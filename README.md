@@ -131,7 +131,7 @@ Claude Code 把每個專案的記憶存成 Markdown 檔，有些在每次對話�
 
 ## Known limitations
 
-- The interface is currently in Traditional Chinese. English is planned.
+- The interface is currently in Traditional Chinese. English is planned ([#1](https://github.com/youllook/noema/issues/1)).
 - Only one project's memory is shown at a time, and several Noema windows can be opened at once.
 - The Sleep skill needs Node.js. Its instructions are in Chinese, and a scan reads every transcript in the project, so it can be slow when the transcripts add up to several GB.
 
