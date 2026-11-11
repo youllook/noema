@@ -1,5 +1,7 @@
 # Noema
 
+**English** | [繁體中文](README.zh-TW.md)
+
 **A live window into Claude Code's memory.**
 
 Noema is a small desktop window that shows, in real time, which of Claude Code's memory files are being read, created, edited or deleted, and helps you keep that memory lean.
@@ -104,30 +106,6 @@ Noema is **local**. It makes no network requests and sends nothing anywhere.
 It only reads your memory and transcript files, with one exception: when you archive, delete or purge a memory from the window and confirm it. Before any such change, the file is backed up to `%LOCALAPPDATA%\Noema\trash\<project>\`.
 
 Apart from that, the only file Noema writes is its own window state. The optional Sleep skill writes its report and backups to `%LOCALAPPDATA%\Noema\sleep\`.
-
-## 中文簡介
-
-**Noema 是 Claude Code 記憶的即時檢視窗。**
-
-Claude Code 把每個專案的記憶存成 Markdown 檔，有些在每次對話開始時自動注入，有些在需要時才讀取。這些平常看不到，Noema 把它們即時畫出來。
-
-- **門縫**：中央一道光代表 Claude。平常緩慢呼吸，記憶被碰到時打開，並跟著最新事件變色。
-- **記憶雲**：每條記憶是一張卡片，排成 3D 記憶雲。滾輪或拖曳可以旋轉，平常不會自轉。
-- **四色光束**：讀取綠、新增藍（新卡從光裡浮現）、修改金黃、刪除紅。
-- **只凸顯正在用的記憶**：互動中的卡片會放大、浮到最前面，關聯線也只畫它們的，一眼看出哪些記憶正在被使用。
-- **門把**：門縫兩側的光圈是開機注入的 `CLAUDE.md` 和 `MEMORY.md`，顯示 token 數。滑過去看預算線，超過預算時光圈轉紅。
-- **Sleep 技能（選用）**：讓記憶「睡一覺」。依序是入睡（備份）、掃描（先用規則抓出路徑失效、過了複查日、太久沒讀、孤兒，⚠ 標出又熱又可疑的記憶）、AI 提出重複與可壓縮的條目、由您分批核准、醒來顯示 token 前後變化。
-- **銷毀**：只限 `archive/` 裡的檔案，而且要您明確下令才會執行。卡片被紅光注入到發亮，確認檔案真的刪掉之後才燒成灰燼。
-- **直接在視窗裡整理**：在卡片上按右鍵，或用閱讀器裡的按鈕，可以封存或永久刪除現役記憶，也可以銷毀封存的記憶。每次都會先跳確認框（預設焦點在「取消」），動手前先備份，並順手整理 MEMORY.md 和 ARCHIVE.md 的索引。
-
-全程只在本機運作，也不連網。除了您在視窗裡確認過的封存、刪除、銷毀之外，Noema 不會改動記憶檔。
-
-**安裝需求**：
-- Windows 10/11（x64），需要 WebView2 Runtime；沒有的話，Noema 會跳出說明並附上下載連結。
-- 不需要另外安裝 Visual C++ 可轉散發套件。
-- 需要使用 Claude Code 的記憶資料夾（`~/.claude/projects/<專案>/memory/`）。
-- 不支援在 WSL 裡執行的 Claude Code。
-- 執行檔還沒有數位簽章，第一次執行如果跳出「Windows 已保護您的電腦」，請點「其他資訊 → 仍要執行」。
 
 ## Known limitations
 
