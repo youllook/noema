@@ -47,11 +47,20 @@ Sleep never deletes anything outside `archive/`. Stale memories are *moved* to `
 
 ## Install
 
-**Requirements:** Windows 10/11 with the WebView2 runtime (already included in Windows 11 and current Windows 10), and Claude Code.
+**Requirements**
+
+- **Windows 10/11 (x64).** macOS and Linux are not supported.
+- **Microsoft Edge WebView2 Runtime.** It ships with Windows 11 and current Windows 10. If it's missing, Noema shows a dialog with a link to [download it](https://developer.microsoft.com/microsoft-edge/webview2/).
+- **Claude Code running natively on Windows.** If you run Claude Code inside WSL, its memory lives in the Linux filesystem, and Noema can't see it.
+- **Claude Code's memory folder** (`~/.claude/projects/<project>/memory/`, where Claude saves memories with a `MEMORY.md` index). Noema visualizes that folder plus your global `~/.claude/CLAUDE.md`. It does *not* read `CLAUDE.md` files inside your repositories. If a project has no memory folder yet, Noema says so instead of showing an empty window.
+
+No Visual C++ redistributable is needed; the runtime is linked into the executable.
 
 ### Download
 
 Grab `noema.exe` from the [latest release](../../releases/latest) and run it.
+
+> **"Windows protected your PC"?** The executable isn't code-signed yet, so SmartScreen may warn the first time you run it. Click **More info → Run anyway**. You can always build it yourself from source instead (see below).
 
 ### Build from source
 
@@ -112,6 +121,19 @@ Claude Code 把每個專案的記憶存成 Markdown 檔，有些在每次對話�
 - **直接在視窗裡整理**：在卡片上按右鍵，或用閱讀器裡的按鈕，可以封存或永久刪除現役記憶，也可以銷毀封存的記憶。每次都會先跳確認框（預設焦點在「取消」），動手前先備份，並順手整理 MEMORY.md 和 ARCHIVE.md 的索引。
 
 全程只在本機運作，也不連網。除了您在視窗裡確認過的封存、刪除、銷毀之外，Noema 不會改動記憶檔。
+
+**安裝需求**：
+- Windows 10/11（x64），需要 WebView2 Runtime；沒有的話，Noema 會跳出說明並附上下載連結。
+- 不需要另外安裝 Visual C++ 可轉散發套件。
+- 需要使用 Claude Code 的記憶資料夾（`~/.claude/projects/<專案>/memory/`）。
+- 不支援在 WSL 裡執行的 Claude Code。
+- 執行檔還沒有數位簽章，第一次執行如果跳出「Windows 已保護您的電腦」，請點「其他資訊 → 仍要執行」。
+
+## Known limitations
+
+- The interface is currently in Traditional Chinese. English is planned.
+- Only one project's memory is shown at a time, and several Noema windows can be opened at once.
+- The Sleep skill needs Node.js. Its instructions are in Chinese, and a scan reads every transcript in the project, so it can be slow when the transcripts add up to several GB.
 
 ## License
 

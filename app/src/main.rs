@@ -93,6 +93,27 @@ fn icon_rgba(size: u32) -> Vec<u8> {
     px
 }
 
+/// WebView2 起不來（多半是沒裝 WebView2 Runtime）：跳對話框說明，而不是默默閃退；按「是」開下載頁
+fn webview_missing(err: &dyn std::fmt::Display) -> ! {
+    use windows_sys::Win32::UI::Shell::ShellExecuteW;
+    use windows_sys::Win32::UI::WindowsAndMessaging::{IDYES, MB_ICONERROR, MB_YESNO, MessageBoxW, SW_SHOWNORMAL};
+    let wide = |s: &str| s.encode_utf16().chain(std::iter::once(0)).collect::<Vec<u16>>();
+    let text = format!(
+        "Noema needs the Microsoft Edge WebView2 Runtime, but it could not be started on this PC.\n\
+         Open the WebView2 download page now?\n\n\
+         Noema 需要 Microsoft Edge WebView2 Runtime，但這台電腦上無法啟動它。\n\
+         要現在開啟 WebView2 下載頁嗎？\n\n\
+         Details: {err}"
+    );
+    let (text, title) = (wide(&text), wide("Noema"));
+    let answer = unsafe { MessageBoxW(std::ptr::null_mut(), text.as_ptr(), title.as_ptr(), MB_YESNO | MB_ICONERROR) };
+    if answer == IDYES {
+        let (op, url) = (wide("open"), wide("https://developer.microsoft.com/microsoft-edge/webview2/"));
+        unsafe { ShellExecuteW(std::ptr::null_mut(), op.as_ptr(), url.as_ptr(), std::ptr::null(), std::ptr::null(), SW_SHOWNORMAL) };
+    }
+    std::process::exit(1);
+}
+
 fn main() {
     let event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
     let mut state = load_state();
@@ -145,8 +166,15 @@ fn main() {
         .with_ipc_handler(move |req| {
             let _ = ipc_proxy.send_event(UserEvent::Ipc(req.body().clone()));
         })
-        .build(&window)
-        .expect("webview");
+        .build(&window);
+    #[cfg(debug_assertions)]
+    if std::env::var_os("NOEMA_SIMULATE_NO_WEBVIEW").is_some() {
+        webview_missing(&"simulated (debug build)");
+    }
+    let webview = match webview {
+        Ok(w) => w,
+        Err(e) => webview_missing(&e),
+    };
     window.set_visible(true);
 
     // 背景掃描執行緒

@@ -1,0 +1,3 @@
+# 靜態連結 MSVC 執行階段：使用者不必另外安裝 Visual C++ 可轉散發套件（VCRUNTIME140.dll）
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

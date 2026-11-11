@@ -114,6 +114,12 @@ canvas.core { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
 .node.flash { border-color: color-mix(in srgb, var(--accent) 60%, transparent); box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 45%, transparent); }
 .node.burning { visibility: hidden; }
 /* 睡眠：整張圖變暗，門縫那層升到暗幕之上，成為唯一的光 */
+/* 沒有記憶時的說明（別人第一次裝、還沒用過自動記憶時不會是一片空白） */
+.empty-state { position: absolute; left: 50%; top: 68%; transform: translateX(-50%); background: #191b1bd9; padding: 6px 10px; width: min(420px, 84%); z-index: 60; text-align: center; pointer-events: none; color: var(--muted); font-size: 10.5px; line-height: 1.65; }
+.empty-state strong { display: block; margin-bottom: 4px; color: var(--text); font-size: 11.5px; font-weight: 600; letter-spacing: .5px; }
+.empty-state p { margin: 0; }
+.empty-state p.zh { margin-top: 6px; opacity: .8; }
+.empty-state code { font: 9.5px var(--mono); color: var(--accent); }
 .sleep-dim { position: absolute; inset: 0; z-index: 110; background: #050605; opacity: 0; pointer-events: none; transition: opacity 1.6s ease; }
 .stage[data-sleep="sleep"] .sleep-dim, .stage[data-sleep="scan"] .sleep-dim, .stage[data-sleep="propose"] .sleep-dim { opacity: .55; }
 .stage[data-sleep="apply"] .sleep-dim, .stage[data-sleep="purge"] .sleep-dim { opacity: .4; }
@@ -337,6 +343,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
     <button class="handle" data-open="memory.md" data-side="1" title="MEMORY.md · 啟動注入（醒來時，已經記得）" aria-label="MEMORY.md，啟動注入"></button>
     <div class="handle-label" data-for="@claude">CLAUDE.md</div>
     <div class="handle-label" data-for="memory.md">MEMORY.md</div>
+    <div class="empty-state" hidden><strong></strong><p></p><p class="zh"></p></div>
     <div class="sleep-dim" aria-hidden="true"></div>
     <div class="sleep-phase" aria-live="polite"></div>
     <div class="sleep-delta" aria-live="polite"><small>BOOT INJECTION</small><b></b><em></em></div>
@@ -455,6 +462,7 @@ function applySnapshot(s) {
   if (prevKeys && prevProject === s.current) for (const k of keys) if (!prevKeys.has(k)) bornAt[k] = elapsed;
   prevKeys = keys; prevProject = s.current;
   updateHandles();
+  updateEmptyState(s);
   const sel = $('#project');
   if (document.activeElement !== sel) {
     sel.replaceChildren(...s.projects.map(p => { const o = document.createElement('option'); o.value = p.id; o.textContent = projectLabel(p.id); o.title = p.id; return o; }));
@@ -463,6 +471,31 @@ function applySnapshot(s) {
   updateFooter();
   buildNodes();
   refreshReader();
+}
+// 沒有任何記憶檔時說明 Noema 在看哪裡，而不是一片空白
+function updateEmptyState(s) {
+  const box = $('.empty-state');
+  const noProject = !s.current, empty = !s.memories.length && !s.archive.length;
+  box.hidden = !(noProject || empty);
+  $('.stage-hint').hidden = !box.hidden;                             // 沒卡片可轉，旋轉提示先藏起來
+  if (box.hidden) return;
+  const code = t => { const c = document.createElement('code'); c.textContent = t; return c; };
+  const [title, en, zh] = box.children;
+  title.textContent = noProject ? 'No Claude Code memory found' : 'No memories in this project yet';
+  en.replaceChildren(
+    'Noema watches Claude Code’s memory folder, ', code('~/.claude/projects/<project>/memory/'),
+    noProject ? '. None exists yet. Once Claude saves a memory in any project, it shows up here.'
+              : '. When Claude saves a memory for this project, it will appear here as a card.');
+  zh.textContent = noProject
+    ? '還沒有找到任何 Claude Code 記憶資料夾。等 Claude 在任一專案存下記憶，就會出現在這裡。'
+    : '這個專案還沒有記憶。Claude 存下記憶後，會以卡片出現在這裡。';
+  placeEmptyState();
+}
+// 排在 CORE · CLAUDE 標籤下面；視窗太矮時往上收，整塊留在舞台裡
+function placeEmptyState() {
+  const box = $('.empty-state');
+  if (box.hidden) return;
+  box.style.top = Math.max(8, Math.min(cy + coreR * 1.25 + 30, height - box.offsetHeight - 40)) + 'px';
 }
 function updateFooter() {
   if (!SNAP) return;
@@ -607,6 +640,7 @@ function resize() {
   if (cap !== cloudCap) { cloudCap = cap; clearTimeout(rebuildTimer); rebuildTimer = setTimeout(() => SNAP && buildNodes(), 120); }
   coreR = Math.max(16, Math.min(Rx, Ry) * .3);
   const hc = $('.hud-center'); hc.style.top = (cy + coreR * 1.25 + 10) + 'px';   // 標籤貼在門縫正下方
+  placeEmptyState();
   for (const h of document.querySelectorAll('.handle')) {                         // 門把貼著門縫兩側、略低於正中
     const side = +h.dataset.side, p = handlePos(side), lab = $('.handle-label[data-for="' + h.dataset.open + '"]');
     h.style.left = p.x + 'px'; h.style.top = p.y + 'px';
