@@ -1,0 +1,1480 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<title>Noema / 認知核心</title>
+<style>
+* { box-sizing: border-box; }
+:root { color-scheme: dark; font-family: "Segoe UI", "Microsoft JhengHei UI", "Microsoft JhengHei", sans-serif; }
+html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; user-select: none; }
+body { color: var(--text); --mono: Consolas, "Cascadia Mono", ui-monospace, monospace;
+  --surface:#191b1b; --panel:#2b2b21b0; --text:#e4e5d3; --muted:#929482; --line:#d8b86b30; --accent:#edc477; --write:#ff895b;
+  --project:#edc477; --feedback:#9cc8c0; --user:#d5b0d5; --reference:#9fb5dd; }
+button, select { font: inherit; }
+button { color: inherit; cursor: pointer; }
+button:focus-visible, select:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+.window { width: 100vw; height: 100vh; position: relative; isolation: isolate; overflow: hidden; display: grid;
+  grid-template-rows: 46px 80px minmax(150px, 1fr) 122px 28px;
+  border: 1px solid #b69a5660; border-radius: 8px; background: linear-gradient(135deg,#292c25aa,transparent 45%),#191b1b; }
+.window:after { content:''; position:absolute; inset:0; pointer-events:none; z-index:8; opacity:.16; background:repeating-linear-gradient(0deg,transparent 0 3px,#c5d39b12 3px 4px); }
+.topbar { margin: 0 21px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed var(--line); cursor: default; }
+.brand { display: flex; align-items: center; gap: 9px; font-size: 11px; letter-spacing: 2.8px; font-weight: 650; }
+.brand-mark { flex: none; width: 15px; height: 15px; border: 1px solid var(--accent); border-radius: 1px; position: relative; transform: rotate(45deg); }
+.brand-mark:after { content: ''; position: absolute; inset: 4px; background: var(--accent); box-shadow: 0 0 12px var(--accent); animation: idle 3.2s ease-in-out infinite; }
+.brand-mark.live:after { animation: live .7s ease-in-out infinite; }
+.brand-mark.live:after { background: var(--ev, var(--accent)); box-shadow: 0 0 14px var(--ev, var(--accent)); }
+@keyframes idle { 50% { opacity: .45; box-shadow: 0 0 3px var(--accent); } }
+@keyframes live { 50% { transform: scale(1.9); opacity: .55; } }
+.window-controls { display: flex; gap: 6px; }
+.icon-btn { border: 1px solid var(--line); border-radius: 0; width: 25px; height: 24px; background: transparent; color: var(--muted); line-height: 1; padding: 0; font-size: 12px; }
+.icon-btn:hover { color: var(--text); border-color: var(--accent); }
+.icon-btn[aria-pressed="true"] { color: var(--accent); border-color: #edc47788; }
+.hero { padding: 11px 22px 8px; position: relative; }
+.eyebrow { display: flex; align-items: center; gap: 6px; font: 9px var(--mono); letter-spacing: 2.2px; color: var(--muted); }
+.eyebrow select { max-width: 200px; background: #1b201be8; color: var(--accent); border: 1px solid var(--line); border-radius: 0; padding: 2px 4px; font: 9px var(--mono); letter-spacing: .4px; }
+h1 { margin: 3px 0 0; font-size: 29px; font-weight: 650; letter-spacing: 6px; }
+.hero-count { position: absolute; right: 23px; top: 20px; text-align: right; pointer-events: none; }
+.hero-count strong { font: 26px var(--mono); font-weight: 300; color: var(--accent); }
+.hero-count span { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; letter-spacing: 1px; }
+.section-label { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font: 9px var(--mono); letter-spacing: 1.5px; }
+.section-label em { font-style: normal; font-size: 9px; letter-spacing: .3px; }
+/* 啟動注入＝門縫兩側的空心光圈門把（2026-11-11 用戶定）：左 CLAUDE.md、右 MEMORY.md；位置由 resize() 依門縫算 */
+.handle { --hc: var(--accent); position: absolute; z-index: 120; width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px; padding: 0; border-radius: 50%;
+  border: 1.6px solid color-mix(in srgb, var(--hc) 70%, #fff4d8); background: none;
+  box-shadow: 0 0 6px var(--hc), 0 0 16px color-mix(in srgb, var(--hc) 55%, transparent), inset 0 0 5px color-mix(in srgb, var(--hc) 70%, transparent);
+  transition: transform .25s, box-shadow .25s, border-color .25s; animation: handle-breath 4.8s ease-in-out infinite; }
+@keyframes handle-breath { 0%, 100% { opacity: .78; } 50% { opacity: 1; } }
+.handle:hover, .handle:focus-visible { transform: scale(1.25); animation: none; opacity: 1; }
+.handle.reading, .handle.writing { animation: none; opacity: 1; transform: scale(1.3); border-color: #fff4d8;
+  box-shadow: 0 0 8px var(--hc), 0 0 22px var(--hc), 0 0 44px color-mix(in srgb, var(--hc) 55%, transparent), inset 0 0 7px var(--hc); }
+.handle.reading, .handle.writing { --hc: var(--ev); }
+.handle.over { --hc: #ff4856; }
+.handle.mention { border-style: dashed; }
+.handle.missing { border-style: dashed; opacity: .3; box-shadow: none; animation: none; }
+.handle-label { position: absolute; z-index: 120; transform: translateY(-50%); font: 7.5px var(--mono); letter-spacing: 1px; color: var(--muted); white-space: nowrap; pointer-events: none; opacity: .55; transition: opacity .25s, color .25s; }
+.handle-label.lit { opacity: 1; color: var(--ev, var(--accent)); }
+.handle-label i { display: block; font-style: normal; color: var(--accent); opacity: .8; }
+.handle-label[data-for="@claude"] { text-align: right; }
+.stage { position: relative; margin: 7px 0 0; min-height: 0; overflow: hidden;
+  background: radial-gradient(circle at 1px 1px, #d2ca8418 1px, transparent 1.2px) 19px 26px / 24px 24px; }
+canvas { width: 100%; height: 100%; display: block; }
+.stage-caption { position: absolute; top: 10px; left: 22px; color: var(--muted); font: 8px var(--mono); letter-spacing: 1.5px; pointer-events: none; }
+.stage-hint { position: absolute; bottom: 35px; width: 100%; text-align: center; color: var(--muted); font-size: 8px; letter-spacing: 1px; pointer-events: none; }
+.legend { display: flex; align-items: center; gap: 12px; position: absolute; bottom: 9px; left: 22px; right: 22px; color: var(--muted); font-size: 9px; }
+.legend span { display: flex; align-items: center; gap: 4px; }
+.legend i { width: 4px; height: 4px; border-radius: 50%; background: var(--dot); }
+.archive-toggle { margin-left: auto; padding: 3px 5px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 9px; border-radius: 0; white-space: nowrap; }
+.archive-toggle[aria-pressed="false"] { opacity: .5; }
+/* 3D 雲：.nodes 不建立堆疊脈絡，卡片的 z-index（0–100，依深度）直接和核心球那層（50）比前後 */
+.nodes { position: absolute; inset: 0; pointer-events: none; }
+.nodes { --ns: 1; }
+canvas.core { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
+.node { --depth: 1; position: absolute; left: 0; top: 0; pointer-events: auto; max-width: calc(116px * var(--ns)); padding: calc(4px * var(--ns)) calc(12px * var(--ns)) calc(4px * var(--ns)) calc(7px * var(--ns)); border: 1px solid var(--line); border-left: 2px solid var(--node-color);
+  background: #1b201bd8; text-align: left; transform: translate(-50%,-50%); border-radius: 0; transition: border-color .3s, box-shadow .3s;
+  will-change: transform, opacity; }
+.node:before { content: ''; position: absolute; top: 50%; right: calc(5px * var(--ns)); width: 3px; height: 3px; margin-top: -1.5px; border-radius: 50%; background: var(--node-color); box-shadow: 0 0 10px var(--node-color); }
+.node-label { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: calc(9.5px * var(--ns)); letter-spacing: .1px; color: var(--text); }
+.node-meta { display: none; }
+.node.more { border-left-color: var(--muted); --node-color: var(--muted); }
+.node:hover, .node:focus-visible { background: #2b2b21; z-index: 300 !important; opacity: 1 !important; }
+.node.reading, .node.writing { opacity: 1 !important; }
+/* 事件顏色由 JS 設在 --ev（2026-11-11 用戶定：讀取綠、新增藍、修改金黃、刪除紅） */
+.node.reading { border-color: var(--ev); box-shadow: 0 0 16px -4px var(--ev); }
+.node.reading:before { background: var(--ev); animation: read-light 1s ease-in-out infinite; }
+.node.writing { border-color: var(--ev); border-left-color: var(--ev); box-shadow: 0 0 18px -3px var(--ev); opacity: 1; }
+.node.writing:before { border-radius: 50%; background: var(--ev); box-shadow: 0 0 8px var(--ev); animation: read-light 1.2s ease-in-out infinite; }
+.node.mention { border-style: dashed; border-left-style: solid; opacity: 1; }
+.node.reading { animation: card-read 1.4s ease-in-out infinite; }
+.node.writing { animation: card-write 1.2s ease-in-out infinite; }
+@keyframes card-read {
+  0%, 100% { border-color: color-mix(in srgb, var(--ev) 45%, transparent); box-shadow: 0 0 6px -2px var(--ev); }
+  50% { border-color: var(--ev); box-shadow: 0 0 22px 2px color-mix(in srgb, var(--ev) 70%, transparent), inset 0 0 14px -4px var(--ev); }
+}
+@keyframes card-write {
+  0%, 100% { border-color: color-mix(in srgb, var(--ev) 40%, transparent); box-shadow: 0 0 5px -2px var(--ev); }
+  50% { border-color: color-mix(in srgb, var(--ev) 85%, transparent); box-shadow: 0 0 12px -2px color-mix(in srgb, var(--ev) 70%, transparent); }
+}
+@keyframes read-light { 50% { box-shadow: 0 0 3px 5px #a8e8ff22, 0 0 23px var(--ev, var(--node-color)); } }
+/* 新增：藍光打到後，新卡從光裡浮現 */
+.node.born { animation: born 1.4s ease-out; }
+@keyframes born {
+  0% { opacity: 0; filter: brightness(3) blur(3px); box-shadow: 0 0 30px #68b0ff; border-color: #cfe6ff; }
+  35% { opacity: 1; filter: brightness(1.8) blur(0); box-shadow: 0 0 22px #68b0ffcc; border-color: #9ccaff; }
+  100% { filter: none; } }
+/* Sleep 掃描標記：⚠ 又熱又可疑（常駐）；路徑／複查、冷只在睡眠期間顯示 */
+.node-mark { display: none; position: absolute; top: -7px; right: -5px; font: calc(6.5px * var(--ns)) var(--mono); line-height: 1.3; padding: 0 3px; border: 1px solid currentColor; background: #191b1b; pointer-events: none; }
+.node.m-warn .node-mark, .node.m-path .node-mark, .node.m-cold .node-mark { display: block; }
+.node.m-warn { border-color: #ff6a4dbb; box-shadow: 0 0 12px -2px #ff6a4d; animation: warn 1.6s ease-in-out infinite; }
+.node.m-warn .node-mark { color: #ff6a4d; }
+.node.m-path .node-mark { color: var(--accent); }
+.node.m-cold { filter: saturate(.3) brightness(.75); }
+.node.m-cold .node-mark { color: #7d8a8f; border-style: dashed; }
+@keyframes warn { 50% { box-shadow: 0 0 20px 1px #ff6a4db3; } }
+.node.flash { border-color: color-mix(in srgb, var(--accent) 60%, transparent); box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 45%, transparent); }
+.node.burning { visibility: hidden; }
+/* 睡眠：整張圖變暗，門縫那層升到暗幕之上，成為唯一的光 */
+.sleep-dim { position: absolute; inset: 0; z-index: 110; background: #050605; opacity: 0; pointer-events: none; transition: opacity 1.6s ease; }
+.stage[data-sleep="sleep"] .sleep-dim, .stage[data-sleep="scan"] .sleep-dim, .stage[data-sleep="propose"] .sleep-dim { opacity: .55; }
+.stage[data-sleep="apply"] .sleep-dim, .stage[data-sleep="purge"] .sleep-dim { opacity: .4; }
+.stage[data-sleep] canvas.core { z-index: 115; }
+.sleep-phase { position: absolute; top: 10px; right: 22px; z-index: 140; font: 8px var(--mono); letter-spacing: 2px; color: var(--accent); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.stage[data-sleep] .sleep-phase { opacity: 1; }
+.sleep-delta { position: absolute; left: 50%; transform: translate(-50%, -50%); z-index: 150; text-align: center; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .6s; }
+.sleep-delta.on { opacity: 1; }
+.sleep-delta small { display: block; font: 7.5px var(--mono); letter-spacing: 2px; color: var(--muted); }
+.sleep-delta b { font: 13px var(--mono); font-weight: 400; color: #fff4d8; text-shadow: 0 0 10px var(--accent); }
+.sleep-delta em { font-style: normal; font: 9px var(--mono); color: #9cd3a0; margin-left: 6px; }
+@keyframes write-light { 50% { transform: rotate(90deg) scale(1.8); } }
+.hud-center { position:absolute; top:60%; left:50%; transform:translateX(-50%); z-index:49; display:flex; align-items:baseline; gap:5px; white-space:nowrap; pointer-events:none; }
+.hud-center small { font:7px var(--mono); color:var(--muted); letter-spacing:2px; }
+.hud-center strong { font:11px var(--mono); color:var(--accent); font-weight:400; }
+.hud-center span { font:7px var(--mono); color:var(--accent); letter-spacing:2px; opacity:.7; }
+.timeline { margin: 0 21px; padding: 12px 0 0; border-top: 1px dashed var(--line); overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+.stream-label { display: flex; gap: 6px; align-items: center; }
+.live-dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; animation: idle 2s ease-in-out infinite; }
+.sim-badge { font-size: 8px; color: var(--muted); border: 1px solid var(--line); padding: 2px 5px; letter-spacing: .5px; }
+.events { list-style: none; padding: 5px 0 4px; margin: 0; overflow-y: auto; flex: 1; min-height: 0; scrollbar-width: none; }
+.events::-webkit-scrollbar { display: none; }
+.event { display: grid; grid-template-columns: 47px 34px minmax(0,1fr); gap: 7px; align-items: center; margin: 0; padding: 3px 0; font-size: 10px; }
+.event time { color: var(--muted); font: 8px var(--mono); }
+.event-tag { font: 8px var(--mono); color: var(--accent); }
+.event .event-tag { color: var(--ev, var(--accent)); }
+.event.sleep .event-tag { color: #b9b3ff; }
+.event.mention .event-tag, .event.boot .event-tag { color: var(--muted); }
+.event.old { opacity: .5; }
+.event.fresh { animation: fresh 2.4s ease-out; }
+@keyframes fresh { from { background: #edc47733; } to { background: transparent; } }
+.event button { padding: 0; border: 0; background: transparent; text-align: left; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; font-size: 10px; color: var(--text); }
+.event .sub { color: var(--muted); font: 8px var(--mono); margin-left: 5px; }
+.empty { color: var(--muted); font-size: 9px; padding: 8px 0; }
+.footer { margin: 0 21px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; font: 8px var(--mono); color: var(--muted); letter-spacing: .5px; white-space: nowrap; overflow: hidden; }
+.footer span:last-child { color: var(--accent); }
+.capsule { display: none; align-items: center; gap: 11px; width: 100vw; height: 100vh; padding: 0 8px 0 18px; border: 1px solid #b69a5680; border-radius: 40px; background: linear-gradient(135deg,#292c25,#191b1b 60%); cursor: default; }
+.capsule strong { font-size: 10px; letter-spacing: 2px; }
+.capsule span { flex: 1; min-width: 0; font-size: 9px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.capsule span.live { color: var(--accent); }
+.capsule span.live { color: var(--ev, var(--accent)); }
+.capsule button { flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: transparent; font-size: 15px; color: var(--accent); }
+.capsule button:hover { background: #edc47722; }
+body.collapsed .window { display: none; }
+body.collapsed .capsule { display: flex; }
+/* ---------- 閱讀器（HUD Markdown Reader） ---------- */
+dialog.reader { position: fixed; inset: 7px; margin: 0; width: auto; height: auto; max-width: none; max-height: none; padding: 0; overflow: hidden;
+  color: var(--text); border: 1px solid #b69a5680; border-radius: 3px; user-select: text; --tc: var(--accent);
+  background: linear-gradient(160deg,#2a2c22 0,transparent 34%), #151716; font-size: clamp(13.5px, 9px + 1.1vw, 16px); }
+dialog.reader[open] { display: grid; grid-template-rows: auto 2px minmax(0,1fr) 25px; }
+dialog.reader::backdrop { background: #0c0e0df5; border-radius: 8px; }
+dialog.reader::before, dialog.reader::after { content: ''; position: absolute; width: 13px; height: 13px; pointer-events: none; z-index: 3; }
+dialog.reader::before { top: -1px; left: -1px; border-top: 2px solid var(--tc); border-left: 2px solid var(--tc); }
+dialog.reader::after { bottom: -1px; right: -1px; border-bottom: 2px solid var(--tc); border-right: 2px solid var(--tc); }
+dialog.reader ::selection { background: #edc47755; color: #fff; }
+.reader-head { padding: 10px 12px 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed var(--line); cursor: default; user-select: none; }
+.reader-mark { flex: none; width: 9px; height: 9px; background: var(--tc); box-shadow: 0 0 12px var(--tc); transform: rotate(45deg); margin: 0 3px; }
+.reader-id { min-width: 0; flex: 1; }
+.reader-id h2 { font: 12px var(--mono); margin: 0; color: var(--tc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .4px; }
+.reader-id p { margin: 3px 0 0; font: 9px var(--mono); color: var(--muted); letter-spacing: 1.6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.reader-head .icon-btn { flex: none; width: 28px; height: 26px; font-size: 13px; }
+.reader-progress { background: #edc47712; }
+.reader-progress i { display: block; height: 100%; width: 0; background: var(--tc); box-shadow: 0 0 8px var(--tc); }
+.reader-scroll { overflow-y: auto; overflow-x: hidden; padding: 18px 18px 30px; outline: none; scroll-padding-top: 12px; }
+.reader-scroll > * { max-width: 740px; margin-left: auto; margin-right: auto; }
+.reader-scroll::-webkit-scrollbar, .md pre::-webkit-scrollbar, .tablewrap::-webkit-scrollbar { width: 9px; height: 9px; }
+.reader-scroll::-webkit-scrollbar-track { background: repeating-linear-gradient(0deg,#edc47720 0 1px,transparent 1px 7px); border-left: 1px solid var(--line); }
+.md pre::-webkit-scrollbar-track, .tablewrap::-webkit-scrollbar-track { background: #edc4770d; }
+.reader-scroll::-webkit-scrollbar-thumb, .md pre::-webkit-scrollbar-thumb, .tablewrap::-webkit-scrollbar-thumb { background: #edc477a8; border: 2px solid transparent; background-clip: padding-box; }
+.reader-scroll::-webkit-scrollbar-thumb:hover, .md pre::-webkit-scrollbar-thumb:hover, .tablewrap::-webkit-scrollbar-thumb:hover { background: var(--accent); background-clip: padding-box; }
+.reader-scroll::-webkit-scrollbar-corner, .md pre::-webkit-scrollbar-corner { background: transparent; }
+.reader-foot { padding: 0 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); font: 9px var(--mono); letter-spacing: .8px; color: var(--muted); white-space: nowrap; user-select: none; }
+.reader-foot span { overflow: hidden; text-overflow: ellipsis; }
+.reader-foot span:last-child { flex: none; color: var(--accent); max-width: 60%; }
+.reader-foot span.flash { color: var(--feedback); }
+
+/* 資訊面板（frontmatter） */
+.info { position: relative; margin-bottom: 22px; padding: 14px 16px 13px; border: 1px solid var(--line); border-left: 2px solid var(--tc);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tc) 10%, transparent), transparent 72%), var(--panel);
+  clip-path: polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,0 100%); }
+.info-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font: 10px var(--mono); letter-spacing: 1.4px; }
+.tag { padding: 3px 8px; color: var(--tc); border: 1px solid color-mix(in srgb, var(--tc) 55%, transparent); background: color-mix(in srgb, var(--tc) 13%, transparent); white-space: nowrap; }
+.tag.dim { --tc: var(--muted); }
+.info-serial { margin-left: auto; padding-right: 8px; color: var(--muted); }
+.info h1 { margin: 11px 0 0; font-size: 1.5em; line-height: 1.35; letter-spacing: 1px; font-weight: 650; overflow-wrap: anywhere; }
+.info-desc { margin: 6px 0 0; font-size: .95em; line-height: 1.75; color: #cfd0bd; overflow-wrap: anywhere; }
+.info dl { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 5px 14px; margin: 13px 0 0; padding-top: 11px; border-top: 1px dashed var(--line); font: 11px/1.5 var(--mono), "Microsoft JhengHei"; }
+.info dt { color: var(--muted); letter-spacing: 1.2px; white-space: nowrap; }
+.info dd { margin: 0; overflow-wrap: anywhere; color: #d9dac8; }
+.info dd small { color: var(--muted); font-size: 1em; }
+
+/* Markdown 內文 */
+.md { line-height: 1.9; letter-spacing: .25px; overflow-wrap: anywhere; counter-reset: sec; }
+.md > :first-child { margin-top: 0; }
+.md p { margin: .85em 0; }
+.md h1, .md h2, .md h3, .md h4, .md h5, .md h6 { line-height: 1.45; font-weight: 650; letter-spacing: .6px; }
+.md h1 { margin: 1.5em 0 .7em; padding-bottom: .4em; font-size: 1.42em; color: var(--accent); border-bottom: 1px solid var(--line); }
+.md h2 { margin: 1.7em 0 .6em; padding-bottom: .35em; font-size: 1.2em; border-bottom: 1px dashed var(--line); counter-increment: sec; }
+.md h2::before { content: counter(sec, decimal-leading-zero) ' /'; margin-right: .7em; font: .68em var(--mono); letter-spacing: 1px; color: var(--tc); vertical-align: .12em; }
+.md h3 { margin: 1.4em 0 .4em; padding-left: .7em; font-size: 1.06em; border-left: 2px solid var(--tc); }
+.md h4, .md h5, .md h6 { margin: 1.2em 0 .3em; font-size: .95em; color: var(--accent); }
+.md strong { font-weight: 650; color: #fbe2ac; }
+.md em { font-style: italic; color: #d6e6dc; }
+.md del { color: var(--muted); }
+.md code { font: .88em var(--mono), "Microsoft JhengHei"; padding: 1px 5px; color: #f1dcae; background: #edc47714; border: 1px solid #edc47726; border-radius: 2px; }
+.md .path, .info .path { cursor: copy; border: 1px dashed #9cc8c055; background: #9cc8c012; color: #bfe0d8; border-radius: 2px; }
+.md span.path { font: .88em var(--mono), "Microsoft JhengHei"; padding: 1px 5px; }
+.info .path { padding: 0 4px; }
+.md .path:hover, .info .path:hover { border-color: var(--feedback); background: #9cc8c026; }
+.codeblock { margin: 1em 0; border: 1px solid var(--line); border-left: 2px solid var(--accent); background: #0e100f; }
+.cb-head { display: flex; align-items: center; justify-content: space-between; padding: 3px 6px 3px 11px; border-bottom: 1px dashed var(--line); font: 9px var(--mono); letter-spacing: 1.5px; color: var(--muted); user-select: none; }
+.cb-copy { padding: 2px 7px; border: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--muted); font: 9px var(--mono); letter-spacing: 1px; }
+.cb-copy:hover { color: var(--accent); border-color: var(--accent); }
+.md pre { margin: 0; padding: 11px 13px; overflow-x: auto; line-height: 1.65; white-space: pre; }
+.md pre code { padding: 0; border: 0; background: none; color: #dfe0cc; font-size: .86em; }
+.md blockquote { margin: 1em 0; padding: 4px 14px; border-left: 2px solid var(--feedback); background: #9cc8c00f; color: #cbd3c6; }
+.md blockquote p { margin: .5em 0; }
+.md ul, .md ol { margin: .6em 0; padding-left: 1.45em; list-style: none; }
+.md li { position: relative; margin: .28em 0; }
+.md li > ul, .md li > ol { margin: .2em 0; }
+.md li > p { margin: .5em 0; }
+.md ul > li::before { content: ''; position: absolute; left: -1.08em; top: .78em; width: 5px; height: 5px; background: var(--tc); transform: rotate(45deg); }
+.md ul ul > li::before { background: transparent; border: 1px solid var(--tc); }
+.md ul ul ul > li::before { width: 3px; height: 3px; top: .85em; background: var(--muted); border: 0; }
+.md ol { counter-reset: li; padding-left: 2.1em; }
+.md ol > li { counter-increment: li; }
+.md ol > li::before { content: counter(li, decimal-leading-zero); position: absolute; left: -2.5em; top: .3em; width: 2em; height: auto; text-align: right; font: .76em var(--mono); color: var(--tc); background: none; border: 0; transform: none; }
+.md li.task::before { display: none; }
+.md .box { display: inline-block; width: .9em; height: .9em; margin: 0 .5em 0 -1.35em; border: 1px solid var(--tc); vertical-align: -.08em; position: relative; }
+.md .box.on::after { content: ''; position: absolute; inset: 2px; background: var(--tc); }
+.md hr { height: 9px; margin: 1.8em 0; border: 0; background: linear-gradient(var(--line),var(--line)) 0 50% / 100% 1px no-repeat; position: relative; }
+.md hr::after { content: ''; position: absolute; left: 50%; top: 1px; width: 7px; height: 7px; margin-left: -4px; background: #151716; border: 1px solid var(--accent); transform: rotate(45deg); }
+.tablewrap { margin: 1em 0; overflow-x: auto; border: 1px solid var(--line); }
+.md table { width: 100%; border-collapse: collapse; font-size: .92em; line-height: 1.6; }
+.md th { padding: 7px 11px; text-align: left; font-weight: 650; color: var(--accent); background: #edc47714; border-bottom: 1px solid #edc47755; white-space: nowrap; }
+.md td { padding: 7px 11px; vertical-align: top; border-top: 1px dashed var(--line); }
+.md th + th, .md td + td { border-left: 1px solid #d8b86b1c; }
+.md tbody tr:hover td { background: #edc4770a; }
+.md a { color: inherit; text-decoration: none; cursor: pointer; }
+.md .wl { --lc: var(--accent); padding: 0 5px 1px 4px; color: var(--lc); border-bottom: 1px solid color-mix(in srgb, var(--lc) 60%, transparent); background: color-mix(in srgb, var(--lc) 10%, transparent); }
+.md .wl::before { content: '◆'; margin-right: 4px; font-size: .55em; vertical-align: .25em; }
+.md .wl:hover, .md .wl:focus-visible { background: color-mix(in srgb, var(--lc) 26%, transparent); outline: none; }
+.md .wl.broken { --lc: var(--muted); border-bottom-style: dashed; background: none; cursor: not-allowed; }
+.md .wl.broken::before { content: '◇'; }
+.md .wl.broken::after { content: '斷連'; display: inline-block; margin-left: 5px; padding: 0 3px; font: .68em/1.5 var(--mono), "Microsoft JhengHei"; letter-spacing: 1px; border: 1px dashed #92948277; vertical-align: .15em; }
+.md .ext { color: var(--reference); border-bottom: 1px dotted #9fb5dd88; cursor: copy; }
+.md .ext:hover { background: #9fb5dd1c; }
+.md .img-chip { padding: 0 6px; font: .82em var(--mono), "Microsoft JhengHei"; color: var(--muted); border: 1px dashed var(--line); }
+.reader-links { margin-top: 30px; padding-top: 13px; border-top: 1px dashed var(--line); display: grid; gap: 11px; }
+.link-group b { display: block; margin-bottom: 7px; font: 9px var(--mono); letter-spacing: 1.6px; color: var(--muted); font-weight: 400; }
+.link-group div { display: flex; flex-wrap: wrap; gap: 6px; }
+.link-chip { --lc: var(--accent); padding: 5px 9px; font-size: 11.5px; color: var(--text); border: 1px solid var(--line); border-left: 2px solid var(--lc); border-radius: 0; background: var(--panel); text-align: left; overflow-wrap: anywhere; }
+button.link-chip:hover { border-color: var(--lc); background: color-mix(in srgb, var(--lc) 14%, transparent); }
+span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; }
+.link-chip .lc-title { display: block; }
+.link-chip .lc-type { display: block; margin-top: 3px; font: 8.5px var(--mono); letter-spacing: 1.4px; color: var(--lc); opacity: .85; }
+.link-chip .lc-desc { display: none; }
+/* 寬視窗：引用卡改成主文右側的固定欄（捲動時黏住） */
+@media (min-width: 720px) {
+  .reader-scroll { display: grid; grid-template-columns: minmax(0, 740px) clamp(170px, 24vw, 240px); grid-template-rows: auto auto auto 1fr; justify-content: center; column-gap: 24px; align-content: start; }
+  .reader-scroll > * { grid-column: 1; max-width: none; margin-left: 0; margin-right: 0; min-width: 0; }
+  .reader-scroll > .reader-links { grid-column: 2; grid-row: 1 / 5; align-self: start; position: sticky; top: 0;
+    margin: 0; padding: 2px 0 0 14px; border-top: 0; border-left: 1px dashed var(--line); gap: 16px; }
+  .reader-links .link-group div { flex-direction: column; flex-wrap: nowrap; }
+  .reader-links .link-chip { width: 100%; padding: 8px 10px; clip-path: polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,0 100%); }
+  .reader-links .link-chip .lc-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-top: 5px; font-size: 10.5px; line-height: 1.55; color: var(--muted); }
+}
+.more-list { display: grid; gap: 7px; }
+.more-list button { text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-left: 2px solid var(--node-color); border-radius: 0; background: var(--panel); font-size: 13px; }
+.more-list button small { display: block; margin-top: 3px; font: 10px var(--mono); color: var(--muted); }
+.more-list button:hover { border-color: var(--node-color); }
+.reader-empty { color: var(--muted); font-size: 12px; }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<main class="window" aria-label="認知核心記憶檢視器">
+  <header class="topbar" data-drag>
+    <div class="brand"><i class="brand-mark" aria-hidden="true"></i>NOEMA <span style="opacity:.45;font-weight:400">/ CORE / 03</span></div>
+    <div class="window-controls">
+      <button class="icon-btn" id="pin" title="置頂" aria-pressed="true">▲</button>
+      <button class="icon-btn" id="collapse" title="縮成膠囊">−</button>
+      <button class="icon-btn" id="hide" title="隱藏到系統匣">×</button>
+    </div>
+  </header>
+  <section class="hero" data-drag>
+    <div class="eyebrow">PROJECT / <select id="project" title="切換專案"></select></div>
+    <h1 data-drag>認知核心</h1>
+    <div class="hero-count"><strong>00</strong><span>ACTIVE MEMORIES</span></div>
+  </section>
+  <section class="stage" aria-label="依類型分色的記憶節點與連結">
+    <canvas aria-hidden="true"></canvas>
+    <canvas class="core" aria-hidden="true"></canvas>
+    <div class="stage-caption">NEURAL ARRAY / ONLINE</div>
+    <div class="nodes"></div>
+    <div class="hud-center"><small>CORE · CLAUDE</small><strong>00</strong><span>MEMORIES</span></div>
+    <button class="handle" data-open="@claude" data-side="-1" title="CLAUDE.md · 啟動注入（醒來時，已經記得）" aria-label="CLAUDE.md，啟動注入"></button>
+    <button class="handle" data-open="memory.md" data-side="1" title="MEMORY.md · 啟動注入（醒來時，已經記得）" aria-label="MEMORY.md，啟動注入"></button>
+    <div class="handle-label" data-for="@claude">CLAUDE.md</div>
+    <div class="handle-label" data-for="memory.md">MEMORY.md</div>
+    <div class="sleep-dim" aria-hidden="true"></div>
+    <div class="sleep-phase" aria-live="polite"></div>
+    <div class="sleep-delta" aria-live="polite"><small>BOOT INJECTION</small><b></b><em></em></div>
+    <div class="stage-hint">滾輪或拖曳旋轉 · 點選卡片展開記憶</div>
+    <div class="legend" aria-label="記憶類型圖例">
+      <span><i style="--dot:var(--project)"></i>project</span>
+      <span><i style="--dot:var(--feedback)"></i>feedback</span>
+      <span><i style="--dot:var(--user)"></i>user</span>
+      <span><i style="--dot:var(--reference)"></i>ref.</span>
+      <button class="archive-toggle" aria-pressed="true" title="顯示或隱藏封存記憶">封存 00</button>
+    </div>
+  </section>
+  <section class="timeline" aria-label="讀寫事件時間軸">
+    <div class="section-label"><span class="stream-label"><i class="live-dot"></i>01 / ACTIVITY STREAM</span><span class="sim-badge" id="stream-state">連線中</span></div>
+    <ol class="events"></ol>
+  </section>
+  <footer class="footer"><span id="footer-left">—</span><span id="footer-status">LOCAL / READ ONLY</span></footer>
+</main>
+<div class="capsule" data-drag aria-label="Noema 膠囊">
+  <i class="brand-mark"></i><strong data-drag>NOEMA</strong><span id="capsule-status" data-drag>待命</span><button id="expand" title="展開">↗</button>
+</div>
+<dialog class="reader" aria-labelledby="reader-title">
+  <header class="reader-head" data-drag>
+    <button class="icon-btn" id="reader-back" title="返回上一筆（Alt+←）" aria-label="返回" hidden>←</button>
+    <i class="reader-mark" aria-hidden="true"></i>
+    <div class="reader-id"><h2 id="reader-title"></h2><p id="reader-crumb"></p></div>
+    <button class="icon-btn" id="close-reader" title="關閉（Esc）" aria-label="關閉">×</button>
+  </header>
+  <div class="reader-progress" aria-hidden="true"><i></i></div>
+  <div class="reader-scroll" tabindex="0">
+    <section class="info" hidden></section>
+    <article class="md" hidden></article>
+    <div class="more-list" hidden></div>
+    <nav class="reader-links" hidden></nav>
+  </div>
+  <footer class="reader-foot"><span id="reader-stat"></span><span id="reader-hint">ESC 關閉</span></footer>
+</dialog>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const send = msg => { try { window.ipc.postMessage(JSON.stringify(msg)); } catch (e) {} };
+const TYPE_LABELS = { project: '專案', feedback: '回饋', user: '使用者', reference: '參考', boot: '啟動' };
+const colors = { project: '#edc477', feedback: '#9cc8c0', user: '#d5b0d5', reference: '#9fb5dd' };
+const WRITE = '#ff895b';
+const pad = n => String(n).padStart(2, '0');
+
+let SNAP = null, files = [], memories = [], shown = [], edges = [], wikiEdges = [];
+let width = 420, height = 210, nodeScale = 1, archiveVisible = true, collapsed = false;
+let elapsed = 0, lastFrame = 0, lastPaint = 0;
+let active = [];            // 正在點亮的事件 {key, kind, start}
+let lastLive = 0;
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stage = $('.stage'), canvas = $('canvas'), ctx = canvas.getContext('2d'), dialog = $('dialog');
+const coreCanvas = $('canvas.core'), cctx = coreCanvas.getContext('2d');
+
+/* ---------- 資料 ---------- */
+function metadata(content) {
+  const fm = (content.match(/^---\r?\n([\s\S]*?)\r?\n---/) || [, ''])[1];
+  const field = key => fm.match(new RegExp('^\\s*' + key + ':\\s*(.+)$', 'm'))?.[1]?.trim().replace(/^["']|["']$/g, '');
+  const type = field('type');
+  return { name: field('name'), description: field('description'), type: colors[type] ? type : 'reference' };
+}
+const normalize = name => name.replace(/\.md$/i, '').replace(/_/g, '-').toLowerCase();
+function resolveLink(target, source) {
+  const clean = target.split('|')[0].split('#')[0].trim();
+  const basename = clean.split('/').pop();
+  const pool = source?.archived || clean.startsWith('archive/') ? files.filter(f => f.archived) : files.filter(f => !f.archived);
+  return pool.find(f => normalize(f.file) === normalize(basename)) || pool.find(f => f.name && normalize(f.name) === normalize(clean));
+}
+function linksOf(file) {
+  const links = [];
+  for (const m of file.content.matchAll(/\[\[([^\]]+)\]\]/g)) links.push({ text: m[1], target: resolveLink(m[1], file), kind: 'wiki' });
+  for (const m of file.content.matchAll(/\[[^\]]+\]\(([^)]+\.md)\)/g)) links.push({ text: m[1], target: resolveLink(m[1], file), kind: 'index' });
+  return links;
+}
+const byKey = key => files.find(f => f.key === key);
+const projectLabel = id => id.replace(/^([A-Za-z])--/, '').replace(/^claude-workspace-/, '') || id;
+
+function applySnapshot(s) {
+  SNAP = s;
+  const titles = {};
+  const index = s.boot.memoryIndex;
+  if (index) for (const m of index.content.matchAll(/\[([^\]]+)\]\(([^)]+\.md)\)/g)) titles[m[2].split('/').pop().toLowerCase()] = m[1].trim();
+  const mk = (f, archived) => {
+    const meta = metadata(f.content);
+    return { ...f, ...meta, archived, key: (archived ? 'archive/' : '') + f.file.toLowerCase(),
+      label: (!archived && titles[f.file.toLowerCase()]) || (archived ? f.file.replace(/\.md$/i, '') : meta.name || f.file.replace(/\.md$/i, '')) };
+  };
+  const sameProject = !prevProject || prevProject === s.current;
+  if (!sameProject) resetSleep();                                    // 換專案：清掉上一個專案的睡眠／銷毀／光束
+  const old = sameProject ? new Map(files.map(f => [f.key, f])) : new Map();
+  files = [];
+  if (s.boot.claudeMd) files.push({ ...s.boot.claudeMd, key: '@claude', type: 'boot', label: 'CLAUDE.md' });
+  if (index) files.push({ ...index, key: 'memory.md', type: 'boot', label: 'MEMORY.md' });
+  files.push(...s.memories.map(f => mk(f, false)), ...s.archive.map(f => mk(f, true)));
+  // 寫入後約 0.25 秒會重建一次：凸顯程度與掃描進度沿用，卡片才不會縮回去再放大
+  for (const f of files) { const o = old.get(f.key); if (o) { f.boost = o.boost; f.swept = o.swept; } }
+  memories = files.filter(f => f.type !== 'boot');
+  edges = files.flatMap(f => linksOf(f).filter(l => l.target && l.target !== f).map(l => ({ source: f, target: l.target, kind: l.kind })));
+  wikiEdges = edges.filter(e => e.kind === 'wiki');
+
+  $('.hero-count strong').textContent = pad(s.memories.length);
+  $('.hud-center strong').textContent = pad(s.memories.length);
+  $('.archive-toggle').textContent = '封存 ' + pad(s.archive.length);
+  // 新出現的記憶（同一專案內）記下時間，buildNodes 讓它從光裡浮現
+  const keys = new Set(memories.map(f => f.key));
+  if (prevKeys && prevProject === s.current) for (const k of keys) if (!prevKeys.has(k)) bornAt[k] = elapsed;
+  prevKeys = keys; prevProject = s.current;
+  updateHandles();
+  const sel = $('#project');
+  if (document.activeElement !== sel) {
+    sel.replaceChildren(...s.projects.map(p => { const o = document.createElement('option'); o.value = p.id; o.textContent = projectLabel(p.id); o.title = p.id; return o; }));
+    sel.value = s.current;
+  }
+  updateFooter();
+  buildNodes();
+  refreshReader();
+}
+function updateFooter() {
+  if (!SNAP) return;
+  const sid = SNAP.sessionId ? SNAP.sessionId.slice(0, 8) : 'NO SESSION';
+  $('#footer-left').textContent = 'SESSION · ' + sid + ' / ' + wikiEdges.length + ' LINK';
+  $('#stream-state').textContent = Date.now() - lastLive < 60000 ? '即時 · 活躍' : '即時監看';
+}
+
+/* ---------- 3D 記憶雲（2026-11-10 用戶定：中心能量球＝Claude，卡片立體環繞，滾輪旋轉） ---------- */
+let yaw = 0, pitch = -0.3, yawVel = 0, pitchVel = 0, hovering = false, dragging = null;
+let cx = 210, cy = 100, Rx = 120, Ry = 80, coreR = 30, cloudCap = 24;
+function buildNodes() {
+  const box = $('.nodes');
+  box.replaceChildren();
+  const act = memories.filter(f => !f.archived), arc = memories.filter(f => f.archived);
+  // 雲上最多放 CAP 張，多出的收進「+N 筆」（最近改過的優先上雲）
+  const CAP = cloudCap, ARC_CAP = Math.max(4, Math.round(cloudCap / 3));
+  let visAct = act, hidAct = [];
+  if (act.length > CAP) { const s = [...act].sort((a, b) => b.mtime - a.mtime); visAct = s.slice(0, CAP - 1); hidAct = s.slice(CAP - 1); }
+  let visArc = arc, hidArc = [];
+  if (arc.length > ARC_CAP) { visArc = arc.slice(0, ARC_CAP - 1); hidArc = arc.slice(ARC_CAP - 1); }
+  const a = hidAct.length ? [...visAct, { more: hidAct, archived: false }] : visAct;
+  const b = hidArc.length ? [...visArc, { more: hidArc, archived: true }] : visArc;
+  shown = [];
+  // 費氏球面均勻分布：現役在上半、封存沉在南極一帶
+  const all = [...a, ...b], N = all.length, GA = Math.PI * (3 - Math.sqrt(5));
+  all.forEach((f, i) => {
+    const y = N === 1 ? 0 : 1 - 2 * (i + .5) / N, r = Math.sqrt(1 - y * y), th = i * GA + .6;
+    f.ux = Math.cos(th) * r; f.uy = -y; f.uz = Math.sin(th) * r;
+  });
+  let n = 0;
+  for (const f of all) {
+    const button = document.createElement('button');
+    const label = document.createElement('span'); label.className = 'node-label';
+    const meta = document.createElement('span'); meta.className = 'node-meta';
+    if (f.more) {
+      button.className = 'node more' + (f.archived ? ' archived' : '');
+      label.textContent = '+' + f.more.length + ' 筆'; meta.textContent = 'MORE';
+      button.addEventListener('click', () => openList(f.more));
+    } else {
+      button.className = 'node' + (f.archived ? ' archived' : '');
+      button.style.setProperty('--node-color', colors[f.type]);
+      button.title = (f.description || f.file) + '\n' + f.file;
+      label.textContent = f.label;
+      meta.textContent = f.archived ? 'ARCHIVED' : f.type.toUpperCase() + ' / ' + pad(++n);
+      button.addEventListener('click', () => openReader(f));
+    }
+    button.hidden = f.archived && !archiveVisible;
+    const mark = document.createElement('span'); mark.className = 'node-mark';
+    button.append(label, meta, mark);
+    // 剛新增的記憶：從藍光裡浮現
+    if (!f.more && bornAt[f.key] && elapsed - bornAt[f.key] < 3000) { button.classList.add('born'); setTimeout(() => button.classList.remove('born'), 1500); }
+    if (!f.more && burns.some(b => b.key === f.key)) button.classList.add('burning');
+    f.button = button; shown.push(f); box.append(button);
+  }
+  for (const f of memories) if (!shown.includes(f)) f.button = null;
+  refreshLights(); positionNodes(); renderMarks(); paint();       // 先上事件 class 再算位置，凸顯才不會掉一格
+}
+const handlePos = side => ({ x: cx + side * (coreR * .42 + 8), y: cy + coreR * .06 });
+function point(file) {
+  if (file.type === 'boot') return { ...handlePos(file.key === '@claude' ? -1 : 1), d: 1 };
+  if (!file.button || file.button.hidden) return null;
+  return { x: file.sx, y: file.sy, d: file.depth };
+}
+// 每幀：旋轉 → 透視投影 → 依深度設位置、大小、透明度、前後層（核心球在 z-index 50，背面卡片被它擋住）
+function positionNodes() {
+  const cY = Math.cos(yaw), sY = Math.sin(yaw), cP = Math.cos(pitch), sP = Math.sin(pitch);
+  for (const f of shown) {
+    const x1 = f.ux * cY + f.uz * sY, z1 = -f.ux * sY + f.uz * cY;
+    const y2 = f.uy * cP - z1 * sP, z2 = f.uy * sP + z1 * cP;
+    const k = 3 / (3 - z2) / 1.2;                     // 0.625（背）～1.25（前）
+    const depth = (z2 + 1) / 2;
+    f.sx = cx + x1 * Rx * k; f.sy = cy + y2 * Ry * k; f.depth = depth;
+    // 互動中的卡片凸顯（2026-11-11 用戶定）：放大、不透明、浮到門縫與暗幕之上；事件結束後平滑縮回
+    const cl = f.button.classList, hot = cl.contains('reading') || cl.contains('writing');
+    f.boost = (f.boost || 0) + ((hot ? 1 : 0) - (f.boost || 0)) * (reducedMotion ? 1 : .14);
+    if (f.boost < .002) f.boost = 0;
+    const s0 = .6 + .45 * depth, s = s0 + (Math.max(1.18, s0 + .12) - s0) * f.boost;
+    const o0 = (.22 + .78 * depth) * (f.archived ? .45 : 1);
+    // 只動 transform / opacity（走合成層，不觸發重排）；z-index 變了才寫
+    const st = f.button.style;
+    st.transform = 'translate3d(' + f.sx.toFixed(1) + 'px,' + f.sy.toFixed(1) + 'px,0) translate(-50%,-50%) scale(' + s.toFixed(3) + ')';
+    st.opacity = (o0 + (1 - o0) * f.boost).toFixed(2);
+    const z = f.boost > .05 ? 200 : Math.round(depth * 100);
+    if (f.z !== z) { f.z = z; st.zIndex = z; }
+  }
+}
+const boosting = () => active.length > 0 || shown.some(f => f.boost > 0);
+let lastSpin = 0;
+function spin(dt) {
+  dt = Math.max(0, Math.min(dt, 100));
+  const idle = false;                                  // 待機不自轉（2026-11-11 用戶定），只靠滾輪／拖曳旋轉
+  yaw += yawVel * dt;
+  pitch = Math.max(-1.1, Math.min(1.1, pitch + pitchVel * dt));
+  const decay = Math.exp(-dt / 380);
+  yawVel *= decay; pitchVel *= decay;
+  if (Math.abs(yawVel) < 1e-6) yawVel = 0;
+  if (Math.abs(pitchVel) < 1e-6) pitchVel = 0;
+  return idle || yawVel || pitchVel;
+}
+stage.addEventListener('wheel', e => {
+  e.preventDefault();
+  const d = e.deltaMode === 1 ? 33 : 1;                 // 行模式換算成像素
+  if (e.shiftKey) pitchVel += e.deltaY * d * 5e-6;
+  else { yawVel += e.deltaY * d * 7.5e-6; pitchVel += e.deltaX * d * 5e-6; }
+  yawVel = Math.max(-.006, Math.min(.006, yawVel));
+}, { passive: false });
+// 在空白處拖曳也能轉（點卡片仍是開閱讀器）
+stage.addEventListener('pointerdown', e => {
+  if (e.button !== 0 || e.target.closest('.node, button')) return;
+  dragging = { x: e.clientX, y: e.clientY, t: performance.now() }; stage.setPointerCapture(e.pointerId);
+});
+stage.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const dx = e.clientX - dragging.x, dy = e.clientY - dragging.y, dt = Math.max(8, performance.now() - dragging.t);
+  yaw += dx * .008; pitch = Math.max(-1.1, Math.min(1.1, pitch + dy * .006));
+  yawVel = dx * .008 / dt; pitchVel = dy * .006 / dt;
+  dragging = { x: e.clientX, y: e.clientY, t: performance.now() };
+});
+const endDrag = () => { dragging = null; };
+stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag);
+$('.nodes').addEventListener('pointerover', e => { hovering = !!e.target.closest('.node'); });
+$('.nodes').addEventListener('pointerout', e => { hovering = !!(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.node')); });
+let rebuildTimer = 0;
+function resize() {
+  width = stage.clientWidth; height = stage.clientHeight;
+  if (!width || !height) return;
+  // 記憶框隨舞台放大（420 寬的原稿為 1 倍，上限 1.8 倍）
+  nodeScale = Math.max(1, Math.min(1.8, width / 470, height / 470));
+  $('.nodes').style.setProperty('--ns', nodeScale.toFixed(3));
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  for (const [cv, c] of [[canvas, ctx], [coreCanvas, cctx]]) {
+    cv.width = Math.round(width * dpr); cv.height = Math.round(height * dpr); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  // 雲的幾何：螢幕上最外緣出現在側面（透視約 0.89 倍），以此反推半徑，卡片不出舞台
+  const halfW = 56 * nodeScale, halfH = 15 * nodeScale;
+  // 球與雲的中心＝舞台正中央（2026-11-10 用戶定：Fable 繪製）；上下各留 36px，下緣避開圖例列
+  cx = width / 2; cy = height / 2;
+  Rx = Math.max(50, (width / 2 - halfW - 8) / .89);
+  Ry = Math.max(40, (height / 2 - 36 - halfH) / .89);
+  const cap = Math.max(12, Math.min(60, Math.floor(Rx * Ry / (780 * nodeScale * nodeScale))));
+  if (cap !== cloudCap) { cloudCap = cap; clearTimeout(rebuildTimer); rebuildTimer = setTimeout(() => SNAP && buildNodes(), 120); }
+  coreR = Math.max(16, Math.min(Rx, Ry) * .3);
+  const hc = $('.hud-center'); hc.style.top = (cy + coreR * 1.25 + 10) + 'px';   // 標籤貼在門縫正下方
+  for (const h of document.querySelectorAll('.handle')) {                         // 門把貼著門縫兩側、略低於正中
+    const side = +h.dataset.side, p = handlePos(side), lab = $('.handle-label[data-for="' + h.dataset.open + '"]');
+    h.style.left = p.x + 'px'; h.style.top = p.y + 'px';
+    lab.style.top = p.y + 'px';
+    if (side < 0) { lab.style.left = ''; lab.style.right = (width - p.x + 12) + 'px'; } else { lab.style.right = ''; lab.style.left = (p.x + 12) + 'px'; }
+  }
+  positionNodes(); paint();
+}
+new ResizeObserver(resize).observe(stage);
+
+/* ---------- 繪製 ---------- */
+function line(x1, y1, x2, y2, color, lw = 1) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.stroke(); }
+// 有機光束：沿線的粗細波動往終點流動、兩端收細、外暈＋內芯兩層（2026-11-10）
+// o = { bend, base, amp, period(ms), waves, alpha }
+function organicBeam(ax, ay, bx, by, color, o) {
+  const N = o.lite ? 18 : 30, mx = (ax + bx) / 2, my = (ay + by) / 2 - (o.bend || 0);
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const s = i / N, u = 1 - s;
+    const x = u * u * ax + 2 * u * s * mx + s * s * bx, y = u * u * ay + 2 * u * s * my + s * s * by;
+    const env = Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(.04, s))), .55);
+    let wave = .5 + .5 * Math.sin((s * (o.waves || 1.6) - elapsed / o.period) * Math.PI * 2);
+    if (o.sharp) wave = Math.pow(wave, o.sharp);          // 次方越大，波峰越窄＝一顆顆短脈衝
+    const slow = .5 + .5 * Math.sin(elapsed / (o.period * 2.7) * Math.PI * 2 + s * 1.3);
+    pts.push({ x, y, w: env * (o.base + o.amp * (wave * .75 + slow * .25)) });
+  }
+  // 效能（2026-11-10）：改畫成一條「粗細沿線變化的填色帶」——每層一次 fill，不再逐段 stroke＋shadowBlur
+  const nx = [], ny = [];
+  for (let i = 0; i <= N; i++) {
+    const p = pts[Math.max(0, i - 1)], q = pts[Math.min(N, i + 1)];
+    const dx = q.x - p.x, dy = q.y - p.y, len = Math.hypot(dx, dy) || 1;
+    nx.push(-dy / len); ny.push(dx / len);
+  }
+  const ga = ctx.globalAlpha;
+  ctx.save(); ctx.fillStyle = color;
+  for (const [mul, alpha, blur] of [[3.2, .16, 0], [1, 1, o.lite ? 0 : 5]]) {
+    ctx.shadowColor = color; ctx.shadowBlur = blur;
+    ctx.globalAlpha = (o.alpha ?? 1) * alpha * ga;
+    ctx.beginPath();
+    for (let i = 0; i <= N; i++) { const h = Math.max(.25, pts[i].w * mul / 2); i ? ctx.lineTo(pts[i].x + nx[i] * h, pts[i].y + ny[i] * h) : ctx.moveTo(pts[i].x + nx[i] * h, pts[i].y + ny[i] * h); }
+    for (let i = N; i >= 0; i--) { const h = Math.max(.25, pts[i].w * mul / 2); ctx.lineTo(pts[i].x - nx[i] * h, pts[i].y - ny[i] * h); }
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+function circle(x, y, r, color, lw = 1, s = 0, e = Math.PI * 2) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), s, e); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.stroke(); }
+// 關聯線只畫「凸顯中的卡片」碰到的那幾條（2026-11-11 用戶定）：平常圖上沒有線，一眼看出哪些記憶正在被用
+function drawConnections() {
+  for (const edge of edges) {
+    if (!archiveVisible && (edge.source.archived || edge.target.archived)) continue;
+    const lit = Math.max(edge.source.boost || 0, edge.target.boost || 0);
+    if (lit <= 0) continue;
+    const a = point(edge.source), b = point(edge.target);
+    if (!a || !b) continue;
+    ctx.globalAlpha = lit * (.45 + .55 * Math.max(a.d, b.d));   // 跟著卡片凸顯淡入淡出
+    try { drawEdge(edge, a, b); } finally { ctx.globalAlpha = 1; }
+  }
+}
+function drawEdge(edge, a, b) {
+  {
+    const alpha = edge.source.archived || edge.target.archived ? '22' : edge.kind === 'wiki' ? '80' : '22';
+    const color = colors[edge.target.type] || colors.project;
+    ctx.setLineDash(edge.kind === 'index' ? [2, 6] : []);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y);
+    ctx.quadraticCurveTo((a.x + b.x) / 2, (a.y + b.y) / 2 - 12, b.x, b.y);
+    // [[連結]] 光絲：有機粗細波動沿線流向被引用者（2026-11-10 用戶定）
+    if (edge.kind === 'wiki' && !reducedMotion && !(edge.source.archived || edge.target.archived)) {
+      ctx.setLineDash([]);
+      organicBeam(a.x, a.y, b.x, b.y, color, { bend: 12, base: .5, amp: 1.8, period: 2600, waves: 1.4, alpha: .75, lite: true });
+    } else {
+      ctx.strokeStyle = color + alpha; ctx.lineWidth = edge.kind === 'wiki' ? 1 : .6; ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+}
+function drawHud() {
+  // 點陣底紋改由 .stage 的 CSS 背景畫一次（效能）
+  // 雲的赤道軌道：跟著旋轉傾斜的淡橢圓，給出立體感
+  const tilt = Math.abs(Math.sin(pitch));
+  ctx.save(); ctx.setLineDash([2, 7]);
+  ctx.beginPath(); ctx.ellipse(cx, cy, Rx * 1.02, Math.max(2, Ry * 1.02 * tilt), 0, 0, Math.PI * 2);
+  ctx.strokeStyle = '#edc47726'; ctx.lineWidth = .8; ctx.stroke();
+  ctx.restore();
+}
+// 中心＝門縫（2026-11-11 用戶定：取代測地線金色燈球）：黑暗裡一道沒關緊的門，門後是光
+// 待命：幾乎闔上、緩緩呼吸；有事件：門縫打開、光往兩側灑出，顏色跟著最新事件（讀綠／新增藍／修改金／刪除紅）
+// 效能：不用 shadowBlur；每幀只有兩個漸層＋兩個矩形
+const hexRGB = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+// 光束顏色（2026-11-11 用戶定）：讀取綠、新增藍、修改金黃、刪除紅
+const EV = { read: '#7ee08a', create: '#68b0ff', modify: '#f5c850', delete: '#ff4856' };
+const EV_RGB = Object.fromEntries(Object.entries(EV).map(([k, v]) => [k, hexRGB(v)]));
+const CORE_GOLD = hexRGB(colors.project);
+let coreClock = 0, coreLast = -1, coreHeat = 0, coreBusy = 0, coreOpen = .1, coreTint = [...CORE_GOLD];
+const slitHalf = () => coreR * 1.25;                                 // 門縫半高
+
+/* ---------- 開機注入 token（門把上顯示，滑過看預算線） ---------- */
+const tokensOf = s => { const cjk = (String(s || '').match(/[　-〿㐀-鿿豈-﫿＀-￯]/g) || []).length; return Math.round(cjk + (String(s || '').length - cjk) / 3.5); };
+const kfmt = n => n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+function updateHandles() {
+  const budget = (sleepReport && sleepReport.budget) || 5000;
+  const tok = { '@claude': tokensOf(byKey('@claude')?.content), 'memory.md': tokensOf(byKey('memory.md')?.content) };
+  const total = tok['@claude'] + tok['memory.md'], over = total > budget;
+  for (const h of document.querySelectorAll('.handle')) {
+    const key = h.dataset.open, has = !!byKey(key), name = key === '@claude' ? 'CLAUDE.md' : 'MEMORY.md';
+    h.classList.toggle('missing', !has); h.classList.toggle('over', has && over);
+    h.title = has ? `${name} · ≈${tok[key].toLocaleString()} tok\n開機注入合計 ≈${total.toLocaleString()} / 預算 ${budget.toLocaleString()}${over ? '（超過）' : ''}\n點擊開啟` : name + ' · 不存在';
+    const lab = $('.handle-label[data-for="' + key + '"]');
+    lab.innerHTML = '';
+    lab.append(name); if (has) { const i = document.createElement('i'); i.textContent = '≈' + kfmt(tok[key]) + ' tok'; lab.append(i); }
+  }
+}
+
+/* ---------- NOEMA · Sleep（技能 noema-sleep.js 的階段標記驅動） ---------- */
+const PHASE_LABEL = { sleep: 'SLEEP · 入睡', scan: 'SLEEP · 掃描', propose: 'SLEEP · 等候核准', apply: 'SLEEP · 鞏固與修剪', wake: 'AWAKE · 醒來', purge: 'PURGE · 銷毀封存' };
+let sleepPhase = '', sleepAt = 0, sleepWall = 0, sleepReport = null, sweepAt = -1, prevKeys = null, prevProject = '';
+let purgePrev = '', wakeSeenTs = 0, wakeReport = null, wakeTimer = 0, reportSynced = false;
+const bornAt = {};
+function setSleep(phase) {
+  sleepPhase = phase; sleepAt = elapsed; sleepWall = Date.now();
+  if (phase) { stage.dataset.sleep = phase; $('.sleep-phase').textContent = PHASE_LABEL[phase] || ''; }
+  else delete stage.dataset.sleep;
+}
+function sleepEvent(ev) {
+  const [phase, files] = String(ev.target).split(':');
+  if (phase === 'purge') { if (files) startPurge(files.split(',').filter(Boolean)); return; }   // 只列候選時不演
+  setSleep(phase);
+  if (phase === 'scan') { sweepAt = elapsed; for (const f of shown) f.swept = false; }
+  if (phase === 'sleep') { sweepAt = -1; wakeReport = null; renderMarks(); }
+  if (phase === 'wake') { wakeSeenTs = Date.parse(ev.ts) || Date.now(); scheduleWakeClear(7000); tryDelta(); }
+  paint();
+}
+// 醒來的清場計時：token 變化晚到時會重新起算，讓它顯示完整
+function scheduleWakeClear(ms) {
+  clearTimeout(wakeTimer);
+  wakeTimer = setTimeout(() => { if (sleepPhase === 'wake') { setSleep(''); renderMarks(); } }, ms);
+}
+// 醒來的 token 變化：報告和醒來標記誰先到都行，兩者都到齊才顯示一次（舊報告不算）
+function tryDelta() {
+  if (!wakeReport || !wakeSeenTs || wakeReport.shown) return;
+  if ((Date.parse(wakeReport.phaseAt) || 0) < wakeSeenTs - 5000) return;
+  wakeReport.shown = true;
+  const b = wakeReport.before?.boot?.total ?? 0, a = wakeReport.after.boot.total, d = $('.sleep-delta');
+  d.querySelector('b').textContent = b.toLocaleString() + ' → ' + a.toLocaleString() + ' tok';
+  d.querySelector('em').textContent = (a <= b ? '−' + (b - a) : '+' + (a - b)) + ' · 預算 ' + (wakeReport.budget || 5000).toLocaleString();
+  d.style.top = (cy - slitHalf() - 26) + 'px';
+  if (!sleepPhase) setSleep('wake');
+  d.classList.add('on'); setTimeout(() => d.classList.remove('on'), 6000);
+  scheduleWakeClear(7000);
+}
+function onSleepReport(r) {
+  const prevScan = sleepReport && sleepReport.scannedAt;
+  sleepReport = r && typeof r === 'object' ? r : null;
+  // Noema 在睡眠途中重開：從報告補回階段（30 分鐘內、還沒醒來）
+  if (sleepReport && !reportSynced) {
+    reportSynced = true;
+    const ph = sleepReport.phase, at = Date.parse(sleepReport.phaseAt || '') || 0;
+    if (!sleepPhase && ['sleep', 'scan', 'propose', 'apply'].includes(ph) && Date.now() - at < 30 * 60000) setSleep(ph === 'scan' ? 'propose' : ph);
+  }
+  // 掃描結果比光幕晚到：再掃一次，標記跟著光幕出現
+  if (sleepReport && sleepPhase === 'scan' && sleepReport.scannedAt && sleepReport.scannedAt !== prevScan && sweepAt < 0) {
+    sweepAt = elapsed; for (const f of shown) f.swept = false;
+  }
+  if (sleepReport && sleepReport.phase === 'wake' && sleepReport.after) { wakeReport = sleepReport; tryDelta(); }
+  updateHandles(); renderMarks();
+}
+// 換專案：上一個專案的睡眠、銷毀、光束全部清掉
+function resetSleep() {
+  clearTimeout(wakeTimer);
+  setSleep(''); sweepAt = -1; burns.length = 0; ash.length = 0; active = [];
+  sleepReport = null; wakeReport = null; wakeSeenTs = 0; reportSynced = false; purgePrev = '';
+  $('.sleep-delta').classList.remove('on');
+}
+// 標記：⚠ 又熱又可疑常駐；路徑失效／過了複查日、冷只在睡眠期間（且是這次入睡之後的掃描）顯示
+function markOf(f) {
+  if (!sleepReport || !Array.isArray(sleepReport.files) || f.archived || f.more) return '';
+  const r = sleepReport.files.find(x => x.file && x.file.toLowerCase() === f.key);
+  if (!r) return '';
+  if (r.warn) return 'warn';
+  const asleep = sleepPhase && sleepPhase !== 'purge';
+  const fresh = !sleepReport.startedAt || (sleepReport.scannedAt && sleepReport.scannedAt >= sleepReport.startedAt);
+  if (!asleep || !fresh) return '';
+  if (r.flags.includes('path') || r.flags.includes('review')) return 'path';
+  if (r.flags.includes('cold')) return 'cold';
+  return '';
+}
+function renderMarks() {
+  const sweeping = sweepAt >= 0;
+  for (const f of shown) {
+    if (!f.button || f.more) continue;
+    const m = sweeping && !f.swept ? '' : markOf(f);
+    f.button.classList.remove('m-warn', 'm-path', 'm-cold');
+    if (m) { f.button.classList.add('m-' + m); f.button.querySelector('.node-mark').textContent = { warn: '⚠ 熱', path: '路徑', cold: '冷' }[m]; }
+  }
+}
+// 掃描：兩道淡淡的光幕從門縫往左右推開，掃過的卡片輕閃，可疑的留下標記
+function drawSweep(c) {
+  if (sweepAt < 0) return;
+  const age = elapsed - sweepAt, u = Math.min(1, age / 3200), reach = (width / 2 + 40) * (1 - Math.pow(1 - u, 2));
+  c.save(); c.globalCompositeOperation = 'lighter';
+  for (const s of [-1, 1]) {
+    const x = cx + s * reach, g = c.createLinearGradient(x - s * 60, 0, x, 0);
+    g.addColorStop(0, 'rgba(237,196,119,0)'); g.addColorStop(1, 'rgba(237,196,119,' + (.08 * (1 - u * .6)).toFixed(3) + ')');
+    c.fillStyle = g; c.fillRect(Math.min(x, x - s * 60), 0, 60, height);
+    c.fillStyle = 'rgba(255,244,216,' + (.28 * (1 - u * .5)).toFixed(3) + ')'; c.fillRect(x - .5, 0, 1, height);
+  }
+  c.restore();
+  for (const f of shown) {
+    if (f.swept || !f.button || Math.abs(f.sx - cx) > reach) continue;
+    f.swept = true; f.button.classList.add('flash'); setTimeout(() => f.button && f.button.classList.remove('flash'), 380);
+    const m = markOf(f);
+    if (m) { f.button.classList.add('m-' + m); f.button.querySelector('.node-mark').textContent = { warn: '⚠ 熱', path: '路徑', cold: '冷' }[m]; }
+  }
+  if (u >= 1) { sweepAt = -1; renderMarks(); }
+}
+
+/* ---------- 銷毀（只限 archive/）：紅光持續注入 → 卡片發亮 → 從受光那側燒掉（餘燼線＋焦邊＋灰燼，不畫火焰） ---------- */
+const HEAT = 1200, BURN = 1500, GAP = 1100;
+const burns = [], ash = [];
+const PURGE_WAIT = 20000;   // 指令被拒或腳本略過時，等這麼久還沒刪掉就取消、卡片還原
+function startPurge(names) {
+  if (sleepPhase !== 'purge') purgePrev = sleepPhase;              // 睡眠流程中途銷毀：燒完回到原本的階段
+  setSleep('purge');
+  if (collapsed) return;                                           // 收成膠囊時量不到卡片，不演
+  const sr = stage.getBoundingClientRect();
+  names.forEach((name, i) => {
+    const key = 'archive/' + name.toLowerCase(), f = byKey(key);
+    if (!f || !f.button || f.button.hidden || burns.some(b => b.key === key)) return;   // 不在雲上（收在 +N 或封存隱藏）就不演
+    // 封存卡多半沉在雲的背面、縮得很小：燒的時候用卡片原尺寸（未經深度縮放）畫，才看得清楚
+    const r = f.button.getBoundingClientRect();
+    const rw = Math.max(r.width, f.button.offsetWidth * 1.15), rh = Math.max(r.height, f.button.offsetHeight * 1.15);
+    if (!(rw > 1 && rh > 1)) return;
+    const b = { key, label: f.label, t0: elapsed + i * GAP, x: r.left - sr.left + r.width / 2, y: r.top - sr.top + r.height / 2, rw, rh, beamAt: -1e9 };
+    // 一開始就把卡片畫進畫布、藏起 DOM：檔案刪掉後 DOM 卡片會被重建拿掉，排隊中的卡仍要留在原地
+    b.cold = rasterCard(b, false); b.hot = rasterCard(b, true);
+    f.button.classList.add('burning');
+    burns.push(b);
+  });
+}
+function cancelBurn(i) {
+  const b = burns.splice(i, 1)[0], f = byKey(b.key);
+  if (f && f.button) f.button.classList.remove('burning');
+}
+function rasterCard(b, hot) {
+  const d = Math.min(devicePixelRatio || 1, 2), w = Math.ceil(b.rw * d), h = Math.ceil(b.rh * d);
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.scale(d, d);
+  g.fillStyle = hot ? 'rgb(198,168,114)' : 'rgba(27,32,27,.85)'; g.fillRect(0, 0, b.rw, b.rh);
+  g.strokeStyle = hot ? 'rgb(255,236,200)' : 'rgba(216,184,107,.19)'; g.lineWidth = 1; g.strokeRect(.5, .5, b.rw - 1, b.rh - 1);
+  g.fillStyle = hot ? 'rgb(255,240,210)' : '#929482'; g.fillRect(0, 0, 2, b.rh);
+  const sc = b.rh / 21; g.font = (9.5 * sc).toFixed(1) + 'px "Segoe UI","Microsoft JhengHei UI",sans-serif'; g.textBaseline = 'middle';
+  if (hot) { g.shadowColor = 'rgba(255,200,140,.9)'; g.shadowBlur = 6; }
+  g.fillStyle = hot ? '#fffaf0' : '#e4e5d3'; g.fillText(b.label, 7 * sc, b.rh / 2 + .5, b.rw - 12 * sc);
+  return cv;
+}
+function igniteBurn(b) {
+  b.hot = b.hot || rasterCard(b, true);
+  const d = b.hot.width / b.rw, w = b.hot.width, h = b.hot.height;
+  b.base = b.hot.getContext('2d').getImageData(0, 0, w, h);
+  // 燃燒順序：離受光點（最靠門縫的卡緣）越遠越晚，加平滑雜訊讓燒線不規則
+  const ox = Math.max(0, Math.min(b.rw, cx - (b.x - b.rw / 2))) * d, oy = Math.max(0, Math.min(b.rh, cy - (b.y - b.rh / 2))) * d;
+  const maxD = Math.max(...[[0, 0], [w, 0], [0, h], [w, h]].map(([x, y]) => Math.hypot(x - ox, y - oy)));
+  const G = 7, gw = Math.ceil(w / G) + 2, grid = Float32Array.from({ length: gw * (Math.ceil(h / G) + 2) }, Math.random), s = t => t * t * (3 - 2 * t);
+  b.val = new Float32Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const fx = x / G, fy = y / G, ix = fx | 0, iy = fy | 0, tx = s(fx - ix), ty = s(fy - iy);
+    const a = grid[iy * gw + ix], bb = grid[iy * gw + ix + 1], c = grid[(iy + 1) * gw + ix], e = grid[(iy + 1) * gw + ix + 1];
+    b.val[y * w + x] = Math.hypot(x - ox, y - oy) / maxD * .78 + ((a + (bb - a) * tx) * (1 - ty) + (c + (e - c) * tx) * ty) * .32;
+  }
+  b.w = w; b.h = h; b.d = d;
+  b.out = document.createElement('canvas'); b.out.width = w; b.out.height = h;
+  b.glow = document.createElement('canvas'); b.glow.width = w; b.glow.height = h;
+}
+function drawBurns(c, dt) {
+  for (let i = burns.length - 1; i >= 0; i--) {
+    const b = burns[i], a = elapsed - b.t0;
+    const x0 = b.x - b.rw / 2, y0 = b.y - b.rh / 2;
+    if (a < 0) { c.drawImage(b.cold, x0, y0, b.rw, b.rh); continue; }   // 排隊中：維持原樣
+    const gone = !byKey(b.key);                                    // 腳本真的刪掉了才燒
+    if (a < HEAT || (!gone && !b.val)) {                           // 注入：紅光一道道打進去，卡片越來越亮
+      if (!gone && a > HEAT + PURGE_WAIT) { cancelBurn(i); continue; }   // 一直沒刪：取消，卡片還原
+      if (elapsed - b.beamAt > 500) { b.beamAt = elapsed; active.push({ key: b.key, kind: 'delete', start: elapsed, p: { x: b.x, y: b.y } }); }
+      const h = Math.min(1, Math.pow(a / HEAT, 1.4)), pulse = a > HEAT ? .8 + .2 * Math.sin(a / 160) : 1;   // 等候刪除時發亮脈動
+      c.drawImage(b.cold, x0, y0, b.rw, b.rh);
+      c.save(); c.globalAlpha = h; c.drawImage(b.hot, x0, y0, b.rw, b.rh);
+      c.globalCompositeOperation = 'lighter'; c.globalAlpha = h * .6 * pulse; c.filter = 'blur(' + (2 + 8 * h).toFixed(1) + 'px)'; c.drawImage(b.hot, x0, y0, b.rw, b.rh); c.restore();
+      continue;
+    }
+    if (!b.val) { igniteBurn(b); b.burnAt = a; }
+    const p = Math.min(1, (a - b.burnAt) / BURN), T = -.04 + p * 1.18, E = .035, C = .11;
+    const oc = b.out.getContext('2d'), gc = b.glow.getContext('2d');
+    const img = oc.createImageData(b.w, b.h), gi = gc.createImageData(b.w, b.h), o = img.data, go = gi.data, s = b.base.data, v = b.val;
+    const fronts = [];
+    for (let k = 0, j = 0; k < v.length; k++, j += 4) {
+      const x = v[k] - T;
+      if (x < 0) continue;                                         // 已燒掉
+      if (x < E) {                                                 // 餘燼線：白熱→橘
+        const u = x / E; o[j] = 255; o[j + 1] = 250 - 110 * u; o[j + 2] = 220 - 180 * u; o[j + 3] = 255;
+        go[j] = 255; go[j + 1] = 170 - 60 * u; go[j + 2] = 60; go[j + 3] = 230 * (1 - u * .5);
+        if (Math.random() < .004) fronts.push(k); continue;
+      }
+      if (x < E + C) {                                             // 焦邊：黑褐漸回原色
+        const u = (x - E) / C, k2 = .18 + .82 * u * u;
+        o[j] = s[j] * k2 + 40 * (1 - k2); o[j + 1] = s[j + 1] * k2 + 22 * (1 - k2); o[j + 2] = s[j + 2] * k2 + 10 * (1 - k2); o[j + 3] = s[j + 3]; continue;
+      }
+      o[j] = s[j]; o[j + 1] = s[j + 1]; o[j + 2] = s[j + 2]; o[j + 3] = s[j + 3];
+    }
+    oc.putImageData(img, 0, 0); gc.putImageData(gi, 0, 0);
+    c.drawImage(b.out, x0, y0, b.rw, b.rh);
+    c.save(); c.globalCompositeOperation = 'lighter'; c.filter = 'blur(3px)'; c.globalAlpha = .9; c.drawImage(b.glow, x0, y0, b.rw, b.rh); c.restore();
+    for (const k of fronts.slice(0, 4)) ash.push({ x: x0 + (k % b.w) / b.d, y: y0 + ((k / b.w) | 0) / b.d, vx: (Math.random() - .5) * .02, vy: -(.015 + Math.random() * .035), t: 0, life: 700 + Math.random() * 900, s: .6 + Math.random() * 1.1, hot: Math.random() < .4 });
+    if (p >= 1) burns.splice(i, 1);
+  }
+  for (let i = ash.length - 1; i >= 0; i--) {                      // 灰燼：細碎往上飄，少數帶餘溫
+    const a = ash[i]; a.t += dt; if (a.t > a.life) { ash.splice(i, 1); continue; }
+    a.vx += (Math.random() - .5) * .0006 * dt; a.x += a.vx * dt; a.y += a.vy * dt; const u = a.t / a.life;
+    c.fillStyle = a.hot && u < .35 ? 'rgba(255,' + Math.round(170 - 200 * u) + ',70,' + (1 - u).toFixed(3) + ')' : 'rgba(120,112,98,' + (.8 * (1 - u)).toFixed(3) + ')';
+    c.fillRect(a.x, a.y, a.s, a.s);
+  }
+  if (sleepPhase === 'purge' && !burns.length && !ash.length) { setSleep(purgePrev || ''); purgePrev = ''; renderMarks(); }
+}
+const sleepBusy = () => !!sleepPhase || burns.length > 0 || ash.length > 0 || sweepAt >= 0;
+
+function drawCore() {
+  const c = cctx;
+  c.clearRect(0, 0, width, height);
+  const hot = active.some(a => a.kind !== 'read' && a.kind !== 'mention'), busy = active.length > 0;
+  const dt = coreLast < 0 ? 0 : Math.max(0, Math.min(elapsed - coreLast, 100)); coreLast = elapsed;
+  const ease = reducedMotion ? 1 : 1 - Math.exp(-dt / 240);
+  coreHeat += ((hot ? 1 : 0) - coreHeat) * ease; coreBusy += ((busy ? 1 : 0) - coreBusy) * ease;
+  // 門縫跟著最新一筆事件的顏色走，沒事件時回到金色
+  let latest = null;
+  for (const a of active) if (a.kind !== 'mention' && (!latest || a.start > latest.start)) latest = a;
+  const tc = latest ? EV_RGB[latest.kind] || CORE_GOLD : CORE_GOLD;
+  coreTint = coreTint.map((v, i) => v + (tc[i] - v) * ease);
+  coreClock += dt;
+  const t = coreClock / 1000, sa = elapsed - sleepAt;
+  // 睡眠時門縫的開合：入睡／等候核准幾乎闔上、掃描微開、醒來猛然打開再收回
+  let target = .08 + (reducedMotion ? 0 : .03 * Math.sin(t * 1.3)) + .45 * coreBusy + .35 * coreHeat;
+  if (sleepPhase === 'sleep' || sleepPhase === 'propose') target = .012 + .01 * Math.sin(t * .8);
+  else if (sleepPhase === 'scan') target = .25;
+  else if (sleepPhase === 'wake' && sa < 2500) target = 1.1 * (1 - sa / 2500) + .1;
+  coreOpen += (target - coreOpen) * (reducedMotion ? 1 : 1 - Math.exp(-dt / (sleepPhase === 'sleep' ? 600 : 160)));
+  const o = coreOpen, h2 = slitHalf(), k = h2 / 130, x = cx, y = cy;
+  const [R, Gc, B] = coreTint.map(Math.round);
+  const rgba = a => 'rgba(' + R + ',' + Gc + ',' + B + ',' + Math.max(0, Math.min(1, a)).toFixed(3) + ')';
+  const white = a => 'rgba(255,240,205,' + Math.max(0, Math.min(1, a)).toFixed(3) + ')';
+  c.save();
+  c.globalCompositeOperation = 'lighter';
+  // 1. 光從門縫往兩側灑出：水平拉長的柔光，開越大拉越寬
+  c.save(); c.translate(x, y); c.scale(.9 + o * 3, 1);
+  let g = c.createRadialGradient(0, 0, 0, 0, 0, h2 * 1.5);
+  g.addColorStop(0, rgba(.1 + .22 * o)); g.addColorStop(1, rgba(0));
+  c.fillStyle = g; c.fillRect(-h2 * 1.5, -h2 * 1.5, h2 * 3, h2 * 3);
+  c.restore();
+  // 2. 門縫光暈：貼著縫的窄長光
+  const w = Math.max(1.2, (1.5 + o * 20) * k);
+  c.save(); c.translate(x, y); c.scale((w * 2.2 + 10 * k + o * 30 * k) / h2, 1);
+  g = c.createRadialGradient(0, 0, 0, 0, 0, h2);
+  g.addColorStop(0, rgba(.55)); g.addColorStop(.45, rgba(.16)); g.addColorStop(1, rgba(0));
+  c.fillStyle = g; c.fillRect(-h2, -h2, h2 * 2, h2 * 2);
+  c.restore();
+  // 3. 門縫本體：上下淡出的白熱細縫
+  g = c.createLinearGradient(0, y - h2, 0, y + h2);
+  g.addColorStop(0, white(0)); g.addColorStop(.12, white(.95)); g.addColorStop(.88, white(.95)); g.addColorStop(1, white(0));
+  c.fillStyle = g; c.fillRect(x - w / 2, y - h2, w, h2 * 2);
+  c.restore();
+  drawSweep(c);
+  drawBurns(c, dt);
+  // 睡眠卡住的保底：30 分鐘沒有新階段就自動醒來
+  if (sleepPhase && sleepPhase !== 'purge' && Date.now() - sleepWall > 30 * 60000) { setSleep(''); renderMarks(); }   // 用實際時間：視窗藏起來時 elapsed 不會走
+}
+function drawEvents() {
+  for (const ev of active) {
+    const file = byKey(ev.key);
+    if (file && file.archived && !archiveVisible && ev.kind !== 'delete') continue;
+    // 卡片被刪掉後就沒有位置了：沿用最後一次看到的位置，讓紅光打完
+    let p = file && point(file);
+    if (p) ev.p = p; else p = ev.p;
+    if (!p) continue;
+    const age = elapsed - ev.start;
+    const color = ev.kind === 'mention' ? (file && colors[file.type]) || colors.project : EV[ev.kind] || colors.project;
+    const fade = Math.max(0, 1 - age / 4200);
+    ctx.globalAlpha = fade;
+    // 由環心射向節點的資料束（加粗＋外光＋流動光點，2026-11-10 用戶要更明顯）
+    const t = Math.min(1, age / 450);
+    const ex = cx + (p.x - cx) * t, ey = cy + (p.y - cy) * t;
+    const strong = ev.kind !== 'mention';
+    ctx.save();
+    ctx.shadowColor = color; ctx.shadowBlur = strong ? 14 : 6;
+    ctx.setLineDash(ev.kind === 'mention' ? [3, 6] : []);
+    // 光束：有機粗細波動由環心流向卡片；讀取慢、寫入（新增／修改／刪除）快（2026-11-10 用戶定）
+    if (strong) {
+      ctx.setLineDash([]); ctx.shadowBlur = 0;
+      organicBeam(cx, cy, ex, ey, color, ev.kind !== 'read'
+        // 寫入＝細線上跑短脈衝（2026-11-10 用戶：粗光束太粗暴，細細的脈衝傳輸即可）
+        ? { base: .35, amp: 1.6, period: 700, waves: 3.2, sharp: 7 }
+        : { base: .8, amp: 3, period: 1500, waves: 1.8 });
+    } else {
+      line(cx, cy, ex, ey, color, 1.2);
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+    ctx.globalAlpha = fade;
+    // 節點上的圓圈漣漪已拿掉：點亮改由整張卡的邊框表現（2026-11-10 用戶定）
+    ctx.globalAlpha = 1;
+  }
+}
+function paint() {
+  if (!width) return;
+  ctx.clearRect(0, 0, width, height);
+  drawHud(); drawConnections(); drawEvents(); drawCore();
+}
+
+/* ---------- 閱讀 ---------- */
+/* Markdown → HTML（自寫輕量解析器；所有文字一律先跳脫，記憶內容裡的 <...> 不會變成標籤） */
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const typeColor = f => colors[f.type] || colors.project;
+const PATH_ONLY = /^(?:[A-Za-z]:[\\/]|~[\\/]|\\\\)\S*$/;
+const PATH_IN_TEXT = /(?<![A-Za-z0-9])(?:[A-Za-z]:[\\/]|~[\\/])[^\s<>"'`|?*，。、；：（）「」『』【】！？]+/g;
+const URL_IN_TEXT = /https?:\/\/[^\s<>"'`，。、；（）「」『』【】]+/g;
+const LIST_ITEM = /^( *)([-*+]|\d{1,3}[.)])\s+(.*)$/;
+const TABLE_SEP = /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/;
+const HR = /^ {0,3}([-*_])(?: *\1){2,} *$/;
+const FENCE = /^ {0,3}(`{3,}|~{3,})\s*([^`\s]*)/;
+const HEADING = /^ {0,3}(#{1,6})\s+(.+?)\s*$/;
+const QUOTE = /^ {0,3}>/;
+const indentOf = s => s.match(/^ */)[0].length;
+const trimTail = s => { const t = s.match(/[.,;:!?)\]]+$/); return t ? [s.slice(0, -t[0].length), t[0]] : [s, '']; };
+
+function linkHtml(target, label, raw) {
+  if (!target) return '<span class="wl broken" title="斷連 · 找不到「' + esc(raw) + '」">' + label + '</span>';
+  return '<a class="wl" role="link" tabindex="0" data-key="' + esc(target.key) + '" style="--lc:' + typeColor(target) + '" title="' + esc(target.file + (target.description ? '\n' + target.description : '')) + '">' + label + '</a>';
+}
+function inline(src, file) {
+  const stash = [];
+  const keep = html => '' + (stash.push(html) - 1) + '';
+  const copyable = (text, cls, tag) => '<' + tag + ' class="' + cls + '" data-copy="' + esc(text) + '" title="點一下複製">' + esc(text) + '</' + tag + '>';
+  let s = src;
+  // 行內 code：先收起來，裡面的符號不再解析
+  s = s.replace(/(`+)(?!`)([\s\S]*?[^`])\1(?!`)/g, (m, t, code) => {
+    code = code.replace(/^ (.*) $/, '$1');
+    return keep(PATH_ONLY.test(code) ? copyable(code, 'path', 'code') : '<code>' + esc(code) + '</code>');
+  });
+  s = s.replace(/!\[([^\]\n]*)\]\(([^)\n]+)\)/g, (m, alt) => keep('<span class="img-chip">▣ ' + esc(alt || '圖片') + '</span>'));
+  s = s.replace(/\[\[([^\]\n]+)\]\]/g, (m, raw) => {
+    const [name, alias] = raw.split('|');
+    const target = resolveLink(raw, file);
+    return keep(linkHtml(target, esc((alias || (target && target.label) || name).trim()), name.trim()));
+  });
+  s = s.replace(/\[([^\]\n]+)\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"\n]*")?\s*\)/g, (m, text, href) => {
+    const label = inline(text, file);
+    if (/^https?:\/\//i.test(href)) return keep('<a class="ext" data-copy="' + esc(href) + '" title="' + esc(href) + '\n點一下複製網址">' + label + '</a>');
+    if (/\.md(#.*)?$/i.test(href)) return keep(linkHtml(resolveLink(decodeURIComponentSafe(href), file), label, href));
+    if (href.startsWith('#')) return keep(label);
+    return keep('<span class="path" data-copy="' + esc(href) + '" title="' + esc(href) + '\n點一下複製">' + label + '</span>');
+  });
+  s = s.replace(URL_IN_TEXT, m => { const [url, tail] = trimTail(m); return keep('<a class="ext" data-copy="' + esc(url) + '" title="點一下複製網址">' + esc(url) + '</a>') + tail; });
+  s = s.replace(PATH_IN_TEXT, m => { const [p, tail] = trimTail(m); return keep(copyable(p, 'path', 'span')) + tail; });
+  s = s.replace(/\\([\\`*_{}\[\]()#+\-.!|~>])/g, (m, ch) => keep(esc(ch)));
+  s = esc(s.replace(/(?: {2,}|\\)\n/g, '\n'));
+  s = s.replace(/\*\*\*(?=\S)([^\n]+?)(?<=\S)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(?=\S)([^\n]+?)(?<=\S)\*\*/g, '<strong>$1</strong>')
+    .replace(/(?<!\w)__(?=\S)([^\n]+?)(?<=\S)__(?!\w)/g, '<strong>$1</strong>')
+    .replace(/\*(?=[^\s*])([^*\n]+?)(?<=[^\s*])\*/g, '<em>$1</em>')
+    .replace(/(?<![\w\\/.-])_(?=[^\s_])([^_\n]+?)(?<=[^\s_])_(?![\w\\/.-])/g, '<em>$1</em>')
+    .replace(/~~(?=\S)([^\n]+?)(?<=\S)~~/g, '<del>$1</del>')
+    .replace(/\n/g, '<br>');
+  return s.replace(/(\d+)/g, (m, i) => stash[i]);
+}
+function decodeURIComponentSafe(s) { try { return decodeURIComponent(s); } catch (e) { return s; } }
+function splitRow(line) {
+  const cells = []; let cur = '', code = false;
+  const t = line.trim().replace(/^\|/, '');
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i];
+    if (ch === '\\' && t[i + 1] === '|') { cur += '|'; i++; }
+    else if (ch === '`') { code = !code; cur += ch; }
+    else if (ch === '|' && !code) { cells.push(cur.trim()); cur = ''; }
+    else cur += ch;
+  }
+  if (cur.trim()) cells.push(cur.trim());
+  return cells;
+}
+function blockStart(lines, i) {
+  const ln = lines[i];
+  return HEADING.test(ln) || FENCE.test(ln) || QUOTE.test(ln) || HR.test(ln) || LIST_ITEM.test(ln)
+    || (ln.includes('|') && i + 1 < lines.length && lines[i + 1].includes('|') && TABLE_SEP.test(lines[i + 1]));
+}
+function renderList(lines, i, file) {
+  const first = lines[i].match(LIST_ITEM);
+  const base = first[1].length, ordered = /\d/.test(first[2]), n = lines.length;
+  const sibling = j => { const m = j < n && lines[j].match(LIST_ITEM); return m && m[1].length >= base && m[1].length <= base + 1 && /\d/.test(m[2]) === ordered ? m : null; };
+  let html = '';
+  while (i < n) {
+    const m = sibling(i);
+    if (!m) break;
+    const content = base + m[2].length + 1, buf = [m[3]];
+    i++;
+    while (i < n) {
+      const ln = lines[i];
+      if (!ln.trim()) {
+        let j = i; while (j < n && !lines[j].trim()) j++;
+        if (j < n && indentOf(lines[j]) >= base + 2) { for (; i < j; i++) buf.push(''); continue; }
+        break;
+      }
+      const ind = indentOf(ln);
+      if (ind >= base + 2) { buf.push(ln.slice(Math.min(ind, content))); i++; continue; }
+      if (blockStart(lines, i)) break;
+      buf.push(ln.trim()); i++;
+    }
+    const task = buf[0].match(/^\[([ xX])\]\s+/);
+    if (task) buf[0] = buf[0].slice(task[0].length);
+    let body = renderBlocks(buf, file).replace(/^<p>([\s\S]*?)<\/p>/, '$1');
+    if (task) body = '<span class="box' + (task[1] === ' ' ? '' : ' on') + '"></span>' + body;
+    html += '<li' + (task ? ' class="task"' : '') + '>' + body + '</li>';
+    let j = i; while (j < n && !lines[j].trim()) j++;
+    if (j > i && sibling(j)) i = j;
+  }
+  const start = ordered ? parseInt(first[2], 10) : 1;
+  return [(ordered ? '<ol' + (start > 1 ? ' style="counter-reset:li ' + (start - 1) + '"' : '') + '>' : '<ul>') + html + (ordered ? '</ol>' : '</ul>'), i];
+}
+function renderBlocks(lines, file) {
+  let out = '', i = 0, m;
+  const n = lines.length;
+  while (i < n) {
+    const ln = lines[i];
+    if (!ln.trim()) { i++; continue; }
+    if ((m = ln.match(FENCE))) {
+      const close = new RegExp('^ {0,3}' + m[1][0] + '{' + m[1].length + ',}\\s*$'), buf = [];
+      for (i++; i < n && !close.test(lines[i]); i++) buf.push(lines[i]);
+      i++;
+      out += '<div class="codeblock"><div class="cb-head"><span>' + esc((m[2] || 'code').toUpperCase()) + '</span><button class="cb-copy" type="button">COPY</button></div><pre><code>' + esc(buf.join('\n')) + '</code></pre></div>';
+      continue;
+    }
+    if ((m = ln.match(HEADING))) { const lv = m[1].length; out += '<h' + lv + '>' + inline(m[2].replace(/\s+#+$/, ''), file) + '</h' + lv + '>'; i++; continue; }
+    if (HR.test(ln)) { out += '<hr>'; i++; continue; }
+    if (QUOTE.test(ln)) {
+      const buf = [];
+      for (; i < n && QUOTE.test(lines[i]); i++) buf.push(lines[i].replace(/^ {0,3}> ?/, ''));
+      out += '<blockquote>' + renderBlocks(buf, file) + '</blockquote>'; continue;
+    }
+    if (ln.includes('|') && i + 1 < n && lines[i + 1].includes('|') && TABLE_SEP.test(lines[i + 1])) {
+      const head = splitRow(ln), align = splitRow(lines[i + 1]).map(c => /^:-+:$/.test(c) ? 'center' : /-:$/.test(c) ? 'right' : '');
+      const cell = (tag, c, k) => '<' + tag + (align[k] ? ' style="text-align:' + align[k] + '"' : '') + '>' + inline(c || '', file) + '</' + tag + '>';
+      let body = '';
+      for (i += 2; i < n && lines[i].trim() && lines[i].includes('|'); i++) {
+        const row = splitRow(lines[i]);
+        body += '<tr>' + head.map((_, k) => cell('td', row[k], k)).join('') + '</tr>';
+      }
+      out += '<div class="tablewrap"><table><thead><tr>' + head.map((c, k) => cell('th', c, k)).join('') + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+      continue;
+    }
+    if (LIST_ITEM.test(ln)) { const r = renderList(lines, i, file); out += r[0]; i = r[1]; continue; }
+    const buf = [ln.trim()];
+    for (i++; i < n && lines[i].trim() && !blockStart(lines, i); i++) buf.push(lines[i].trim());
+    out += '<p>' + inline(buf.join('\n'), file) + '</p>';
+  }
+  return out;
+}
+/* 把檔案拆成 frontmatter 欄位與內文 */
+function parseDoc(content) {
+  const text = content.replace(/^﻿/, '').replace(/\r\n?/g, '\n').replace(/[]/g, '');
+  const m = text.match(/^---[ \t]*\n([\s\S]*?)\n---[ \t]*(?:\n|$)/);
+  const fields = [];
+  if (m) for (const ln of m[1].split('\n')) {
+    const kv = ln.match(/^\s*([\w.-]+):\s*(.*)$/);
+    if (kv) fields.push({ key: kv[1], value: /^[>|][+-]?$/.test(kv[2].trim()) ? '' : kv[2].trim().replace(/^(["'])(.*)\1$/, '$2') });
+    else if (ln.trim() && fields.length) { const last = fields[fields.length - 1]; last.value += (last.value ? ' ' : '') + ln.trim(); }
+  }
+  const body = m ? text.slice(m[0].length) : text;
+  return { fields: fields.filter(f => f.value), body, lines: body.split('\n').map(l => l.replace(/^[ \t]+/, w => w.replace(/\t/g, '    '))) };
+}
+const fmtDate = ms => { const d = new Date(ms); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+function ago(ms) {
+  const s = Math.max(0, Date.now() - ms) / 1000;
+  if (s < 90) return '剛剛';
+  if (s < 3600) return Math.round(s / 60) + ' 分鐘前';
+  if (s < 86400) return Math.round(s / 3600) + ' 小時前';
+  if (s < 86400 * 60) return Math.round(s / 86400) + ' 天前';
+  return Math.round(s / 86400 / 30) + ' 個月前';
+}
+
+/* 閱讀器狀態：trail 是瀏覽軌跡，最後一格是目前畫面 */
+const BOOT_DESC = { '@claude': '全域指示 · 每個 session 啟動時自動注入', 'memory.md': '記憶索引 · 這個專案的記憶目錄，啟動時自動注入' };
+const scroller = $('.reader-scroll');
+let trail = [], readerSig = '', hintTimer = 0;
+function openReader(file) { if (!file) return; trail = [{ key: file.key }]; showView(); }
+function openList(list) { trail = [{ list: list.map(f => f.key) }]; showView(); }
+function goTo(key) { trail[trail.length - 1].top = scroller.scrollTop; trail.push({ key }); showView(); }
+function goBack() { if (trail.length > 1) { trail.pop(); showView(true); } else dialog.close(); }
+function showView(restore) {
+  const view = trail[trail.length - 1];
+  $('#reader-back').hidden = trail.length < 2;
+  for (const s of ['.info', '.md', '.more-list', '.reader-links']) $(s).hidden = true;
+  if (view.list) renderOverflow(view.list.map(byKey).filter(Boolean)); else renderDoc(byKey(view.key), view.key);
+  if (!dialog.open) dialog.showModal();
+  scroller.scrollTop = restore ? view.top || 0 : 0;
+  updateProgress();
+  scroller.focus({ preventScroll: true });
+}
+function renderOverflow(list) {
+  readerSig = 'list';
+  dialog.style.setProperty('--tc', 'var(--accent)');
+  $('#reader-title').textContent = '其餘 ' + list.length + ' 筆記憶';
+  $('#reader-crumb').textContent = 'OVERFLOW / 版面放不下的節點';
+  $('#reader-stat').textContent = 'READ ONLY · ' + list.length + ' 筆';
+  const box = $('.more-list'); box.hidden = false; box.replaceChildren();
+  for (const f of list) {
+    const b = el('button', '', f.label); b.type = 'button'; b.dataset.key = f.key;
+    b.style.setProperty('--node-color', typeColor(f));
+    b.append(el('small', '', (f.archived ? 'ARCHIVED' : f.type.toUpperCase()) + ' · ' + f.file));
+    box.append(b);
+  }
+}
+function renderDoc(file, key) {
+  const info = $('.info'), md = $('.md'), nav = $('.reader-links');
+  if (!file) {
+    readerSig = 'gone:' + key;
+    dialog.style.setProperty('--tc', 'var(--muted)');
+    $('#reader-title').textContent = key; $('#reader-crumb').textContent = 'SIGNAL LOST'; $('#reader-stat').textContent = 'READ ONLY';
+    md.hidden = false; md.replaceChildren(el('p', 'reader-empty', '這筆記憶已不在目前的專案裡（可能被搬走或改名）。'));
+    return;
+  }
+  readerSig = file.key + ':' + file.mtime + ':' + file.content.length;
+  const boot = file.type === 'boot', color = boot ? colors.project : typeColor(file);
+  const doc = parseDoc(file.content);
+  dialog.style.setProperty('--tc', color);
+  $('#reader-title').textContent = (file.archived ? 'archive/' : '') + file.file;
+  $('#reader-crumb').textContent = (boot ? 'BOOT INJECTION' : file.archived ? 'ARCHIVE' : 'MEMORY') + ' / ' + (boot ? 'READ ONLY' : file.type.toUpperCase()) + (trail.length > 1 ? ' · 第 ' + trail.length + ' 層' : '');
+
+  // 資訊面板
+  info.hidden = false; info.replaceChildren();
+  const tags = el('div', 'info-tags');
+  tags.append(el('span', 'tag', boot ? 'BOOT · 啟動注入' : file.type.toUpperCase() + ' · ' + (TYPE_LABELS[file.type] || file.type)));
+  if (file.archived) tags.append(el('span', 'tag dim', 'ARCHIVED · 封存'));
+  const order = memories.filter(f => !f.archived).indexOf(file);
+  tags.append(el('span', 'info-serial', boot ? 'CORE' : file.archived ? 'COLD' : 'NODE ' + pad(order + 1) + ' / ' + pad(memories.filter(f => !f.archived).length)));
+  info.append(tags, el('h1', '', file.label || file.file));
+  const desc = boot ? BOOT_DESC[file.key] : file.description;
+  if (desc) info.append(el('p', 'info-desc', desc));
+  const dl = el('dl');
+  const row = (k, v) => { const dd = el('dd'); if (typeof v === 'string') dd.textContent = v; else dd.append(...v); dl.append(el('dt', '', k), dd); };
+  row('MODIFIED', [fmtDate(file.mtime) + ' ', el('small', '', '· ' + ago(file.mtime))]);
+  const pathEl = el('span', 'path', file.path); pathEl.dataset.copy = file.path; pathEl.title = '點一下複製';
+  row('PATH', [pathEl]);
+  if (file.name && file.name !== file.label) row('NAME', file.name);
+  for (const f of doc.fields) {
+    if (['name', 'description', 'type'].includes(f.key)) continue;
+    const t = /^\d{4}-\d\d-\d\dT[\d:.]+(Z|[+-]\d\d:?\d\d)?$/.test(f.value) ? Date.parse(f.value) : NaN;
+    if (f.key === 'modified' && Math.abs(t - file.mtime) < 120000) continue;   // 與檔案修改時間相同就不重複列
+    row(f.key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]/g, ' ').toUpperCase() + (f.key === 'modified' ? ' (META)' : ''), isNaN(t) ? f.value : fmtDate(t));
+  }
+  info.append(dl);
+
+  // 內文
+  md.hidden = false;
+  md.innerHTML = renderBlocks(doc.lines, file) || '<p class="reader-empty">（沒有內文）</p>';
+
+  // 連結總覽：連出／被引用
+  const uniq = arr => [...new Set(arr)];
+  const out = boot ? [] : linksOf(file).filter(l => !l.target || l.target !== file);
+  const outOk = uniq(out.filter(l => l.target).map(l => l.target)), outBad = uniq(out.filter(l => !l.target).map(l => l.text));
+  const back = uniq(edges.filter(e => e.target === file && e.source !== file && e.source.type !== 'boot').map(e => e.source));
+  nav.replaceChildren();
+  const group = (title, items) => {
+    if (!items.length) return;
+    const g = el('div', 'link-group'), box = el('div');
+    g.append(el('b', '', title + ' · ' + pad(items.length)), box); box.append(...items); nav.append(g);
+  };
+  // 引用卡：標題＋類型＋描述（寬視窗時排在右側欄，2026-11-10 用戶要）
+  const chip = f => {
+    const b = el('button', 'link-chip'); b.type = 'button'; b.dataset.key = f.key; b.style.setProperty('--lc', typeColor(f)); b.title = f.file;
+    b.append(el('span', 'lc-title', f.label), el('small', 'lc-type', (f.type || 'memory').toUpperCase() + (f.archived ? ' · ARCHIVED' : '')));
+    if (f.description) b.append(el('span', 'lc-desc', f.description));
+    return b;
+  };
+  group('LINKS OUT / 連出', [...outOk.map(chip), ...outBad.map(t => { const s = el('span', 'link-chip', '斷連 · ' + t); s.title = '找不到這筆記憶'; return s; })]);
+  group('REFERENCED BY / 被引用', back.map(chip));
+  nav.hidden = !nav.children.length;
+  const chars = doc.body.replace(/\s/g, '').length;
+  $('#reader-stat').textContent = 'READ ONLY · ' + chars.toLocaleString('en-US') + ' 字' + (outOk.length ? ' · 連出 ' + outOk.length : '') + (outBad.length ? ' · 斷連 ' + outBad.length : '') + (back.length ? ' · 被引用 ' + back.length : '');
+}
+/* 記憶在閱讀中被改寫時，原地更新並保留捲動位置 */
+function refreshReader() {
+  if (!dialog.open || !trail.length) return;
+  const view = trail[trail.length - 1];
+  if (view.list) return;
+  const f = byKey(view.key);
+  const sig = f ? f.key + ':' + f.mtime + ':' + f.content.length : 'gone:' + view.key;
+  if (sig === readerSig) return;
+  const top = scroller.scrollTop;
+  renderDoc(f, view.key);
+  scroller.scrollTop = top; updateProgress();
+}
+function updateProgress() {
+  const max = scroller.scrollHeight - scroller.clientHeight;
+  $('.reader-progress i').style.width = (max > 0 ? Math.min(100, scroller.scrollTop / max * 100) : 100) + '%';
+}
+function flash(text) {
+  const hint = $('#reader-hint');
+  hint.textContent = text; hint.classList.add('flash');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => { hint.textContent = 'ESC 關閉'; hint.classList.remove('flash'); }, 1800);
+}
+function copyText(text) {
+  const done = ok => flash(ok ? '已複製 · ' + (text.length > 34 ? '…' + text.slice(-32) : text) : '複製失敗');
+  const fallback = () => {
+    const ta = el('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0';
+    dialog.append(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove(); scroller.focus({ preventScroll: true }); done(ok);
+  };
+  try { navigator.clipboard.writeText(text).then(() => done(true), fallback); } catch (e) { fallback(); }
+}
+scroller.addEventListener('scroll', updateProgress, { passive: true });
+new ResizeObserver(updateProgress).observe(scroller);
+$('#close-reader').addEventListener('click', () => dialog.close());
+$('#reader-back').addEventListener('click', goBack);
+dialog.addEventListener('click', e => {
+  const link = e.target.closest('[data-key]');
+  if (link) { e.preventDefault(); goTo(link.dataset.key); return; }
+  if (String(getSelection()).length) return;   // 正在選字就不觸發複製
+  const copy = e.target.closest('[data-copy]');
+  if (copy) { e.preventDefault(); copyText(copy.dataset.copy); return; }
+  const cb = e.target.closest('.cb-copy');
+  if (cb) copyText(cb.closest('.codeblock').querySelector('pre').textContent);
+});
+dialog.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { e.preventDefault(); dialog.close(); }
+  else if ((e.altKey && e.key === 'ArrowLeft') || e.key === 'Backspace') { e.preventDefault(); goBack(); }
+  else if (e.key === 'Enter' && e.target.matches('a[data-key]')) { e.preventDefault(); goTo(e.target.dataset.key); }
+});
+dialog.addEventListener('close', () => { trail = []; });
+for (const card of document.querySelectorAll('[data-open]')) card.addEventListener('click', () => openReader(byKey(card.dataset.open)));
+
+/* ---------- 事件 ---------- */
+const KIND = { read: ['READ', '讀取 '], create: ['NEW', '新增 '], modify: ['EDIT', '修改 '], delete: ['DEL', '刪除 '], write: ['EDIT', '修改 '], mention: ['REF', '提及 '], boot: ['BOOT', '啟動 · 注入 '], sleep: ['SLEEP', ''] };
+const targetKey = t => t === 'CLAUDE.md' ? '@claude' : t;
+const PHASE_TEXT = { sleep: '入睡 · 備份記憶', scan: '掃描 · 規則判斷', propose: '提案 · 等候核准', apply: '執行核准的動作', wake: '醒來', purge: '銷毀封存' };
+function eventLabel(ev) {
+  if (ev.kind === 'boot') return 'CLAUDE.md + MEMORY.md';
+  if (ev.kind === 'sleep') { const [p, files] = String(ev.target).split(':'); return p === 'purge' ? (files ? '銷毀 ' + files.split(',').length + ' 條封存' : '列出銷毀候選') : PHASE_TEXT[p] || p; }
+  if (ev.target === '') return '記憶目錄';
+  const f = byKey(targetKey(ev.target));
+  return f ? f.label : ev.target;
+}
+function addTimeline(ev, live) {
+  const list = $('.events');
+  list.querySelector('.empty')?.remove();
+  const item = document.createElement('li');
+  item.className = 'event ' + ev.kind + (live ? ' fresh' : ' old');
+  if (EV[ev.kind]) item.style.setProperty('--ev', EV[ev.kind]);
+  const time = document.createElement('time');
+  const d = ev.ts ? new Date(ev.ts) : new Date();
+  time.textContent = d.toLocaleTimeString('zh-TW', { hour12: false }); time.title = d.toLocaleString('zh-TW', { hour12: false });
+  const tag = document.createElement('span'); tag.className = 'event-tag'; tag.textContent = (KIND[ev.kind] || [ev.kind.toUpperCase()])[0];
+  const button = document.createElement('button');
+  button.textContent = (KIND[ev.kind] || ['', ''])[1] + eventLabel(ev);
+  button.title = ev.tool + (ev.sub ? ' · 子代理' : '') + ' · session ' + (ev.session || '').slice(0, 8);
+  if (ev.kind === 'mention' || ev.sub) { const s = document.createElement('span'); s.className = 'sub'; s.textContent = (ev.kind === 'mention' ? ev.tool : '') + (ev.sub ? ' ⑂SUB' : ''); button.append(s); }
+  button.addEventListener('click', () => { const f = byKey(ev.kind === 'boot' ? 'memory.md' : targetKey(ev.target)); if (f) openReader(f); });
+  item.append(time, tag, button);
+  list.prepend(item);
+  while (list.children.length > 60) list.lastElementChild.remove();
+}
+function refreshLights() {
+  const now = elapsed;
+  active = active.filter(a => now - a.start < 4200);
+  const cls = { read: 'reading', create: 'writing', modify: 'writing', delete: 'writing', mention: 'mention' };
+  const rank = { delete: 4, create: 3, modify: 3, read: 2, mention: 1 };
+  const best = {};
+  for (const a of active) if (!best[a.key] || rank[a.kind] > rank[best[a.key]]) best[a.key] = a.kind;
+  for (const f of files) {
+    const el = f.type === 'boot' ? document.querySelector('[data-open="' + f.key + '"]') : f.button;
+    if (!el) continue;
+    el.classList.remove('reading', 'writing', 'mention');
+    const k = best[f.key];
+    if (k) { el.classList.add(cls[k]); if (EV[k]) el.style.setProperty('--ev', EV[k]); }
+    if (f.type === 'boot') {
+      const lab = $('.handle-label[data-for="' + f.key + '"]');
+      lab.classList.toggle('lit', !!EV[k]);
+      if (EV[k]) lab.style.setProperty('--ev', EV[k]);
+    }
+  }
+  let top = null;
+  for (const a of active) if (a.kind !== 'mention') top = a;
+  top = top || (active.length ? active[active.length - 1] : null);
+  const col = top && EV[top.kind];
+  for (const m of document.querySelectorAll('.brand-mark')) { m.classList.toggle('live', !!top); if (col) m.style.setProperty('--ev', col); }
+  const cs = $('#capsule-status');
+  cs.classList.toggle('live', !!top); if (col) cs.style.setProperty('--ev', col);
+  if (!top) cs.textContent = lastLive ? cs.dataset.last || '待命' : '待命 · ' + (SNAP ? pad(SNAP.memories.length) + ' 筆記憶' : '');
+}
+function onEvents(list, history) {
+  if (history) {
+    $('.events').replaceChildren();
+    if (!list.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = '這個 session 尚未觸及記憶。'; $('.events').append(li); }
+    for (const ev of list) addTimeline({ ...ev, kind: ev.kind === 'write' ? 'modify' : ev.kind }, false);
+    return;
+  }
+  for (const raw of list) {
+    const ev = { ...raw, kind: raw.kind === 'write' ? 'modify' : raw.kind };
+    // 超過一分鐘前的事件（新開的對話紀錄從頭讀、或接續對話帶著舊紀錄）只進紀錄，不演
+    const stale = ev.ts && Date.now() - Date.parse(ev.ts) > 60000;
+    addTimeline(ev, !stale);
+    if (stale) continue;
+    lastLive = Date.now();
+    const cs = $('#capsule-status');
+    cs.textContent = (KIND[ev.kind] || ['', ''])[1] + eventLabel(ev); cs.dataset.last = '剛才 · ' + cs.textContent;
+    if (ev.kind === 'sleep') { sleepEvent(ev); continue; }
+    const kind = ev.kind === 'boot' ? 'read' : ev.kind;
+    const keys = ev.kind === 'boot' ? ['@claude', 'memory.md'] : ev.target === '' ? [] : [targetKey(ev.target)];
+    for (const key of keys) active.push({ key, kind, start: elapsed });
+  }
+  refreshLights(); updateFooter(); paint();
+}
+
+/* ---------- 視窗操作 ---------- */
+function applyState(s) {
+  collapsed = s.collapsed;
+  document.body.classList.toggle('collapsed', collapsed);
+  $('#pin').setAttribute('aria-pressed', String(s.onTop));
+  $('#pin').title = s.onTop ? '置頂中（點擊取消）' : '置頂';
+  $('#hide').title = '隱藏到系統匣' + (s.hotkey ? '（' + s.hotkey + ' 叫出）' : '');
+  if (!collapsed) requestAnimationFrame(resize);
+}
+$('#pin').addEventListener('click', () => send({ cmd: 'pin', on: $('#pin').getAttribute('aria-pressed') !== 'true' }));
+$('#collapse').addEventListener('click', () => send({ cmd: 'collapse', on: true }));
+$('#expand').addEventListener('click', () => send({ cmd: 'collapse', on: false }));
+$('.capsule').addEventListener('dblclick', () => send({ cmd: 'collapse', on: false }));
+$('#hide').addEventListener('click', () => send({ cmd: 'hide' }));
+$('#project').addEventListener('change', e => { send({ cmd: 'project', id: e.target.value }); e.target.blur(); });
+$('.archive-toggle').addEventListener('click', () => {
+  archiveVisible = !archiveVisible;
+  $('.archive-toggle').setAttribute('aria-pressed', String(archiveVisible));
+  for (const f of shown) if (f.archived) f.button.hidden = !archiveVisible;
+  paint();
+});
+const EDGE = 6;
+function edgeDir(e) {
+  if (collapsed) return '';
+  const w = innerWidth, h = innerHeight;
+  const v = e.clientY < EDGE ? 'n' : e.clientY > h - EDGE ? 's' : '';
+  const hz = e.clientX < EDGE ? 'w' : e.clientX > w - EDGE ? 'e' : '';
+  return v + hz;
+}
+const CURSOR = { n: 'ns-resize', s: 'ns-resize', e: 'ew-resize', w: 'ew-resize', ne: 'nesw-resize', sw: 'nesw-resize', nw: 'nwse-resize', se: 'nwse-resize' };
+document.addEventListener('mousemove', e => { document.documentElement.style.cursor = dialog.style.cursor = CURSOR[edgeDir(e)] || ''; });
+document.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  const dir = edgeDir(e);
+  if (dir) { e.preventDefault(); send({ cmd: 'resize', dir }); return; }
+  if (e.target.closest('button, select, .node')) return;
+  if (e.target.closest('dialog') && !e.target.closest('.reader-head')) return;   // 閱讀器只有標題列能拖視窗
+  if (e.target.closest('[data-drag]')) { if (e.detail > 1) return; e.preventDefault(); send({ cmd: 'drag' }); }
+}, true);
+document.addEventListener('contextmenu', e => { if (!e.target.closest('dialog')) e.preventDefault(); });
+
+/* ---------- 主迴圈 ---------- */
+function frame(ts) {
+  try {
+    if (!lastFrame) lastFrame = ts;
+    const dt = Math.min(ts - lastFrame, 100); lastFrame = ts;
+    elapsed += dt;
+    if (!document.hidden && ts - lastPaint > 14) {
+      lastPaint = ts;
+      let expired = false;
+      if (active.length && active.some(a => elapsed - a.start >= 4200)) { refreshLights(); expired = true; }
+      const moving = spin(ts - lastSpin); lastSpin = ts;
+      if (!collapsed && SNAP && (moving || boosting())) positionNodes();
+      // expired：減少動態效果模式下，事件結束那一格也要重畫一次，關聯線和門縫顏色才會收掉
+      if (!collapsed && (!reducedMotion || active.length || moving || expired || sleepBusy())) paint();
+    }
+  } catch (e) {
+    $('#footer-status').textContent = 'ERR ' + e.message;
+  } finally {
+    requestAnimationFrame(frame);                                  // 任何一格出錯都不能讓動畫停掉
+  }
+}
+// 藏到系統匣時 elapsed 不走、事件卻照收：藏超過幾秒再回來，就把積下來的光束清掉，不要一次全部爆出來
+let hiddenAt = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  if (hiddenAt && Date.now() - hiddenAt > 4200) { active = []; refreshLights(); paint(); }
+  hiddenAt = 0;
+});
+setInterval(updateFooter, 15000);
+window.__noema = msg => {
+  try {
+    if (msg.type === 'snapshot') applySnapshot(msg);
+    else if (msg.type === 'events') onEvents(msg.events, msg.history);
+    else if (msg.type === 'state') applyState(msg);
+    else if (msg.type === 'sleep-report') onSleepReport(msg.report);
+  } catch (e) { $('#footer-status').textContent = 'ERR ' + e.message; }
+};
+resize();
+requestAnimationFrame(frame);
+send({ cmd: 'ready' });
+</script>
+</body>
+</html>
