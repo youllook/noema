@@ -175,6 +175,28 @@ dialog.reader ::selection { background: #edc47755; color: #fff; }
 .reader-id h2 { font: 12px var(--mono); margin: 0; color: var(--tc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .4px; }
 .reader-id p { margin: 3px 0 0; font: 9px var(--mono); color: var(--muted); letter-spacing: 1.6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .reader-head .icon-btn { flex: none; width: 28px; height: 26px; font-size: 13px; }
+/* 記憶操作：閱讀器標題列按鈕、右鍵選單、確認框 */
+.reader-ops { display: flex; gap: 6px; flex: none; }
+.op-btn { height: 26px; padding: 0 9px; border: 1px solid var(--line); background: transparent; color: var(--muted); font: 10px var(--mono); letter-spacing: 1px; }
+.op-btn:hover { color: var(--text); border-color: var(--accent); }
+.op-btn.danger:hover { color: #ff6a74; border-color: #ff4856; }
+.ctx-menu { position: fixed; z-index: 1000; min-width: 132px; padding: 4px 0; background: #161814f5; border: 1px solid #b69a5680; box-shadow: 0 8px 24px #000a; font-size: 11px; }
+.ctx-menu button { display: block; width: 100%; padding: 6px 12px; border: 0; background: transparent; color: var(--text); text-align: left; font: inherit; }
+.ctx-menu button:hover, .ctx-menu button:focus-visible { background: #edc4771c; outline: none; }
+.ctx-menu button.danger { color: #ff8a92; }
+.ctx-menu button.danger:hover { background: #ff485622; }
+.ctx-menu hr { border: 0; border-top: 1px dashed var(--line); margin: 4px 0; }
+.ctx-menu .ctx-title { padding: 4px 12px 6px; color: var(--muted); font: 9px var(--mono); letter-spacing: 1px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+dialog.confirm { width: min(360px, calc(100vw - 40px)); padding: 18px 20px 16px; border: 1px solid #b69a5690; background: #191b1b; color: var(--text); box-shadow: 0 12px 40px #000c; }
+dialog.confirm::backdrop { background: #050605b0; }
+dialog.confirm h3 { margin: 0 0 10px; font-size: 14px; letter-spacing: 1px; }
+.confirm-file { margin: 0 0 10px; padding: 6px 8px; border-left: 2px solid var(--accent); background: #edc47712; font: 11px var(--mono); word-break: break-all; }
+dialog.confirm.danger .confirm-file { border-left-color: #ff4856; background: #ff485614; }
+.confirm-body { margin: 0 0 16px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.confirm-actions button { padding: 6px 14px; border: 1px solid var(--line); background: transparent; color: var(--text); font-size: 12px; }
+.confirm-actions .confirm-ok { border-color: var(--accent); color: var(--accent); }
+.confirm-actions .confirm-ok.danger { border-color: #ff4856; background: #ff485622; color: #ffb3b9; }
 .reader-progress { background: #edc47712; }
 .reader-progress i { display: block; height: 100%; width: 0; background: var(--tc); box-shadow: 0 0 8px var(--tc); }
 .reader-scroll { overflow-y: auto; overflow-x: hidden; padding: 18px 18px 30px; outline: none; scroll-padding-top: 12px; }
@@ -331,7 +353,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
     <div class="section-label"><span class="stream-label"><i class="live-dot"></i>01 / ACTIVITY STREAM</span><span class="sim-badge" id="stream-state">連線中</span></div>
     <ol class="events"></ol>
   </section>
-  <footer class="footer"><span id="footer-left">—</span><span id="footer-status">LOCAL / READ ONLY</span></footer>
+  <footer class="footer"><span id="footer-left">—</span><span id="footer-status">LOCAL · 右鍵卡片可封存／刪除</span></footer>
 </main>
 <div class="capsule" data-drag aria-label="Noema 膠囊">
   <i class="brand-mark"></i><strong data-drag>NOEMA</strong><span id="capsule-status" data-drag>待命</span><button id="expand" title="展開">↗</button>
@@ -341,6 +363,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
     <button class="icon-btn" id="reader-back" title="返回上一筆（Alt+←）" aria-label="返回" hidden>←</button>
     <i class="reader-mark" aria-hidden="true"></i>
     <div class="reader-id"><h2 id="reader-title"></h2><p id="reader-crumb"></p></div>
+    <span class="reader-ops" id="reader-ops"></span>
     <button class="icon-btn" id="close-reader" title="關閉（Esc）" aria-label="關閉">×</button>
   </header>
   <div class="reader-progress" aria-hidden="true"><i></i></div>
@@ -352,6 +375,13 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
   </div>
   <footer class="reader-foot"><span id="reader-stat"></span><span id="reader-hint">ESC 關閉</span></footer>
 </dialog>
+<dialog class="confirm" aria-labelledby="confirm-title">
+  <h3 id="confirm-title"></h3>
+  <p class="confirm-file"></p>
+  <p class="confirm-body"></p>
+  <div class="confirm-actions"><button type="button" class="confirm-cancel">取消</button><button type="button" class="confirm-ok"></button></div>
+</dialog>
+<div class="ctx-menu" role="menu" hidden></div>
 
 <script>
 'use strict';
@@ -1171,7 +1201,7 @@ function showView(restore) {
   const view = trail[trail.length - 1];
   $('#reader-back').hidden = trail.length < 2;
   for (const s of ['.info', '.md', '.more-list', '.reader-links']) $(s).hidden = true;
-  if (view.list) renderOverflow(view.list.map(byKey).filter(Boolean)); else renderDoc(byKey(view.key), view.key);
+  if (view.list) { renderReaderOps(null); renderOverflow(view.list.map(byKey).filter(Boolean)); } else renderDoc(byKey(view.key), view.key);
   if (!dialog.open) dialog.showModal();
   scroller.scrollTop = restore ? view.top || 0 : 0;
   updateProgress();
@@ -1193,6 +1223,7 @@ function renderOverflow(list) {
 }
 function renderDoc(file, key) {
   const info = $('.info'), md = $('.md'), nav = $('.reader-links');
+  renderReaderOps(file);
   if (!file) {
     readerSig = 'gone:' + key;
     dialog.style.setProperty('--tc', 'var(--muted)');
@@ -1435,6 +1466,83 @@ document.addEventListener('mousedown', e => {
 }, true);
 document.addEventListener('contextmenu', e => { if (!e.target.closest('dialog')) e.preventDefault(); });
 
+/* ---------- 記憶操作：封存／永久刪除／銷毀（右鍵選單或閱讀器按鈕，一律先確認） ---------- */
+const TRASH_NOTE = 'Noema 動手前會先備份一份到 %LOCALAPPDATA%\\Noema\\trash\\。';
+const OPS = {
+  archive: { label: '封存', title: '封存這條記憶？', danger: false,
+    body: '搬進 archive/，MEMORY.md 裡它的那行索引會移到 archive/ARCHIVE.md。之後可以從 archive/ 搬回來。' },
+  delete: { label: '永久刪除', title: '永久刪除這條記憶？', danger: true,
+    body: '直接刪除這個檔，並拿掉 MEMORY.md 裡它的那行索引。記憶目錄裡無法復原。' + TRASH_NOTE },
+  purge: { label: '銷毀', title: '銷毀這條封存記憶？', danger: true,
+    body: '從 archive/ 永久刪除，並拿掉 ARCHIVE.md 裡它的那行索引。記憶目錄裡無法復原。' + TRASH_NOTE },
+};
+const opsFor = f => (!f || f.type === 'boot' || f.more) ? [] : f.archived ? ['purge'] : ['archive', 'delete'];
+const confirmDlg = $('dialog.confirm'), ctxMenu = $('.ctx-menu');
+let pendingOp = null;
+function askOp(op, f) {
+  const o = OPS[op];
+  pendingOp = { op, key: f.key };
+  $('#confirm-title').textContent = o.title;
+  confirmDlg.querySelector('.confirm-file').textContent = (f.archived ? 'archive/' : '') + f.file + (f.label && f.label !== f.file.replace(/\.md$/i, '') ? '　·　' + f.label : '');
+  confirmDlg.querySelector('.confirm-body').textContent = o.body;
+  const ok = confirmDlg.querySelector('.confirm-ok');
+  ok.textContent = o.label; ok.classList.toggle('danger', o.danger);
+  confirmDlg.classList.toggle('danger', o.danger);
+  confirmDlg.showModal();
+  confirmDlg.querySelector('.confirm-cancel').focus();               // 預設焦點在「取消」，按 Enter 不會誤刪
+}
+confirmDlg.querySelector('.confirm-cancel').addEventListener('click', () => { pendingOp = null; confirmDlg.close(); });
+confirmDlg.addEventListener('close', () => { pendingOp = null; });
+confirmDlg.querySelector('.confirm-ok').addEventListener('click', () => {
+  const p = pendingOp; pendingOp = null; confirmDlg.close();
+  if (!p) return;
+  if (dialog.open && trail.length && trail[trail.length - 1].key === p.key) dialog.close();   // 正在讀的那條被動了：關掉閱讀器
+  send({ cmd: 'memop', op: p.op, key: p.key });
+});
+function hideCtx() { ctxMenu.hidden = true; }
+function showCtx(f, x, y) {
+  ctxMenu.replaceChildren();
+  const title = document.createElement('div'); title.className = 'ctx-title'; title.textContent = (f.archived ? 'archive/' : '') + f.file; ctxMenu.append(title);
+  const item = (text, fn, danger) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'menuitem'); b.textContent = text; if (danger) b.className = 'danger'; b.addEventListener('click', () => { hideCtx(); fn(); }); ctxMenu.append(b); };
+  item('開啟', () => openReader(f));
+  ctxMenu.append(document.createElement('hr'));
+  for (const op of opsFor(f)) item(OPS[op].label + '…', () => askOp(op, f), OPS[op].danger);
+  ctxMenu.hidden = false;
+  const r = ctxMenu.getBoundingClientRect();
+  ctxMenu.style.left = Math.min(x, innerWidth - r.width - 6) + 'px';
+  ctxMenu.style.top = Math.min(y, innerHeight - r.height - 6) + 'px';
+  ctxMenu.querySelector('button').focus();
+}
+$('.nodes').addEventListener('contextmenu', e => {
+  const b = e.target.closest('.node'); if (!b) return;
+  const f = shown.find(x => x.button === b);
+  if (!opsFor(f).length) return;
+  e.preventDefault(); e.stopPropagation();
+  showCtx(f, e.clientX, e.clientY);
+});
+document.addEventListener('pointerdown', e => { if (!ctxMenu.hidden && !e.target.closest('.ctx-menu')) hideCtx(); }, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !ctxMenu.hidden) { e.stopPropagation(); hideCtx(); } }, true);
+stage.addEventListener('wheel', hideCtx, { passive: true });
+// 閱讀器標題列的操作按鈕
+function renderReaderOps(f) {
+  const box = $('#reader-ops'); box.replaceChildren();
+  for (const op of opsFor(f)) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'op-btn' + (OPS[op].danger ? ' danger' : '');
+    b.textContent = OPS[op].label; b.title = OPS[op].title;
+    b.addEventListener('click', () => askOp(op, f));
+    box.append(b);
+  }
+}
+// 操作結果：右下角狀態列顯示幾秒
+let opMsgTimer = 0;
+function onMemopResult(r) {
+  const s = $('#footer-status');
+  s.textContent = (r.ok ? '✓ ' : '✕ ') + r.message;
+  s.style.color = r.ok ? '' : '#ff8a92';
+  clearTimeout(opMsgTimer);
+  opMsgTimer = setTimeout(() => { s.textContent = 'LOCAL · 右鍵卡片可封存／刪除'; s.style.color = ''; }, r.ok ? 4000 : 8000);
+}
+
 /* ---------- 主迴圈 ---------- */
 function frame(ts) {
   try {
@@ -1470,6 +1578,7 @@ window.__noema = msg => {
     else if (msg.type === 'events') onEvents(msg.events, msg.history);
     else if (msg.type === 'state') applyState(msg);
     else if (msg.type === 'sleep-report') onSleepReport(msg.report);
+    else if (msg.type === 'memop-result') onMemopResult(msg);
   } catch (e) { $('#footer-status').textContent = 'ERR ' + e.message; }
 };
 resize();

@@ -28,6 +28,7 @@ Claude Code keeps per-project memory as Markdown files under `~/.claude/projects
 - **Only active memories stand out**: a card being touched grows, turns opaque and comes to the front. Relation lines (`[[wiki links]]` and index links) are drawn *only* for those cards, so a glance tells you which memories are in use right now.
 - **Boot injection as door handles**: `CLAUDE.md` and `MEMORY.md`, which are injected at the start of every session, are the two rings beside the slit. Each shows its approximate token count; hover to see the total against a budget line. The rings turn red when you're over budget.
 - **Activity stream**: a timeline of every memory event in the current session. Click any entry to open that memory in the built-in Markdown reader.
+- **Archive, delete or purge from the window**: right-click a card, or use the buttons in the reader. You can archive or permanently delete an active memory, and purge an archived one. Every action asks for confirmation first, with focus on "Cancel", and backs the file up before touching it. It also tidies the index: archiving moves the `MEMORY.md` line to `archive/ARCHIVE.md`, while deleting and purging remove the line. `CLAUDE.md` and `MEMORY.md` themselves can't be touched.
 - **Auto-follow**: when you start or resume a Claude Code session, Noema switches to that project's memory automatically.
 
 ## Sleep: keeping memory lean (optional)
@@ -42,7 +43,7 @@ Memory tends to bloat over time with stale paths, finished progress notes and du
 
 **Purge** permanently deletes files, but only from `archive/` and only when you explicitly ask. In Noema the card is flooded with red light until it glows, then burns away, but only after the file is actually gone. If the command is denied, the card is restored.
 
-Nothing is deleted outside `archive/`. Stale memories are *moved* to `archive/`, and every Sleep run starts with a full backup under `%LOCALAPPDATA%\Noema\sleep\backup\`.
+Sleep never deletes anything outside `archive/`. Stale memories are *moved* to `archive/`, and every Sleep run starts with a full backup under `%LOCALAPPDATA%\Noema\sleep\backup\`.
 
 ## Install
 
@@ -72,6 +73,7 @@ Copy `skill/sleep/` to `~/.claude/skills/sleep/`. Then, in Claude Code, say "sle
 | Show / hide | `Ctrl+Alt+N`, or the tray icon |
 | Rotate the cloud | scroll or drag on empty space |
 | Read a memory | click a card, a door handle, or an activity entry |
+| Archive / delete / purge a memory | right-click its card, or use the buttons in the reader (always confirmed) |
 | Pin on top / collapse to capsule | title-bar buttons ▲ and − |
 | Switch project | the project dropdown (it also auto-follows active sessions) |
 
@@ -88,7 +90,11 @@ Copy `skill/sleep/` to `~/.claude/skills/sleep/`. Then, in Claude Code, say "sle
 
 ## Privacy
 
-Noema is **local and read-only**. It opens your memory and transcript files only to read them, makes no network requests, and sends nothing anywhere. The only files it writes are its own window state. The optional Sleep skill writes its report and backups to `%LOCALAPPDATA%\Noema\sleep\`.
+Noema is **local**. It makes no network requests and sends nothing anywhere.
+
+It only reads your memory and transcript files, with one exception: when you archive, delete or purge a memory from the window and confirm it. Before any such change, the file is backed up to `%LOCALAPPDATA%\Noema\trash\<project>\`.
+
+Apart from that, the only file Noema writes is its own window state. The optional Sleep skill writes its report and backups to `%LOCALAPPDATA%\Noema\sleep\`.
 
 ## 中文簡介
 
@@ -103,8 +109,9 @@ Claude Code 把每個專案的記憶存成 Markdown 檔，有些在每次對話�
 - **門把**：門縫兩側的光圈是開機注入的 `CLAUDE.md` 和 `MEMORY.md`，顯示 token 數。滑過去看預算線，超過預算時光圈轉紅。
 - **Sleep 技能（選用）**：讓記憶「睡一覺」。依序是入睡（備份）、掃描（先用規則抓出路徑失效、過了複查日、太久沒讀、孤兒，⚠ 標出又熱又可疑的記憶）、AI 提出重複與可壓縮的條目、由您分批核准、醒來顯示 token 前後變化。
 - **銷毀**：只限 `archive/` 裡的檔案，而且要您明確下令才會執行。卡片被紅光注入到發亮，確認檔案真的刪掉之後才燒成灰燼。
+- **直接在視窗裡整理**：在卡片上按右鍵，或用閱讀器裡的按鈕，可以封存或永久刪除現役記憶，也可以銷毀封存的記憶。每次都會先跳確認框（預設焦點在「取消」），動手前先備份，並順手整理 MEMORY.md 和 ARCHIVE.md 的索引。
 
-全程只在本機運作，只讀不寫記憶檔，也不連網。
+全程只在本機運作，也不連網。除了您在視窗裡確認過的封存、刪除、銷毀之外，Noema 不會改動記憶檔。
 
 ## License
 

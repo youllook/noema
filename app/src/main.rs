@@ -305,6 +305,12 @@ fn main() {
                             let _ = tx.send(core::Cmd::Switch(id.to_string()));
                         }
                     }
+                    // 記憶操作（封存／永久刪除／銷毀）：UI 已經過確認框
+                    "memop" => {
+                        if let (Some(op), Some(key)) = (v["op"].as_str(), v["key"].as_str()) {
+                            let _ = tx.send(core::Cmd::MemOp(op.to_string(), key.to_string()));
+                        }
+                    }
                     "quit" => {
                         save_state(&state);
                         *control_flow = ControlFlow::Exit;

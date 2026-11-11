@@ -1,5 +1,6 @@
-//! 唯讀掃描 ~/.claude 的記憶與 session transcript，把快照與事件以 JSON 字串送出。
-//! 這個模組只開檔讀取，不寫入、不刪除 ~/.claude 下任何東西。
+//! 掃描 ~/.claude 的記憶與 session transcript，把快照與事件以 JSON 字串送出。
+//! 平常只讀；唯一會動檔的是使用者在 UI 確認過的記憶操作（mem_op）：
+//! 封存＝搬進 memory/archive/、永久刪除／銷毀＝刪檔，動手前一律先備份到 %LOCALAPPDATA%\Noema\trash\。
 
 use notify::{RecursiveMode, Watcher};
 use serde_json::{Value, json};
@@ -14,6 +15,29 @@ pub enum Cmd {
     Switch(String),
     Refresh,
     FsChanged,
+    /// (op, key)：op = archive | delete | purge；key = "x.md" 或 "archive/x.md"
+    MemOp(String, String),
+}
+
+/// 從索引檔拿掉所有連到 file 的那幾行（`](file)` 或 `](./file)`），保留原本的換行格式；回傳被拿掉的行
+fn strip_index_lines(index: &Path, file: &str) -> Vec<String> {
+    let Ok(text) = fs::read_to_string(index) else { return Vec::new() };
+    let f = file.to_lowercase();
+    let pats = [format!("]({f})"), format!("](./{f})")];
+    let mut kept = Vec::new();
+    let mut removed = Vec::new();
+    for line in text.split_inclusive('\n') {
+        let l = line.to_lowercase();
+        if pats.iter().any(|p| l.contains(p.as_str())) {
+            removed.push(line.trim_end_matches(['\r', '\n']).to_string());
+        } else {
+            kept.push(line);
+        }
+    }
+    if !removed.is_empty() {
+        let _ = fs::write(index, kept.concat());
+    }
+    removed
 }
 
 const MAX_CONTENT: usize = 400 * 1024;
@@ -479,6 +503,113 @@ impl Core {
         events
     }
 
+    /// 使用者在 UI 確認過的記憶操作。先送事件讓 UI 開始演出，再動檔，最後回報結果。
+    /// archive：現役 → memory/archive/，MEMORY.md 那行搬到 archive/ARCHIVE.md
+    /// delete ：現役 → 永久刪除，MEMORY.md 那行拿掉
+    /// purge  ：封存 → 永久刪除，ARCHIVE.md 那行拿掉
+    fn mem_op(&mut self, op: &str, key: &str) {
+        let result = self.mem_op_inner(op, key);
+        let (ok, msg) = match &result {
+            Ok(m) => (true, m.clone()),
+            Err(e) => (false, e.clone()),
+        };
+        (self.emit)(json!({"type": "memop-result", "op": op, "key": key, "ok": ok, "message": msg}).to_string());
+        self.snapshot();
+    }
+
+    fn mem_op_inner(&mut self, op: &str, key: &str) -> Result<String, String> {
+        let mem = self.memory_dir();
+        let arc_dir = mem.join("archive");
+        let (archived, name) = match key.strip_prefix("archive/") {
+            Some(n) => (true, n),
+            None => (false, key),
+        };
+        // 只接受單一 .md 檔名；索引檔本身不能動
+        let lower = name.to_lowercase();
+        if name.is_empty() || name.contains(['/', '\\']) || name.contains("..") || !lower.ends_with(".md") || lower == "memory.md" || lower == "archive.md" {
+            return Err(format!("不接受的檔名：{key}"));
+        }
+        match (op, archived) {
+            ("archive", false) | ("delete", false) | ("purge", true) => {}
+            _ => return Err(format!("{op} 不能用在{}", if archived { "封存記憶" } else { "現役記憶" })),
+        }
+        let dir = if archived { &arc_dir } else { &mem };
+        // 實際檔名大小寫以磁碟為準
+        let path = fs::read_dir(dir)
+            .into_iter()
+            .flatten()
+            .flatten()
+            .map(|e| e.path())
+            .find(|p| p.file_name().map(|f| f.to_string_lossy().to_lowercase() == lower).unwrap_or(false))
+            .ok_or_else(|| format!("找不到 {key}"))?;
+        let real = path.file_name().unwrap().to_string_lossy().into_owned();
+
+        // 備份
+        let stamp = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+        let base = std::env::var_os("LOCALAPPDATA").map(PathBuf::from).unwrap_or_else(|| self.home.join("AppData").join("Local"));
+        let trash = base.join("Noema").join("trash").join(&self.current);
+        fs::create_dir_all(&trash).map_err(|e| format!("建立備份資料夾失敗：{e}"))?;
+        fs::copy(&path, trash.join(format!("{stamp}_{}{real}", if archived { "archive_" } else { "" })))
+            .map_err(|e| format!("備份失敗，未動作：{e}"))?;
+
+        // 先讓 UI 開始演出（刪除紅光／銷毀燒毀），再動檔
+        let ts = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as u64).unwrap_or(0);
+        let iso = {
+            // 簡易 ISO 時間：UI 只拿來判斷新舊，用 epoch 毫秒換算
+            let secs = ts / 1000;
+            let (h, m, s) = ((secs / 3600) % 24, (secs / 60) % 60, secs % 60);
+            let days = secs / 86400;
+            // 1970-01-01 起算的日期
+            let (mut y, mut d) = (1970i64, days as i64);
+            loop {
+                let len = if (y % 4 == 0 && y % 100 != 0) || y % 400 == 0 { 366 } else { 365 };
+                if d < len { break; }
+                d -= len; y += 1;
+            }
+            let leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
+            let ml = [31, if leap { 29 } else { 28 }, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            let mut mo = 0;
+            while d >= ml[mo] { d -= ml[mo]; mo += 1; }
+            format!("{y:04}-{:02}-{:02}T{h:02}:{m:02}:{s:02}.{:03}Z", mo + 1, d + 1, ts % 1000)
+        };
+        let event = if op == "purge" {
+            json!({"ts": iso, "kind": "sleep", "target": format!("purge:{real}"), "tool": "Noema", "sub": false, "session": self.session_id})
+        } else {
+            json!({"ts": iso, "kind": "delete", "target": real.to_lowercase(), "tool": "Noema", "sub": false, "session": self.session_id})
+        };
+        (self.emit)(json!({"type": "events", "history": false, "events": [event]}).to_string());
+
+        match op {
+            "archive" => {
+                fs::create_dir_all(&arc_dir).map_err(|e| format!("建立 archive 失敗：{e}"))?;
+                let dest = arc_dir.join(&real);
+                if dest.exists() {
+                    return Err(format!("archive/ 裡已有同名的 {real}，未動作"));
+                }
+                fs::rename(&path, &dest).map_err(|e| format!("搬移失敗：{e}"))?;
+                let lines = strip_index_lines(&mem.join("MEMORY.md"), &real);
+                if !lines.is_empty() {
+                    let idx = arc_dir.join("ARCHIVE.md");
+                    let mut text = fs::read_to_string(&idx).unwrap_or_else(|_| "# Archive\n".to_string());
+                    if !text.ends_with('\n') { text.push('\n'); }
+                    for l in &lines { text.push_str(l); text.push('\n'); }
+                    let _ = fs::write(&idx, text);
+                }
+                Ok(format!("已封存 {real}"))
+            }
+            "delete" => {
+                fs::remove_file(&path).map_err(|e| format!("刪除失敗：{e}"))?;
+                strip_index_lines(&mem.join("MEMORY.md"), &real);
+                Ok(format!("已永久刪除 {real}"))
+            }
+            _ => {
+                fs::remove_file(&path).map_err(|e| format!("銷毀失敗：{e}"))?;
+                strip_index_lines(&arc_dir.join("ARCHIVE.md"), &real);
+                Ok(format!("已銷毀 {real}"))
+            }
+        }
+    }
+
     fn load_project(&mut self) {
         self.tracked.clear();
         self.seen.clear();
@@ -631,6 +762,7 @@ pub fn run(rx: Receiver<Cmd>, tx: Sender<Cmd>, emit: Box<dyn Fn(String) + Send>)
                 core.send_report(true); // 頁面就緒後補送：啟動當下的報告可能在 __noema 定義前就送出而遺失
             }
             Ok(Cmd::FsChanged) => dirty = Some(Instant::now()),
+            Ok(Cmd::MemOp(op, key)) => core.mem_op(&op, &key),
             Err(RecvTimeoutError::Timeout) => {}
             Err(RecvTimeoutError::Disconnected) => return,
         }
@@ -680,5 +812,71 @@ pub fn run(rx: Receiver<Cmd>, tx: Sender<Cmd>, emit: Box<dyn Fn(String) + Send>)
             last_list = Instant::now();
         }
         core.poll(relist);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::{Arc, Mutex};
+
+    fn setup(tag: &str) -> (PathBuf, Core, Arc<Mutex<Vec<String>>>) {
+        let root = std::env::temp_dir().join(format!("noema-test-{tag}-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&root);
+        let mem = root.join(".claude").join("projects").join("proj").join("memory");
+        fs::create_dir_all(mem.join("archive")).unwrap();
+        fs::write(mem.join("MEMORY.md"), "# Index\r\n- [Keep](keep.md) — stays\r\n- [Gone](gone.md) — goes\r\n- [Old](./old.md) — old\r\n").unwrap();
+        fs::write(mem.join("keep.md"), "keep").unwrap();
+        fs::write(mem.join("Gone.md"), "gone").unwrap();
+        fs::write(mem.join("old.md"), "old").unwrap();
+        fs::write(mem.join("archive").join("ancient.md"), "ancient").unwrap();
+        fs::write(mem.join("archive").join("ARCHIVE.md"), "# Archive\n- [Ancient](ancient.md)\n").unwrap();
+        unsafe { std::env::set_var("LOCALAPPDATA", root.join("local")); }
+        let out = Arc::new(Mutex::new(Vec::new()));
+        let o2 = out.clone();
+        let core = Core {
+            home: root.clone(),
+            projects_dir: root.join(".claude").join("projects"),
+            current: "proj".into(),
+            emit: Box::new(move |s| o2.lock().unwrap().push(s)),
+            tracked: HashMap::new(), seen: HashSet::new(), names: Vec::new(), history: Vec::new(),
+            session_id: String::new(), cwd: String::new(),
+            appeared: HashMap::new(), vanished: HashMap::new(), report_mtime: 0,
+        };
+        (mem, core, out)
+    }
+
+    #[test]
+    fn mem_ops() {
+        let (mem, mut core, out) = setup("ops");
+        let arc = mem.join("archive");
+        // 封存：檔案搬進 archive，索引行（大小寫不同、./ 前綴都要認得）搬到 ARCHIVE.md
+        assert!(core.mem_op_inner("archive", "gone.md").is_ok());
+        assert!(!mem.join("Gone.md").exists() && arc.join("Gone.md").exists());
+        let idx = fs::read_to_string(mem.join("MEMORY.md")).unwrap();
+        assert!(!idx.contains("gone.md") && idx.contains("keep.md") && idx.contains("\r\n"));
+        assert!(fs::read_to_string(arc.join("ARCHIVE.md")).unwrap().contains("[Gone](gone.md)"));
+        // 永久刪除：檔案消失、索引行拿掉
+        assert!(core.mem_op_inner("delete", "old.md").is_ok());
+        assert!(!mem.join("old.md").exists());
+        assert!(!fs::read_to_string(mem.join("MEMORY.md")).unwrap().contains("old.md"));
+        // 銷毀：只限 archive，ARCHIVE.md 行拿掉
+        assert!(core.mem_op_inner("purge", "archive/ancient.md").is_ok());
+        assert!(!arc.join("ancient.md").exists());
+        assert!(!fs::read_to_string(arc.join("ARCHIVE.md")).unwrap().contains("ancient.md"));
+        // 備份都在
+        let trash: Vec<_> = fs::read_dir(mem.parent().unwrap().parent().unwrap().parent().unwrap().parent().unwrap().join("local").join("Noema").join("trash").join("proj")).unwrap().flatten().collect();
+        assert_eq!(trash.len(), 3);
+        // 擋下不合法的操作
+        assert!(core.mem_op_inner("purge", "keep.md").is_err());          // 現役不能銷毀
+        assert!(core.mem_op_inner("delete", "archive/Gone.md").is_err()); // 封存不能用永久刪除
+        assert!(core.mem_op_inner("delete", "MEMORY.md").is_err());       // 索引檔不能動
+        assert!(core.mem_op_inner("delete", "../keep.md").is_err());      // 路徑跳脫
+        assert!(core.mem_op_inner("delete", "nope.md").is_err());         // 不存在
+        assert!(mem.join("keep.md").exists());
+        // 事件：刪除與銷毀都有送出
+        let ev = out.lock().unwrap().join("\n");
+        assert!(ev.contains("\"kind\":\"delete\"") && ev.contains("purge:ancient.md"));
+        let _ = fs::remove_dir_all(mem.parent().unwrap().parent().unwrap().parent().unwrap().parent().unwrap());
     }
 }
