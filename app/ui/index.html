@@ -35,6 +35,7 @@ button:focus-visible, select:focus-visible { outline: 1px solid var(--accent); o
 .eyebrow select { max-width: 200px; background: #08131ae8; color: var(--accent); border: 1px solid var(--line); border-radius: 0; padding: 2px 4px; font: 9px var(--mono); letter-spacing: .4px; }
 h1 { margin: 3px 0 0; font-size: 29px; font-weight: 650; letter-spacing: 6px; }
 .hero-count { position: absolute; right: 23px; top: 20px; text-align: right; pointer-events: none; }
+.hero-count .archive-toggle { pointer-events: auto; margin: 7px 0 0 auto; display: block; }   /* 封存數量＝顯示／隱藏封存的切換鈕（2026-11-13 合併） */
 .hero-count strong { font: 26px var(--mono); font-weight: 300; color: var(--accent); }
 .hero-count span { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; letter-spacing: 1px; }
 .section-label { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font: 9px var(--mono); letter-spacing: 1.5px; }
@@ -109,7 +110,7 @@ canvas.core { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
 .empty-state p.zh { margin-top: 6px; opacity: .8; }
 .empty-state code { font: 9.5px var(--mono); color: var(--accent); }
 .sleep-dim { position: absolute; inset: 0; z-index: 110; background: #020507; opacity: 0; pointer-events: none; transition: opacity 1.6s ease; }
-.stage[data-sleep="sleep"] .sleep-dim, .stage[data-sleep="scan"] .sleep-dim, .stage[data-sleep="propose"] .sleep-dim { opacity: .55; }
+.stage[data-sleep="sleep"] .sleep-dim, .stage[data-sleep="scan"] .sleep-dim, .stage[data-sleep="propose"] .sleep-dim { opacity: .34; }   /* 2026-11-13：整體壓暗一些就好，活化／未活化的明暗差要看得出來 */
 .stage[data-sleep="apply"] .sleep-dim, .stage[data-sleep="purge"] .sleep-dim { opacity: .4; }
 .stage[data-sleep] canvas.core { z-index: 115; }
 .sleep-phase { position: absolute; top: 10px; right: 22px; z-index: 140; font: 8px var(--mono); letter-spacing: 2px; color: var(--accent); opacity: 0; transition: opacity .4s; pointer-events: none; }
@@ -154,9 +155,15 @@ canvas.core { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
 body.collapsed .window { display: none; }
 body.collapsed .capsule { display: flex; }
 /* ---------- 閱讀器（HUD Markdown Reader） ---------- */
-dialog.reader { position: fixed; inset: 7px; margin: 0; width: auto; height: auto; max-width: none; max-height: none; padding: 0; overflow: hidden;
+/* 2026-11-13 用戶定：閱讀器改成舞台左側的側邊面板（非強制），網路往右讓位，點選的連線與子連線效果才看得到 */
+/* 2026-11-13 用戶定：閱讀器＝左側抽屜，打開時把標題列以下的內容整個往右推，不疊在畫面上 */
+dialog.reader { position: fixed; inset: 47px auto 1px 1px; width: var(--dw, 460px); height: auto; z-index: 300; margin: 0; border-width: 0 1px 0 0 !important; border-radius: 0 0 0 8px !important; animation: drawer-in .22s ease-out; container: reader / inline-size; max-width: none; max-height: none; padding: 0; overflow: hidden;
   color: var(--text); border: 1px solid #4f9fbd80; border-radius: 3px; user-select: text; --tc: var(--accent);
   background: linear-gradient(160deg,#0f2230 0,transparent 34%), #050a0e; font-size: clamp(13.5px, 9px + 1.1vw, 16px); }
+@keyframes drawer-in { from { transform: translateX(-100%); } }
+.window > :not(.topbar) { transition: margin-left .22s ease-out; }
+body.drawer .window > :not(.topbar) { margin-left: var(--dw, 460px); }
+body.drawer .window > .timeline, body.drawer .window > .footer { margin-left: calc(var(--dw, 460px) + 21px); }
 dialog.reader[open] { display: grid; grid-template-rows: auto 2px minmax(0,1fr) 25px; }
 dialog.reader::backdrop { background: #03070af5; border-radius: 8px; }
 dialog.reader::before, dialog.reader::after { content: ''; position: absolute; width: 13px; height: 13px; pointer-events: none; z-index: 3; }
@@ -287,8 +294,8 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
 .link-chip .lc-title { display: block; }
 .link-chip .lc-type { display: block; margin-top: 3px; font: 8.5px var(--mono); letter-spacing: 1.4px; color: var(--lc); opacity: .85; }
 .link-chip .lc-desc { display: none; }
-/* 寬視窗：引用卡改成主文右側的固定欄（捲動時黏住） */
-@media (min-width: 720px) {
+/* 閱讀器夠寬：引用卡改成主文右側的固定欄（捲動時黏住）；依面板寬度判斷，左側面板裡是單欄滿版 */
+@container reader (min-width: 720px) {
   .reader-scroll { display: grid; grid-template-columns: minmax(0, 740px) clamp(170px, 24vw, 240px); grid-template-rows: auto auto auto 1fr; justify-content: center; column-gap: 24px; align-content: start; }
   .reader-scroll > * { grid-column: 1; max-width: none; margin-left: 0; margin-right: 0; min-width: 0; }
   .reader-scroll > .reader-links { grid-column: 2; grid-row: 1 / 5; align-self: start; position: sticky; top: 0;
@@ -319,7 +326,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
   <section class="hero" data-drag>
     <div class="eyebrow">PROJECT / <select id="project" title="切換專案"></select></div>
     <h1 data-drag>認知核心</h1>
-    <div class="hero-count"><strong>00</strong><span>ACTIVE MEMORIES</span></div>
+    <div class="hero-count"><strong>00</strong><span>ACTIVE MEMORIES</span><button class="archive-toggle" aria-pressed="true" title="顯示或隱藏封存記憶">封存 00</button></div>
   </section>
   <section class="stage" aria-label="依類型分色的記憶節點與連結">
     <canvas aria-hidden="true"></canvas>
@@ -341,7 +348,6 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
       <span><i style="--dot:var(--feedback)"></i>feedback</span>
       <span><i style="--dot:var(--user)"></i>user</span>
       <span><i style="--dot:var(--reference)"></i>ref.</span>
-      <button class="archive-toggle" aria-pressed="true" title="顯示或隱藏封存記憶">封存 00</button>
     </div>
   </section>
   <section class="timeline" aria-label="讀寫事件時間軸">
@@ -781,6 +787,7 @@ function nnRebuild() {
   for (const m of nlist) m.archived ? genDirect(m) : genFiber(m);
   for (const e of wikiEdges) { const s = nmap.get(e.source.key), d = nmap.get(e.target.key); if (s && d && s.E && d.E) genLink(s, d); }
   for (const m of nlist) genSyn(m);
+  pulses = pulses.filter(p => p.beam || !(p.done = true));                           // 弱脈衝記的是舊索引，重建後丟掉（長連線會跟著記憶拿新路徑）
   nDirty = true;
 }
 // 依 shown（雲上要放的記憶）同步：新的長出來、消失的留成殘影凋零、換專案整個重來
@@ -937,14 +944,89 @@ function routeAt(route, cum, pos) {
 }
 function pulse(route, cum, kind, opt = {}) {
   const p = { route, cum, kind, c: opt.color || EV_RGB[kind] || CORE_GOLD, t0: elapsed, speed: opt.speed || (kind === 'read' ? 2.1 : 2.7), weak: !!opt.weak, onArrive: opt.onArrive, arrived: false, trail: opt.weak ? .3 : kind === 'read' ? .55 : .2 };
+  p.beam = !p.weak && BEAM_KINDS.has(kind);
+  if (p.beam) p.m = opt.m || nlist.find(x => x.route === route);   // 長連線亮比較久，網路重建後要跟著記憶拿新的路徑
   pulses.push(p); return p;
 }
+// 連線動畫（2026-11-13 用戶定，取代短脈衝）
+//   讀取／修改＝比照掃描：整條連線直接亮起、呼吸般持續發光，停一會再淡掉
+//   新增＝像被拉長的線從中央伸出去（越伸越細），抵達後彈簧般回彈、外擴一圈
+//   刪除＝快速射出 → 繃緊顫動 → 整條縮回中央（像橡皮筋彈回），斷開時迸出火星
+const BEAM_KINDS = new Set(['read', 'create', 'modify', 'write', 'delete']);
+const BEAM_T = { glow: { inT: 260, hold: 2000, fade: 700 }, create: { ext: 1100, hold: 1500, fade: 700 }, delete: { out: 240, taut: 320, back: 700 } };
+const easeOut3 = u => 1 - Math.pow(1 - u, 3), easeIn3 = u => u * u * u;
+const beamStyle = k => k === 'create' || k === 'delete' ? k : 'glow';
+function beamHead(p) {                                              // 新增的神經元跟著連線的頭長出來（dynAlpha 用）
+  const L = p.cum[p.cum.length - 1], t = elapsed - p.t0;
+  return p.beam && p.kind === 'create' ? L * easeOut3(nclamp(t / BEAM_T.create.ext)) : t / 1000 * p.speed;
+}
+function strokeRoute(g, route, cum, upto, c, a, w) {
+  if (a <= .01 || upto <= 0 || route[route.length - 1] >= PX.length) return null;
+  g.lineWidth = w; g.strokeStyle = nrgba(c, a); g.beginPath(); g.moveTo(PX[route[0]], PY[route[0]]);
+  let i = 1; for (; i < route.length && cum[i] <= upto; i++) g.lineTo(PX[route[i]], PY[route[i]]);
+  const end = i < route.length ? routeAt(route, cum, upto) : [PX[route[route.length - 1]], PY[route[route.length - 1]]];
+  if (i < route.length) g.lineTo(end[0], end[1]);
+  g.stroke(); return end;
+}
+function glowRoute(g, route, cum, upto, c, a, wk = 1) {
+  strokeRoute(g, route, cum, upto, c, a * .22, 6 * DPR * wk);
+  strokeRoute(g, route, cum, upto, c, a * .45, 2.6 * DPR * wk);
+  return strokeRoute(g, route, cum, upto, nmix(c, [255, 255, 255], .45), a * .9, 1.1 * DPR * Math.max(.6, wk));
+}
+function tipFx(g, tip, c, a, r = 1) { glow(g, tip[0], tip[1], 16 * DPR * r, c, a * .9); glow(g, tip[0], tip[1], 5 * DPR * r, [255, 255, 255], a); }
+function spark(x, y, c, n = 1, sp = .02) {
+  if (reducedMotion) return;
+  for (let k = 0; k < n; k++) { const a = Math.random() * 6.283, v = (.004 + Math.random() * sp) * DPR; embers.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t0: elapsed, life: 350 + Math.random() * 450, c, r: 2.2 }); }
+}
+function arrive(p) { if (!p.arrived) { p.arrived = true; p.tA = elapsed; p.onArrive && p.onArrive(); } }
+function drawBeam(g, p) {
+  const m = p.m;
+  if (m) { if (!m.route || m.phase === 'gone' || !nmap.has(m.key)) { p.done = true; return; } p.route = m.route; p.cum = m.cum; }
+  const L = p.cum[p.cum.length - 1], t = elapsed - p.t0, st = beamStyle(p.kind);
+  const breathe = reducedMotion ? .85 : .72 + .2 * Math.sin(elapsed / 650 + (m ? m.idx * 1.7 : 0));
+  const sv = m && m.somaV != null && m.somaV < PX.length ? m.somaV : -1;
+  if (st === 'glow') {
+    const T = BEAM_T.glow; if (t >= T.inT) arrive(p);
+    if (t > T.inT + T.hold + T.fade) { p.done = true; return; }
+    const a = nclamp(t / T.inT) * (1 - nclamp((t - T.inT - T.hold) / T.fade));
+    glowRoute(g, p.route, p.cum, L, p.c, a * breathe);
+    if (sv >= 0) glow(g, PX[sv], PY[sv], 9 * DPR, p.c, a * breathe * .8);
+    return;
+  }
+  if (st === 'create') {
+    const T = BEAM_T.create, u = nclamp(t / T.ext), head = L * easeOut3(u);
+    if (u >= 1) arrive(p);
+    const ta = p.arrived ? elapsed - p.tA : 0;
+    if (p.arrived && ta > T.hold + T.fade) { p.done = true; return; }
+    const a = p.arrived ? 1 - nclamp((ta - T.hold) / T.fade) : 1;
+    const wk = p.arrived ? 1 + .9 * Math.exp(-ta / 260) * Math.cos(ta / 55) : 1.5 - .8 * easeOut3(u);
+    const tip = glowRoute(g, p.route, p.cum, head, p.c, a * (p.arrived ? breathe + .15 * Math.exp(-ta / 300) : 1), Math.max(.35, wk));
+    if (tip && !p.arrived) { tipFx(g, tip, p.c, 1); if (Math.random() < .55) spark(tip[0], tip[1], nmix(p.c, [255, 255, 255], .3), 1, .012); }
+    if (p.arrived && sv >= 0) {
+      if (ta < 700) { const q = ta / 700; g.strokeStyle = nrgba(p.c, (1 - q) * .8); g.lineWidth = 1.4 * DPR; g.beginPath(); g.arc(PX[sv], PY[sv], (6 + 34 * easeOut3(q)) * DPR, 0, 6.283); g.stroke(); }
+      glow(g, PX[sv], PY[sv], 10 * DPR, p.c, a * breathe * .8);
+    }
+    return;
+  }
+  const T = BEAM_T.delete, t1 = T.out, t2 = t1 + T.taut, t3 = t2 + T.back;
+  if (t >= t3) { p.done = true; glow(g, PX[p.route[0]], PY[p.route[0]], 30 * DPR, p.c, .8); return; }
+  let head, wk, a = 1;
+  if (t < t1) { const u = t / t1; head = L * (1 - (1 - u) * (1 - u)); wk = .6; }
+  else if (t < t2) { head = L; wk = .55 + .25 * Math.abs(Math.sin(t / 22)); a = .75 + .25 * Math.sin(t / 18); }
+  else {
+    if (!p.snapped) { p.snapped = true; arrive(p); if (sv >= 0) spark(PX[sv], PY[sv], [255, 110, 120], 10, .03); }
+    const u = (t - t2) / T.back; head = L * (1 - easeIn3(u)); wk = .7 + 1.1 * u;
+  }
+  const tip = glowRoute(g, p.route, p.cum, head, p.c, a, wk);
+  if (tip) { tipFx(g, tip, p.c, a, t >= t2 ? 1.2 : .8); if (t >= t2 && Math.random() < .6) spark(tip[0], tip[1], [255, 120, 130], 1, .015); }
+}
 function drawPulse(g, p) {
+  if (p.beam) return drawBeam(g, p);
   const L = p.cum[p.cum.length - 1], head = (elapsed - p.t0) / 1000 * p.speed;
   if (head >= L && !p.arrived) { p.arrived = true; p.onArrive && p.onArrive(); }
   const offs = p.kind === 'read' || p.weak ? [0] : [0, .14, .28];
   if (head - offs[offs.length - 1] - p.trail > L) { p.done = true; return; }
-  const base = (p.weak ? 1.3 : p.kind === 'read' ? 2.8 : 1.5) * DPR, al = p.weak ? .5 : 1;
+  const base = (p.weak ? 1.3 : p.kind === 'read' ? 2.8 : 1.5) * DPR, al = p.al || (p.weak ? .5 : 1);
   for (const o of offs) {
     const h = head - o, lo = Math.max(0, h - p.trail), hi = Math.min(L, h); if (hi <= lo) continue;
     let prev = routeAt(p.route, p.cum, lo);
@@ -956,6 +1038,26 @@ function drawPulse(g, p) {
       g.beginPath(); g.moveTo(prev[0], prev[1]); g.lineTo(q[0], q[1]); g.stroke(); prev = q;
     }
     if (h <= L) glow(g, prev[0], prev[1], (p.weak ? 7 : 11) * DPR, p.c, al);
+  }
+}
+// 點選的記憶（2026-11-13 用戶定，取代「活化記憶都持續有電流」）：
+//   只有點過的那條連線比照掃描持續呼吸發光、並有弱電流流過去；點空白處取消。睡眠期間不顯示
+let selKey = null;
+const SCAN_RGB = [143, 220, 245];
+const scannedKeys = new Map();   // key → 被掃到的時間
+function ambient() {
+  if (reducedMotion || !PX.length) return;
+  const idle = !sleepPhase || sleepPhase === 'wake';
+  if (!idle) return;
+  for (const m of nlist) {
+    if (m.ghost || isDyn(m) || !m.route) continue;
+    if (m.key !== selKey) { m.ambAt = 0; continue; }
+    if (m.amb && !m.amb.done) continue;
+    if (!m.ambAt) { m.ambAt = elapsed + Math.random() * 1600; continue; }
+    if (elapsed < m.ambAt) continue;
+    m.amb = pulse(m.route, m.cum, 'read', { weak: true, color: nmix(somaColor(m), [255, 255, 255], .25), speed: 1.5 });
+    m.amb.amb = true; m.amb.al = .8;
+    m.ambAt = elapsed + 1800 + Math.random() * 1400;
   }
 }
 function flashMem(m, kind, s = 1) { m.flash = { t0: elapsed, c: EV_RGB[kind] || somaColor(m), s }; }
@@ -983,7 +1085,7 @@ function nnEvent(key, kind) {
 function dynAlpha(m, i) {
   const own = SO[i] === m.idx, ph = m.phase;
   if (SC[i] === 7 && own) {                                         // 中央纖維：跟著脈衝頭往外長
-    if (ph === 'incoming') { const p = m.pulse, head = p ? (elapsed - p.t0) / 1000 * p.speed : 0; return m.fL0 + SF[i] * (m.fL1 - m.fL0) < head ? 1 : 0; }
+    if (ph === 'incoming') { const p = m.pulse, head = p ? beamHead(p) : 0; return m.fL0 + SF[i] * (m.fL1 - m.fL0) < head ? 1 : 0; }
     return ph === 'grow' ? 1 : m.grow;
   }
   if (own && isBodyCls(SC[i])) { if (ph === 'incoming') return 0; return SF[i] < m.grow ? 1 : 0; }
@@ -1137,6 +1239,9 @@ stage.addEventListener('pointermove', e => {
   dragging = { x: e.clientX, y: e.clientY, t: performance.now() };
 });
 const endDrag = () => { dragging = null; };
+let downAt = null;                                                  // 點空白處（不是拖曳）＝取消點選
+stage.addEventListener('pointerdown', e => { downAt = [e.clientX, e.clientY]; }, true);
+stage.addEventListener('click', e => { if (!downAt || e.target.closest('.node, button')) return; if (Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 5) { if (selKey) selectMem(null); if (dialog.open) dialog.close(); } });
 stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag);
 $('.nodes').addEventListener('pointerover', e => { hovering = !!e.target.closest('.node'); });
 $('.nodes').addEventListener('pointerout', e => { hovering = !!(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.node')); });
@@ -1147,10 +1252,16 @@ function resize() {
   Wd = Math.round(width * DPR); Hd = Math.round(height * DPR);
   for (const cv of [canvas, coreCanvas, staticCv, centerCv]) { cv.width = Wd; cv.height = Hd; }
   bloomA[0].width = Math.ceil(Wd / 4); bloomA[0].height = Math.ceil(Hd / 4); bloomA[1].width = Math.ceil(Wd / 10); bloomA[1].height = Math.ceil(Hd / 10);
-  // 中央神經元在舞台中央略偏上，下方留給兩個儀表
-  CX = Wd / 2; CY = Hd * .46; FOC = Math.min(Wd, Hd * 1.2) * 1.02;   // 最外圈（半徑約 2.9）也留在舞台內
+  if (dialog.open) placeReader();
+  layoutStage();
+}
+const inset = 0;   // 抽屜改成推開整個舞台，舞台本身變窄，不必再另外讓位
+function layoutStage() {
+  const avail = Math.max(200, width - inset);
+  // 中央神經元在可用區中央略偏上，下方留給兩個儀表
+  CX = (inset + avail / 2) * DPR; CY = Hd * .46; FOC = Math.min(avail * DPR, Hd * 1.2) * 1.02;   // 最外圈（半徑約 2.9）也留在舞台內
   cx = CX / DPR; cy = CY / DPR; coreR = Math.max(16, SOMA * FOC / CAM_D / DPR * 3);
-  const r = Math.max(22, Math.min(46, Math.min(width, height) * .085)), gy = Math.min(cy + height * .3, height - r - 30), gdx = Math.max(width * .15, r * 2.5);
+  const r = Math.max(22, Math.min(46, Math.min(avail, height) * .085)), gy = Math.min(cy + height * .3, height - r - 30), gdx = Math.max(avail * .15, r * 2.5);
   gaugeRects = [];
   for (const h of document.querySelectorAll('.handle')) {
     const x = cx + (+h.dataset.side) * gdx;
@@ -1168,7 +1279,7 @@ new ResizeObserver(resize).observe(stage);
 let coreClock = 0, coreLast = -1, coreHeat = 0, coreBusy = 0, coreOpen = .1, coreTint = [...CORE_GOLD], breath = 0, lastNPaint = -1e9;
 const slitHalf = () => coreR * 1.25;
 function coreUpdate() {
-  const hot = active.some(a => a.kind !== 'read' && a.kind !== 'mention'), busy = active.length > 0 || pulses.length > 0;
+  const hot = active.some(a => a.kind !== 'read' && a.kind !== 'mention'), busy = active.length > 0 || pulses.some(p => !p.amb);   // 持續脈衝不算忙，中央不跟著張開
   const dt = coreLast < 0 ? 0 : Math.max(0, Math.min(elapsed - coreLast, 100)); coreLast = elapsed;
   const ease = reducedMotion ? 1 : 1 - Math.exp(-dt / 240);
   coreHeat += ((hot ? 1 : 0) - coreHeat) * ease; coreBusy += ((busy ? 1 : 0) - coreBusy) * ease;
@@ -1230,7 +1341,7 @@ function composeNet() {
 // 上層畫布：中央大神經元（呼吸、染色）、動作電位、火星、睡眠掃描
 function composeCore(dt) {
   const g = cctx; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, Wd, Hd); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
-  const ox = PX[0], oy = PY[0], s0 = PS[0], b = breath, o = coreOpen, dim = sleepPhase && sleepPhase !== 'wake' && sleepPhase !== 'purge' ? .55 : 1;
+  const ox = PX[0], oy = PY[0], s0 = PS[0], b = breath, o = coreOpen, dim = sleepPhase && sleepPhase !== 'wake' && sleepPhase !== 'purge' ? .7 : 1;
   const k = 1 + .02 * b + .045 * o;
   retint(coreTint);
   const hs = s0 * 1.5 * (1 + .03 * b + .06 * o); g.globalAlpha = nclamp((.26 + .1 * b + .35 * o) * dim); g.drawImage(tintCv, ox - hs, oy - hs, hs * 2, hs * 2);
@@ -1240,9 +1351,21 @@ function composeCore(dt) {
   const ss = SOMA * s0 * 1.65 * (1 + .03 * b + .05 * o); g.save(); g.globalAlpha = .55 + .45 * dim; g.translate(ox, oy); g.rotate(yaw * .6); g.drawImage(somaCv, -ss, -ss, ss * 2, ss * 2); g.restore();
   g.globalCompositeOperation = 'lighter';
   if (sleepPhase === 'wake' && elapsed - sleepAt < 2200) { const p = (elapsed - sleepAt) / 2200; g.beginPath(); g.arc(ox, oy, SOMA * s0 + p * Math.min(Wd, Hd) * .45, 0, 6.283); g.strokeStyle = nrgba(CORE_GOLD, (1 - p) * .65); g.lineWidth = (2 * (1 - p) + .5) * DPR; g.stroke(); }
+  if (selKey && (!sleepPhase || sleepPhase === 'wake')) {           // 點選中的記憶：連線持續發光
+    const m = nmap.get(selKey);
+    if (m && !m.ghost && !isDyn(m) && m.route && m.somaV < PX.length && (!m.archived || archiveVisible)) {
+      const a = nclamp((elapsed - (m.selAt || 0)) / 300) * (reducedMotion ? .85 : .72 + .2 * Math.sin(elapsed / 650 + m.idx * 1.7)), c = somaColor(m);
+      glowRoute(g, m.route, m.cum, m.cum[m.cum.length - 1], c, a); glow(g, PX[m.somaV], PY[m.somaV], 10 * DPR, c, a * .8);
+    }
+  }
+  if (sleepPhase === 'scan') for (const m of nlist) {                // 掃描：掃到的記憶（封存除外）連線持續發光
+    const t = scannedKeys.get(m.key); if (t == null || m.ghost || isDyn(m) || !m.route || m.archived) continue;
+    const a = nclamp((elapsed - t) / 500) * (reducedMotion ? .85 : .72 + .2 * Math.sin(elapsed / 650 + m.idx * 1.7));
+    glowRoute(g, m.route, m.cum, m.cum[m.cum.length - 1], SCAN_RGB, a); glow(g, PX[m.somaV], PY[m.somaV], 9 * DPR, SCAN_RGB, a * .8);
+  }
   for (const p of pulses) drawPulse(g, p);
   pulses = pulses.filter(p => !p.done);
-  embers = embers.filter(e => { const p = (elapsed - e.t0) / e.life; if (p >= 1) return false; const t = elapsed - e.t0; glow(g, e.x + e.vx * t, e.y + e.vy * t, 3.5 * DPR * (1 - p), [255, 120, 80], 1 - p); return true; });
+  embers = embers.filter(e => { const p = (elapsed - e.t0) / e.life; if (p >= 1) return false; const t = elapsed - e.t0; glow(g, e.x + e.vx * t, e.y + e.vy * t, (e.r || 3.5) * DPR * (1 - p), e.c || [255, 120, 80], 1 - p); return true; });
   bloom(g, coreCanvas);
   g.globalCompositeOperation = 'source-over';
   g.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -1255,6 +1378,7 @@ function paint() {
   if (!width || !Wd || !NCtr) return;
   const dt = coreLast < 0 ? 0 : Math.max(0, Math.min(elapsed - coreLast, 100));
   coreUpdate();
+  ambient();
   if (nlist.some(m => m.phase === 'incoming' || m.phase === 'grow')) positionNodes();   // 新長出的神經元：標籤跟著淡入
   const busy = pulses.length || embers.length || ripples.length || nlist.some(m => isDyn(m) || m.flash || m.heat > 0) || active.length || sleepBusy() || yaw !== pYaw || pitch !== pPitch || camD !== pCam || nDirty || coreOpen > .08;
   if (!busy && elapsed - lastNPaint < 33) return;                   // 靜止時只跑呼吸，約 30fps
@@ -1277,7 +1401,7 @@ function sleepEvent(ev) {
   const [phase, files] = String(ev.target).split(':');
   if (phase === 'purge') { if (files) startPurge(files.split(',').filter(Boolean)); return; }   // 只列候選時不演
   setSleep(phase);
-  if (phase === 'scan') { sweepAt = elapsed; for (const f of shown) f.swept = false; }
+  if (phase === 'scan') { sweepAt = elapsed; scannedKeys.clear(); for (const f of shown) f.swept = false; }
   if (phase === 'sleep') { sweepAt = -1; wakeReport = null; renderMarks(); }
   if (phase === 'wake') { wakeSeenTs = Date.parse(ev.ts) || Date.now(); scheduleWakeClear(7000); tryDelta(); }
   paint();
@@ -1343,17 +1467,10 @@ function renderMarks() {
 function drawSweep(c) {
   if (sweepAt < 0) return;
   const age = elapsed - sweepAt, u = Math.min(1, age / 3200), reach = (width / 2 + 40) * (1 - Math.pow(1 - u, 2));
-  c.save(); c.globalCompositeOperation = 'lighter';
-  for (const s of [-1, 1]) {
-    const x = cx + s * reach, g = c.createLinearGradient(x - s * 60, 0, x, 0);
-    g.addColorStop(0, 'rgba(143,220,245,0)'); g.addColorStop(1, 'rgba(143,220,245,' + (.08 * (1 - u * .6)).toFixed(3) + ')');
-    c.fillStyle = g; c.fillRect(Math.min(x, x - s * 60), 0, 60, height);
-    c.fillStyle = 'rgba(230,250,255,' + (.28 * (1 - u * .5)).toFixed(3) + ')'; c.fillRect(x - .5, 0, 1, height);
-  }
-  c.restore();
+  // 掃描波線已移除（2026-11-13 用戶定）：只留不可見的掃描進度，掃到的記憶連線持續發光
   for (const f of shown) {
     if (f.swept || !f.button || f.more || Math.abs(f.sx - cx) > reach) continue;
-    f.swept = true; f.button.classList.add('flash'); setTimeout(() => f.button && f.button.classList.remove('flash'), 380);
+    f.swept = true; if (!f.archived) scannedKeys.set(f.key, elapsed); f.button.classList.add('flash'); setTimeout(() => f.button && f.button.classList.remove('flash'), 380);
     const m = nmap.get(f.key); if (m) flashMem(m, 'read', .45);
     const mk = markOf(f);
     if (mk) { f.button.classList.add('m-' + mk); f.button.querySelector('.node-mark').textContent = { warn: '⚠ 熱', path: '路徑', cold: '冷' }[mk]; }
@@ -1574,7 +1691,13 @@ function ago(ms) {
 const BOOT_DESC = { '@claude': '全域指示 · 每個 session 啟動時自動注入', 'memory.md': '記憶索引 · 這個專案的記憶目錄，啟動時自動注入' };
 const scroller = $('.reader-scroll');
 let trail = [], readerSig = '', hintTimer = 0;
-function openReader(file) { if (!file) return; trail = [{ key: file.key }]; showView(); }
+function selectMem(key) { selKey = key; const m = key && nmap.get(key); if (m) m.selAt = elapsed; paint(); }
+// 閱讀器面板貼齊舞台左側、與舞台同高
+function placeReader() {                                          // 抽屜寬度：視窗約 38%，300–620px，右邊至少留 220px
+  const w = Math.round(Math.max(Math.min(300, innerWidth - 220), Math.min(620, innerWidth * .38, innerWidth - 220)));
+  document.body.style.setProperty('--dw', w + 'px');
+}
+function openReader(file) { if (!file) return; selectMem(file.key); trail = [{ key: file.key }]; showView(); }
 function openList(list) { trail = [{ list: list.map(f => f.key) }]; showView(); }
 function goTo(key) { trail[trail.length - 1].top = scroller.scrollTop; trail.push({ key }); showView(); }
 function goBack() { if (trail.length > 1) { trail.pop(); showView(true); } else dialog.close(); }
@@ -1583,7 +1706,8 @@ function showView(restore) {
   $('#reader-back').hidden = trail.length < 2;
   for (const s of ['.info', '.md', '.more-list', '.reader-links']) $(s).hidden = true;
   if (view.list) { renderReaderOps(null); renderOverflow(view.list.map(byKey).filter(Boolean)); } else renderDoc(byKey(view.key), view.key);
-  if (!dialog.open) dialog.showModal();
+  if (view.key && view.key !== selKey && nmap.has(view.key)) selectMem(view.key);   // 在閱讀器裡跳到別條：點選發光跟著換
+  if (!dialog.open) { placeReader(); dialog.show(); document.body.classList.add('drawer'); }
   scroller.scrollTop = restore ? view.top || 0 : 0;
   updateProgress();
   scroller.focus({ preventScroll: true });
@@ -1721,7 +1845,8 @@ dialog.addEventListener('keydown', e => {
   else if ((e.altKey && e.key === 'ArrowLeft') || e.key === 'Backspace') { e.preventDefault(); goBack(); }
   else if (e.key === 'Enter' && e.target.matches('a[data-key]')) { e.preventDefault(); goTo(e.target.dataset.key); }
 });
-dialog.addEventListener('close', () => { trail = []; });
+dialog.addEventListener('close', () => { trail = []; document.body.classList.remove('drawer'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && dialog.open && !confirmDlg.open && !dialog.contains(e.target)) { e.preventDefault(); dialog.close(); } });
 for (const card of document.querySelectorAll('[data-open]')) card.addEventListener('click', () => openReader(byKey(card.dataset.open)));
 
 /* ---------- 事件 ---------- */

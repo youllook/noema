@@ -8,7 +8,7 @@ Noema is a small desktop window that shows, in real time, which of Claude Code's
 
 ![Noema demo](docs/demo.gif)
 
-> Full-quality demo: [`docs/noema-demo.mp4`](docs/noema-demo.mp4) (20 s, 1920×1080, sample data)
+> Full-quality demo: [`docs/noema-demo.mp4`](docs/noema-demo.mp4) (29 s, 1920×1080, sample data)
 
 Claude Code keeps per-project memory as Markdown files under `~/.claude/projects/<project>/memory/`, plus a global `~/.claude/CLAUDE.md`. These files are injected into every session or read on demand, but you normally never see that happen. Noema makes it visible.
 
@@ -19,18 +19,20 @@ Claude Code keeps per-project memory as Markdown files under `~/.claude/projects
 - **A 3D neural network**: Claude itself is the large neuron at the center. It breathes while idle, swells when memory is touched, and takes on the color of the latest event. Drag to rotate, scroll to zoom, double-click empty space to reset; it never spins on its own.
 - **Every memory is a neuron**: each memory file grows its own procedurally generated neuron (a minimum-spanning-tree morphology after Cuntz et al., 2010, with tapering branches), and always keeps the same shape and place.
 - **Fully wired**: the central neuron's dendrites reach out to every active memory; `[[wiki links]]` are axons between memories; neighboring memories touch through fine synapses. Archived memories sink to the bottom and are disconnected from the center.
-- **Only loaded memories glow**: memories read or written since the last boot injection (that is, the ones actually in Claude's context right now) are bright; everything else stays dim until it's touched.
-- **Action potentials by event type**: each event travels as a signal from the central neuron along the real wiring into the memory.
+- **Only loaded memories are bright**: memories read or written since the last boot injection (that is, the ones actually in Claude's context right now) are bright; everything else stays dim until it's touched.
+- **Every event lights up the real wiring**: the connection from the central neuron to the memory lights up, and each kind of event moves differently.
 
   | Event | Color | What happens |
   |---|---|---|
-  | Read | green | a signal runs into the neuron, then spreads faintly to its linked memories |
-  | Create | blue | a fiber grows out of the center and a new neuron sprouts at its end |
-  | Modify | gold | short pulses, then ripples around the neuron |
-  | Delete | red | the neuron turns red, its branches retract, and it scatters into embers |
+  | Read | green | the whole connection lights up and glows with a slow breathing pulse, then fades; faint signals spread on to linked memories |
+  | Create | blue | the connection stretches out from the center, thinning as it goes; a new neuron sprouts at the tip, the line springs back, and a ring of light spreads out |
+  | Modify | gold | the whole connection glows and breathes, and ripples spread around the neuron |
+  | Delete | red | the connection shoots out, pulls taut and trembles, then snaps back to the center like a rubber band; the neuron turns red, its branches retract, and it scatters into embers |
 
+- **Click a memory to read it**: clicking a neuron opens it in a reader drawer that slides in from the left and pushes the rest of the window aside, so nothing is covered. The selected memory's connection keeps glowing with a faint current running through it. Follow a `[[link]]` in the reader and the glow follows. Click empty space (or press Esc) to close the drawer and clear the selection.
 - **Boot injection as two gauges**: `CLAUDE.md` and `MEMORY.md`, which are injected at the start of every session, are the two round gauges below the central neuron. They aren't wired into the network; they glow when read or written. Each arc shows the file's approximate token count against the budget, a red tick marks where the total would go over, and both turn red when you're over budget.
-- **Activity stream**: a timeline of every memory event in the current session. Click any entry to open that memory in the built-in Markdown reader.
+- **Activity stream**: a timeline of every memory event in the current session. Click any entry to open that memory in the reader drawer.
+- **Archive count and toggle**: the archive count sits under the memory count at the top right; click it to show or hide archived memories.
 - **Archive, delete or purge from the window**: right-click a neuron, or use the buttons in the reader. You can archive or permanently delete an active memory, and purge an archived one. Every action asks for confirmation first, with focus on "Cancel", and backs the file up before touching it. It also tidies the index: archiving moves the `MEMORY.md` line to `archive/ARCHIVE.md`, while deleting and purging remove the line. `CLAUDE.md` and `MEMORY.md` themselves can't be touched.
 - **Auto-follow**: when you start or resume a Claude Code session, Noema switches to that project's memory automatically.
 
@@ -38,8 +40,8 @@ Claude Code keeps per-project memory as Markdown files under `~/.claude/projects
 
 Memory tends to bloat over time with stale paths, finished progress notes and duplicates. The included **Sleep** skill gives a project's memory a "night's sleep", and Noema stages each phase:
 
-1. **Sleep**: backs up the memory folder, and the window dims.
-2. **Scan**: rule-based checks run first. They find local paths that no longer exist, notes past their `review:` date, memories never read in the transcript window ("cold"), and orphans with no links. A light sweep passes over the network and leaves marks. **⚠ hot** marks memories that are read often *and* look wrong, which are the most dangerous kind.
+1. **Sleep**: backs up the memory folder. The whole window dims, but you can still tell loaded memories from the rest.
+2. **Scan**: rule-based checks run first. They find local paths that no longer exist, notes past their `review:` date, memories never read in the transcript window ("cold"), and orphans with no links. As the scan reaches each memory (archived ones excluded), its connection lights up and stays lit until the scan ends, and flagged memories get marks. **⚠ hot** marks memories that are read often *and* look wrong, which are the most dangerous kind.
 3. **Propose**: Claude then looks for duplicates and notes that can be compressed, and lists proposals grouped by reason. You approve them in batches.
 4. **Apply**: fixes, compressions, merges and archiving, each shown as the usual colored signals.
 5. **Wake**: the central neuron flares back up and shows the boot-injection token count before and after.
@@ -85,7 +87,9 @@ Copy `skill/sleep/` to `~/.claude/skills/sleep/`. Then, in Claude Code, say "sle
 | Show / hide | `Ctrl+Alt+N`, or the tray icon |
 | Rotate the network | drag on empty space (or Shift + scroll) |
 | Zoom | scroll; double-click empty space to reset |
-| Read a memory | click a neuron or its name, a gauge, or an activity entry |
+| Read a memory | click a neuron or its name, a gauge, or an activity entry (opens the left drawer) |
+| Close the reader | click empty space, press Esc, or the × button |
+| Show / hide archived memories | click the archive count at the top right |
 | Archive / delete / purge a memory | right-click the neuron, or use the buttons in the reader (always confirmed) |
 | Pin on top / collapse to capsule | title-bar buttons ▲ and − |
 | Switch project | the project dropdown (it also auto-follows active sessions) |
