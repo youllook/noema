@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="dark">
 <title>Noema / 認知核心</title>
+<script>try { if (localStorage.getItem('noema-theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 <style>
 * { box-sizing: border-box; }
 :root { color-scheme: dark; font-family: "Segoe UI", "Microsoft JhengHei UI", "Microsoft JhengHei", sans-serif; }
 html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; user-select: none; }
 body { color: var(--text); --mono: Consolas, "Cascadia Mono", ui-monospace, monospace;
   --surface:#060b10; --panel:#10202bb0; --text:#e2f1f6; --muted:#7f98a3; --line:#8fdcf52a; --accent:#8fdcf5; --write:#ff895b;
-  --project:#8fdcf5; --feedback:#86ecc4; --user:#c9b6f6; --reference:#f2c98a; }
+  --project:#8fdcf5; --feedback:#86ecc4; --user:#c9b6f6; --reference:#f2c98a;
+  --ev-read:#7ee08a; --ev-create:#68b0ff; --ev-modify:#f5c850; --ev-delete:#ff4856; }
 button, select { font: inherit; }
 button { color: inherit; cursor: pointer; }
 button:focus-visible, select:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
@@ -309,6 +311,59 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
 .more-list button small { display: block; margin-top: 3px; font: 10px var(--mono); color: var(--muted); }
 .more-list button:hover { border-color: var(--node-color); }
 .reader-empty { color: var(--muted); font-size: 12px; }
+/* ---------- Light 主題（2026-11-13）：html[data-theme=light]；選擇存在 localStorage ---------- */
+/* 畫布是加色發光（lighter），淺底上會白成一片 → 整張畫布反相再把色相轉回來：光變成墨，色系不變 */
+html[data-theme="light"] { color-scheme: light; }
+html[data-theme="light"] body { --surface:#f3f6f7; --panel:#ffffffc8; --text:#13242c; --muted:#5b707a; --line:#1b6f8f30; --accent:#0e7ea6; --write:#d2501f;
+  --project:#1481aa; --feedback:#0f8f66; --user:#6c4fc4; --reference:#a8700f;
+  --ev-read:#2b963b; --ev-create:#2266d4; --ev-modify:#a87d00; --ev-delete:#d42634; }
+html[data-theme="light"] .stage canvas { filter: invert(1) hue-rotate(180deg) saturate(1.9) url(#ink-lift); }   /* 反相後把最深處抬成中灰（#ink-lift），不出現黑色；2026-11-13 用戶選灰 */
+html[data-theme="light"] .window { border-color: #1b6f8f40; background: linear-gradient(135deg,#dcebf1cc,transparent 45%),#f3f6f7; }
+html[data-theme="light"] .window:after { opacity: .5; background: repeating-linear-gradient(0deg,transparent 0 3px,#1b6f8f08 3px 4px); }
+html[data-theme="light"] .stage { background: radial-gradient(circle at 1px 1px, #1b6f8f22 1px, transparent 1.2px) 19px 26px / 24px 24px; }
+html[data-theme="light"] .icon-btn[aria-pressed="true"] { border-color: #0e7ea688; }
+html[data-theme="light"] .eyebrow select { background: #ffffffe8; }
+html[data-theme="light"] .node-label { color: color-mix(in srgb, var(--node-color) 70%, #13242c); text-shadow: 0 0 4px #f3f6f7, 0 0 2px #f3f6f7, 0 0 1px #fff; }
+html[data-theme="light"] .node.more .node-label { background: #ffffffcc; }
+html[data-theme="light"] .node:hover .node-label, html[data-theme="light"] .node:focus-visible .node-label,
+html[data-theme="light"] .node.reading .node-label, html[data-theme="light"] .node.writing .node-label { background: #ffffffee; color: #13242c; }
+html[data-theme="light"] .node.flash .node-label { color: #000; }
+html[data-theme="light"] .node-mark, html[data-theme="light"] .md hr::after { background: #f3f6f7; }
+html[data-theme="light"] .empty-state { background: #f3f6f7d9; }
+html[data-theme="light"] .handle .g-disc { fill: #ffffffd0; stroke: #1b6f8f30; }
+html[data-theme="light"] .handle .g-track { stroke: #13242c14; }
+html[data-theme="light"] .handle .g-num { color: #13242c; }
+html[data-theme="light"] .sleep-dim { background: #5d6f78; }
+html[data-theme="light"] .sleep-delta b { color: #13242c; text-shadow: none; }
+html[data-theme="light"] .sleep-delta em { color: #2b963b; }
+html[data-theme="light"] .event.sleep .event-tag { color: #5a50c8; }
+@keyframes fresh-light { from { background: #0e7ea622; } to { background: transparent; } }
+html[data-theme="light"] .event.fresh { animation-name: fresh-light; }
+html[data-theme="light"] .capsule { border-color: #1b6f8f60; background: linear-gradient(135deg,#dcebf1,#f3f6f7 60%); }
+html[data-theme="light"] .capsule button:hover { background: #0e7ea61c; }
+html[data-theme="light"] dialog.reader { border-color: #1b6f8f50; background: linear-gradient(160deg,#e3eff4 0,transparent 34%), #fbfcfc; }
+html[data-theme="light"] dialog.reader ::selection { background: #0e7ea640; color: #000; }
+html[data-theme="light"] .ctx-menu { background: #fbfcfcf5; border-color: #1b6f8f50; box-shadow: 0 8px 24px #0003; }
+html[data-theme="light"] .ctx-menu button:hover, html[data-theme="light"] .ctx-menu button:focus-visible { background: #0e7ea614; }
+html[data-theme="light"] .ctx-menu button.danger, html[data-theme="light"] .op-btn.danger:hover { color: #c8202e; }
+html[data-theme="light"] dialog.confirm { background: #fbfcfc; border-color: #1b6f8f60; box-shadow: 0 12px 40px #0004; }
+html[data-theme="light"] dialog.confirm::backdrop { background: #13242c55; }
+html[data-theme="light"] .confirm-file { background: #0e7ea60f; }
+html[data-theme="light"] .confirm-actions .confirm-ok.danger { color: #b01c28; background: #d4263414; }
+html[data-theme="light"] .reader-progress, html[data-theme="light"] .md th { background: #0e7ea610; }
+html[data-theme="light"] .md th { border-bottom-color: #0e7ea640; }
+html[data-theme="light"] .reader-scroll::-webkit-scrollbar-track { background: repeating-linear-gradient(0deg,#0e7ea620 0 1px,transparent 1px 7px); }
+html[data-theme="light"] .reader-scroll::-webkit-scrollbar-thumb, html[data-theme="light"] .md pre::-webkit-scrollbar-thumb, html[data-theme="light"] .tablewrap::-webkit-scrollbar-thumb { background: #0e7ea680; background-clip: padding-box; }
+html[data-theme="light"] .info-desc { color: #3b4b52; }
+html[data-theme="light"] .info dd { color: #26363d; }
+html[data-theme="light"] .md strong { color: #8a5200; }
+html[data-theme="light"] .md em { color: #2e4a40; }
+html[data-theme="light"] .md code { color: #8a4b00; background: #0e7ea60c; border-color: #0e7ea622; }
+html[data-theme="light"] .md .path, html[data-theme="light"] .info .path { color: #1d5f52; border-color: #1d5f5255; background: #1d5f520c; }
+html[data-theme="light"] .codeblock { background: #eef2f3; }
+html[data-theme="light"] .md pre code { color: #23343b; }
+html[data-theme="light"] .md blockquote { background: #0f8f660b; color: #33464d; }
+html[data-theme="light"] .md tbody tr:hover td { background: #0e7ea608; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation: none !important; transition: none !important; } }
 </style>
@@ -318,6 +373,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
   <header class="topbar" data-drag>
     <div class="brand"><i class="brand-mark" aria-hidden="true"></i>NOEMA <span style="opacity:.45;font-weight:400">/ NEURAL / 04</span></div>
     <div class="window-controls">
+      <button class="icon-btn" id="theme" title="切換淺色／深色主題" aria-pressed="false">◐</button>
       <button class="icon-btn" id="pin" title="置頂" aria-pressed="true">▲</button>
       <button class="icon-btn" id="collapse" title="縮成膠囊">−</button>
       <button class="icon-btn" id="hide" title="隱藏到系統匣">×</button>
@@ -383,6 +439,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
   <div class="confirm-actions"><button type="button" class="confirm-cancel">取消</button><button type="button" class="confirm-ok"></button></div>
 </dialog>
 <div class="ctx-menu" role="menu" hidden></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="ink-lift" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="linear" slope=".5" intercept=".36"/><feFuncG type="linear" slope=".5" intercept=".38"/><feFuncB type="linear" slope=".5" intercept=".41"/></feComponentTransfer></filter></svg>
 
 <script>
 'use strict';
@@ -514,7 +571,9 @@ const CORE_GOLD = hexRGB(colors.project);
 const nclamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v;
 const nease = t => { t = nclamp(t); return t * t * (3 - 2 * t); };
 const nmix = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-const nrgba = (c, a) => 'rgba(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ',' + nclamp(a).toFixed(3) + ')';
+let INK = 1;   // 淺色主題時 <1：疊光強度降低，核心不會疊到全白截斷，反相後才保有灰階漸層（2026-11-13）
+const nrgba0 = (c, a) => 'rgba(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ',' + nclamp(a).toFixed(3) + ')';
+const nrgba = (c, a) => nrgba0(c, a * INK);
 const mulberry = s => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 const hashStr = str => { let h = 2166136261; for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619); return h >>> 0; };
 const vadd = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
@@ -864,10 +923,10 @@ const sprites = {};
 function sprite(c) {
   const key = (c[0] >> 3) + ',' + (c[1] >> 3) + ',' + (c[2] >> 3);
   let s = sprites[key];
-  if (!s) { s = document.createElement('canvas'); s.width = s.height = 64; const g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, nrgba(c, .9)); gr.addColorStop(.25, nrgba(c, .35)); gr.addColorStop(1, nrgba(c, 0)); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); sprites[key] = s; }
+  if (!s) { s = document.createElement('canvas'); s.width = s.height = 64; const g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, nrgba0(c, .9)); gr.addColorStop(.25, nrgba0(c, .35)); gr.addColorStop(1, nrgba0(c, 0)); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); sprites[key] = s; }
   return s;
 }
-function glow(g, x, y, r, c, a) { if (a <= .01 || r <= .4) return; g.globalAlpha = nclamp(a); g.drawImage(sprite(c), x - r, y - r, r * 2, r * 2); g.globalAlpha = 1; }
+function glow(g, x, y, r, c, a) { if (a <= .01 || r <= .4) return; g.globalAlpha = nclamp(a * INK); g.drawImage(sprite(c), x - r, y - r, r * 2, r * 2); g.globalAlpha = 1; }
 const segOwnerOk = i => { const o = SO[i], o2 = SO2[i]; const a = o >= 0 ? nlist[o] : null, b = o2 >= 0 ? nlist[o2] : null; return (!a || ((!a.archived || archiveVisible) && !isDyn(a))) && (!b || ((!b.archived || archiveVisible) && !isDyn(b))); };
 function somaColor(m) { return m.archived ? [150, 162, 170] : TYPE_RGB[m.type] || CORE_GOLD; }
 // 沒載入的記憶：整顆壓暗成背景，載入後才亮起
@@ -888,7 +947,7 @@ function nnRenderStatic() {
   drawSegs(sg, sList, segLit);
   for (const b of boutons) { const m = nlist[b.o], m2 = nlist[b.o2]; if (isDyn(m) || isDyn(m2) || ((m.archived || m2.archived) && !archiveVisible)) continue; glow(sg, PX[b.v], PY[b.v], 3.2 * DPR, somaColor(m), fogOf(PN[b.v]) * .7); }
   for (const m of nlist) if (!isDyn(m) && (!m.archived || archiveVisible)) drawSoma(sg, m, 1);
-  drawSegs(cg, cList);
+  cg.globalAlpha = INK < 1 ? .4 : 1; drawSegs(cg, cList); cg.globalAlpha = 1;   // 淺色：中央樹突疊得越密越深，不會一整團飽和
   for (const v of axonTips) { glow(cg, PX[v], PY[v], .03 * PS[v], [255, 224, 170], fogOf(PN[v])); glow(cg, PX[v], PY[v], .009 * PS[v], [255, 250, 235], 1); }
 }
 function nnEnsure() {
@@ -897,6 +956,7 @@ function nnEnsure() {
 }
 
 /* 中央胞體與膜：預先畫好的看板圖，事件時整層染色 */
+const somaInkCv = document.createElement('canvas');   // 淺色主題用的灰階漸層胞體（反相前的值，反相後中心深灰往外漸淡）
 const somaCv = document.createElement('canvas'), hazeCv = document.createElement('canvas'), tintCv = document.createElement('canvas');
 let tintKey = '';
 function blob(g, fn, n) {
@@ -910,6 +970,9 @@ function buildBillboards() {
   somaCv.width = somaCv.height = 256; let g = somaCv.getContext('2d'); g.setTransform(1, 0, 0, 1, 128, 128);
   const bumps = Array.from({ length: 7 }, () => [rng() * 6.283, .5 + rng() * .5]), ph = [rng() * 6.283, rng() * 6.283];
   blob(g, a => { let b = 0; for (const [d, k] of bumps) { const dd = Math.atan2(Math.sin(a - d), Math.cos(a - d)); b += k * Math.exp(-dd * dd / .08); } return 78 * (.8 + .35 * Math.min(1, b) + .05 * Math.sin(3 * a + ph[0]) + .03 * Math.sin(7 * a + ph[1])); }, 72);
+  { const h = somaInkCv; h.width = h.height = 256; const q = h.getContext('2d'); q.setTransform(1, 0, 0, 1, 128, 128); blob(q, a => { let b = 0; for (const [d, k] of bumps) { const dd = Math.atan2(Math.sin(a - d), Math.cos(a - d)); b += k * Math.exp(-dd * dd / .08); } return 78 * (.8 + .35 * Math.min(1, b) + .05 * Math.sin(3 * a + ph[0]) + .03 * Math.sin(7 * a + ph[1])); }, 72);
+    const gq = q.createRadialGradient(-6, -6, 0, 0, 0, 100); gq.addColorStop(0, 'rgba(205,205,205,1)'); gq.addColorStop(.45, 'rgba(160,160,160,.95)'); gq.addColorStop(.8, 'rgba(95,95,95,.75)'); gq.addColorStop(1, 'rgba(40,40,40,.4)');
+    q.fillStyle = gq; q.fill(); }
   let gr = g.createRadialGradient(-8, -8, 0, 0, 0, 105);
   gr.addColorStop(0, 'rgba(255,252,240,1)'); gr.addColorStop(.3, 'rgba(255,232,196,.97)'); gr.addColorStop(.62, 'rgba(178,232,250,.85)'); gr.addColorStop(1, 'rgba(104,190,232,.5)');
   g.fillStyle = gr; g.fill(); g.lineWidth = 1.4; g.strokeStyle = 'rgba(220,247,255,.7)'; g.stroke();
@@ -1144,7 +1207,7 @@ function buildNodes() {
       button.addEventListener('click', () => openList(f.more));
     } else {
       button.className = 'node' + (f.archived ? ' archived' : '');
-      button.style.setProperty('--node-color', colors[f.type]);
+      button.style.setProperty('--node-color', 'var(--' + f.type + ')');
       button.title = (f.description || f.file) + '\n' + f.file;
       label.textContent = f.label;
       meta.textContent = f.archived ? 'ARCHIVED' : f.type.toUpperCase() + ' / ' + pad(++n);
@@ -1344,11 +1407,11 @@ function composeCore(dt) {
   const ox = PX[0], oy = PY[0], s0 = PS[0], b = breath, o = coreOpen, dim = sleepPhase && sleepPhase !== 'wake' && sleepPhase !== 'purge' ? .7 : 1;
   const k = 1 + .02 * b + .045 * o;
   retint(coreTint);
-  const hs = s0 * 1.5 * (1 + .03 * b + .06 * o); g.globalAlpha = nclamp((.26 + .1 * b + .35 * o) * dim); g.drawImage(tintCv, ox - hs, oy - hs, hs * 2, hs * 2);
+  const hs = s0 * 1.5 * (1 + .03 * b + .06 * o); g.globalAlpha = nclamp((.26 + .1 * b + .35 * o) * dim * INK); g.drawImage(tintCv, ox - hs, oy - hs, hs * 2, hs * 2);
   g.setTransform(k, 0, 0, k, ox * (1 - k), oy * (1 - k)); g.globalAlpha = nclamp((.62 + .08 * b + .2 * o) * dim); g.drawImage(centerCv, 0, 0); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1;
   glow(g, ox, oy, SOMA * s0 * (2.4 + .4 * b + 1.8 * o), nmix([255, 226, 180], coreTint, nclamp(coreBusy * .8)), (.4 + .15 * b + .4 * o) * dim);
   g.globalCompositeOperation = 'source-over';
-  const ss = SOMA * s0 * 1.65 * (1 + .03 * b + .05 * o); g.save(); g.globalAlpha = .55 + .45 * dim; g.translate(ox, oy); g.rotate(yaw * .6); g.drawImage(somaCv, -ss, -ss, ss * 2, ss * 2); g.restore();
+  const ss = SOMA * s0 * 1.65 * (1 + .03 * b + .05 * o); if (INK === 1) { g.save(); g.globalAlpha = .55 + .45 * dim; g.translate(ox, oy); g.rotate(yaw * .6); g.drawImage(somaCv, -ss, -ss, ss * 2, ss * 2); g.restore(); }
   g.globalCompositeOperation = 'lighter';
   if (sleepPhase === 'wake' && elapsed - sleepAt < 2200) { const p = (elapsed - sleepAt) / 2200; g.beginPath(); g.arc(ox, oy, SOMA * s0 + p * Math.min(Wd, Hd) * .45, 0, 6.283); g.strokeStyle = nrgba(CORE_GOLD, (1 - p) * .65); g.lineWidth = (2 * (1 - p) + .5) * DPR; g.stroke(); }
   if (selKey && (!sleepPhase || sleepPhase === 'wake')) {           // 點選中的記憶：連線持續發光
@@ -1368,6 +1431,7 @@ function composeCore(dt) {
   embers = embers.filter(e => { const p = (elapsed - e.t0) / e.life; if (p >= 1) return false; const t = elapsed - e.t0; glow(g, e.x + e.vx * t, e.y + e.vy * t, (e.r || 3.5) * DPR * (1 - p), e.c || [255, 120, 80], 1 - p); return true; });
   bloom(g, coreCanvas);
   g.globalCompositeOperation = 'source-over';
+  if (INK < 1) { g.save(); g.globalAlpha = .92; g.translate(ox, oy); g.rotate(yaw * .6); g.drawImage(somaInkCv, -ss * 1.3, -ss * 1.3, ss * 2.6, ss * 2.6); g.restore(); }   // 淺色：灰階漸層胞體最後畫，蓋住光束在中央匯聚的飽和白
   g.setTransform(DPR, 0, 0, DPR, 0, 0);
   drawSweep(g);
   drawBurns(dt);
@@ -1521,7 +1585,7 @@ buildBillboards();
 /* Markdown → HTML（自寫輕量解析器；所有文字一律先跳脫，記憶內容裡的 <...> 不會變成標籤） */
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
-const typeColor = f => colors[f.type] || colors.project;
+const typeColor = f => 'var(--' + (colors[f.type] ? f.type : 'project') + ')';   // DOM 用 CSS 變數，淺色主題才換得到色
 const PATH_ONLY = /^(?:[A-Za-z]:[\\/]|~[\\/]|\\\\)\S*$/;
 const PATH_IN_TEXT = /(?<![A-Za-z0-9])(?:[A-Za-z]:[\\/]|~[\\/])[^\s<>"'`|?*，。、；：（）「」『』【】！？]+/g;
 const URL_IN_TEXT = /https?:\/\/[^\s<>"'`，。、；（）「」『』【】]+/g;
@@ -1737,7 +1801,7 @@ function renderDoc(file, key) {
     return;
   }
   readerSig = file.key + ':' + file.mtime + ':' + file.content.length;
-  const boot = file.type === 'boot', color = boot ? colors.project : typeColor(file);
+  const boot = file.type === 'boot', color = boot ? 'var(--project)' : typeColor(file);
   const doc = parseDoc(file.content);
   dialog.style.setProperty('--tc', color);
   $('#reader-title').textContent = (file.archived ? 'archive/' : '') + file.file;
@@ -1865,7 +1929,7 @@ function addTimeline(ev, live) {
   list.querySelector('.empty')?.remove();
   const item = document.createElement('li');
   item.className = 'event ' + ev.kind + (live ? ' fresh' : ' old');
-  if (EV[ev.kind]) item.style.setProperty('--ev', EV[ev.kind]);
+  if (EV[ev.kind]) item.style.setProperty('--ev', 'var(--ev-' + ev.kind + ')');
   const time = document.createElement('time');
   const d = ev.ts ? new Date(ev.ts) : new Date();
   time.textContent = d.toLocaleTimeString('zh-TW', { hour12: false }); time.title = d.toLocaleString('zh-TW', { hour12: false });
@@ -1891,17 +1955,17 @@ function refreshLights() {
     if (!el) continue;
     el.classList.remove('reading', 'writing', 'mention');
     const k = best[f.key];
-    if (k) { el.classList.add(cls[k]); if (EV[k]) el.style.setProperty('--ev', EV[k]); }
+    if (k) { el.classList.add(cls[k]); if (EV[k]) el.style.setProperty('--ev', 'var(--ev-' + k + ')'); }
     if (f.type === 'boot') {
       const lab = $('.handle-label[data-for="' + f.key + '"]');
       lab.classList.toggle('lit', !!EV[k]);
-      if (EV[k]) lab.style.setProperty('--ev', EV[k]);
+      if (EV[k]) lab.style.setProperty('--ev', 'var(--ev-' + k + ')');
     }
   }
   let top = null;
   for (const a of active) if (a.kind !== 'mention') top = a;
   top = top || (active.length ? active[active.length - 1] : null);
-  const col = top && EV[top.kind];
+  const col = top && EV[top.kind] && 'var(--ev-' + top.kind + ')';
   for (const m of document.querySelectorAll('.brand-mark')) { m.classList.toggle('live', !!top); if (col) m.style.setProperty('--ev', col); }
   const cs = $('#capsule-status');
   cs.classList.toggle('live', !!top); if (col) cs.style.setProperty('--ev', col);
@@ -1953,6 +2017,20 @@ function applyState(s) {
   $('#hide').title = '隱藏到系統匣' + (s.hotkey ? '（' + s.hotkey + ' 叫出）' : '');
   if (!collapsed) requestAnimationFrame(resize);
 }
+// 主題：深色（預設）／淺色，存在 localStorage（WebView2 資料夾在 %LOCALAPPDATA%\Noema\webview，重開仍記得）
+const INK_LIGHT = .5;
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  INK = t === 'light' ? INK_LIGHT : 1; nDirty = true; try { paint(); } catch (e) {}
+  document.querySelector('meta[name="color-scheme"]').content = t;
+  $('#theme').setAttribute('aria-pressed', String(t === 'light'));
+  $('#theme').title = t === 'light' ? '淺色主題（點擊換深色）' : '深色主題（點擊換淺色）';
+}
+applyTheme((() => { try { return localStorage.getItem('noema-theme') === 'light' ? 'light' : 'dark'; } catch (e) { return 'dark'; } })());
+$('#theme').addEventListener('click', () => {
+  const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  applyTheme(t); try { localStorage.setItem('noema-theme', t); } catch (e) {}
+});
 $('#pin').addEventListener('click', () => send({ cmd: 'pin', on: $('#pin').getAttribute('aria-pressed') !== 'true' }));
 $('#collapse').addEventListener('click', () => send({ cmd: 'collapse', on: true }));
 $('#expand').addEventListener('click', () => send({ cmd: 'collapse', on: false }));

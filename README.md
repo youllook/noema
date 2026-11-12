@@ -32,6 +32,7 @@ Claude Code keeps per-project memory as Markdown files under `~/.claude/projects
 - **Click a memory to read it**: clicking a neuron opens it in a reader drawer that slides in from the left and pushes the rest of the window aside, so nothing is covered. The selected memory's connection keeps glowing with a faint current running through it. Follow a `[[link]]` in the reader and the glow follows. Click empty space (or press Esc) to close the drawer and clear the selection.
 - **Boot injection as two gauges**: `CLAUDE.md` and `MEMORY.md`, which are injected at the start of every session, are the two round gauges below the central neuron. They aren't wired into the network; they glow when read or written. Each arc shows the file's approximate token count against the budget, a red tick marks where the total would go over, and both turn red when you're over budget.
 - **Activity stream**: a timeline of every memory event in the current session. Click any entry to open that memory in the reader drawer.
+- **Light or dark**: the ◐ button in the title bar switches between the dark theme and a light one, where the glow turns into gray ink. Noema remembers your choice.
 - **Archive count and toggle**: the archive count sits under the memory count at the top right; click it to show or hide archived memories.
 - **Archive, delete or purge from the window**: right-click a neuron, or use the buttons in the reader. You can archive or permanently delete an active memory, and purge an archived one. Every action asks for confirmation first, with focus on "Cancel", and backs the file up before touching it. It also tidies the index: archiving moves the `MEMORY.md` line to `archive/ARCHIVE.md`, while deleting and purging remove the line. `CLAUDE.md` and `MEMORY.md` themselves can't be touched.
 - **Auto-follow**: when you start or resume a Claude Code session, Noema switches to that project's memory automatically.
@@ -91,6 +92,7 @@ Copy `skill/sleep/` to `~/.claude/skills/sleep/`. Then, in Claude Code, say "sle
 | Close the reader | click empty space, press Esc, or the × button |
 | Show / hide archived memories | click the archive count at the top right |
 | Archive / delete / purge a memory | right-click the neuron, or use the buttons in the reader (always confirmed) |
+| Switch light / dark theme | title-bar button ◐ |
 | Pin on top / collapse to capsule | title-bar buttons ▲ and − |
 | Switch project | the project dropdown (it also auto-follows active sessions) |
 
