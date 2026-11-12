@@ -16,21 +16,22 @@ Claude Code keeps per-project memory as Markdown files under `~/.claude/projects
 
 ## What you see
 
-- **The slit**: a thin line of light at the center that stands for Claude itself. It breathes while idle, opens when memory is touched, and takes on the color of the latest event.
-- **Memory cloud**: every memory file is a card in a 3D cloud. Scroll or drag to rotate it; it never spins on its own.
-- **Beams by event type**:
+- **A 3D neural network**: Claude itself is the large neuron at the center. It breathes while idle, swells when memory is touched, and takes on the color of the latest event. Drag to rotate, scroll to zoom, double-click empty space to reset; it never spins on its own.
+- **Every memory is a neuron**: each memory file grows its own procedurally generated neuron (a minimum-spanning-tree morphology after Cuntz et al., 2010, with tapering branches), and always keeps the same shape and place.
+- **Fully wired**: the central neuron's dendrites reach out to every active memory; `[[wiki links]]` are axons between memories; neighboring memories touch through fine synapses. Archived memories sink to the bottom and are disconnected from the center.
+- **Only loaded memories glow**: memories read or written since the last boot injection (that is, the ones actually in Claude's context right now) are bright; everything else stays dim until it's touched.
+- **Action potentials by event type**: each event travels as a signal from the central neuron along the real wiring into the memory.
 
   | Event | Color | What happens |
   |---|---|---|
-  | Read | green | a beam flows from the slit to the card |
-  | Create | blue | a new card surfaces out of the light |
-  | Modify | gold | short pulses along a thin beam |
-  | Delete | red | the beam finishes, then the card disappears |
+  | Read | green | a signal runs into the neuron, then spreads faintly to its linked memories |
+  | Create | blue | a fiber grows out of the center and a new neuron sprouts at its end |
+  | Modify | gold | short pulses, then ripples around the neuron |
+  | Delete | red | the neuron turns red, its branches retract, and it scatters into embers |
 
-- **Only active memories stand out**: a card being touched grows, turns opaque and comes to the front. Relation lines (`[[wiki links]]` and index links) are drawn *only* for those cards, so a glance tells you which memories are in use right now.
-- **Boot injection as door handles**: `CLAUDE.md` and `MEMORY.md`, which are injected at the start of every session, are the two rings beside the slit. Each shows its approximate token count; hover to see the total against a budget line. The rings turn red when you're over budget.
+- **Boot injection as two gauges**: `CLAUDE.md` and `MEMORY.md`, which are injected at the start of every session, are the two round gauges below the central neuron. They aren't wired into the network; they glow when read or written. Each arc shows the file's approximate token count against the budget, a red tick marks where the total would go over, and both turn red when you're over budget.
 - **Activity stream**: a timeline of every memory event in the current session. Click any entry to open that memory in the built-in Markdown reader.
-- **Archive, delete or purge from the window**: right-click a card, or use the buttons in the reader. You can archive or permanently delete an active memory, and purge an archived one. Every action asks for confirmation first, with focus on "Cancel", and backs the file up before touching it. It also tidies the index: archiving moves the `MEMORY.md` line to `archive/ARCHIVE.md`, while deleting and purging remove the line. `CLAUDE.md` and `MEMORY.md` themselves can't be touched.
+- **Archive, delete or purge from the window**: right-click a neuron, or use the buttons in the reader. You can archive or permanently delete an active memory, and purge an archived one. Every action asks for confirmation first, with focus on "Cancel", and backs the file up before touching it. It also tidies the index: archiving moves the `MEMORY.md` line to `archive/ARCHIVE.md`, while deleting and purging remove the line. `CLAUDE.md` and `MEMORY.md` themselves can't be touched.
 - **Auto-follow**: when you start or resume a Claude Code session, Noema switches to that project's memory automatically.
 
 ## Sleep: keeping memory lean (optional)
@@ -38,12 +39,12 @@ Claude Code keeps per-project memory as Markdown files under `~/.claude/projects
 Memory tends to bloat over time with stale paths, finished progress notes and duplicates. The included **Sleep** skill gives a project's memory a "night's sleep", and Noema stages each phase:
 
 1. **Sleep**: backs up the memory folder, and the window dims.
-2. **Scan**: rule-based checks run first. They find local paths that no longer exist, notes past their `review:` date, memories never read in the transcript window ("cold"), and orphans with no links. A light sweep passes over the cloud and leaves marks. **⚠ hot** marks memories that are read often *and* look wrong, which are the most dangerous kind.
+2. **Scan**: rule-based checks run first. They find local paths that no longer exist, notes past their `review:` date, memories never read in the transcript window ("cold"), and orphans with no links. A light sweep passes over the network and leaves marks. **⚠ hot** marks memories that are read often *and* look wrong, which are the most dangerous kind.
 3. **Propose**: Claude then looks for duplicates and notes that can be compressed, and lists proposals grouped by reason. You approve them in batches.
-4. **Apply**: fixes, compressions, merges and archiving, each shown as the usual colored beams.
-5. **Wake**: the slit reopens and shows the boot-injection token count before and after.
+4. **Apply**: fixes, compressions, merges and archiving, each shown as the usual colored signals.
+5. **Wake**: the central neuron flares back up and shows the boot-injection token count before and after.
 
-**Purge** permanently deletes files, but only from `archive/` and only when you explicitly ask. In Noema the card is flooded with red light until it glows, then burns away, but only after the file is actually gone. If the command is denied, the card is restored.
+**Purge** permanently deletes files, but only from `archive/` and only when you explicitly ask. In Noema the archived neuron is flooded with red light until it glows, then burns away, but only after the file is actually gone. If the command is denied, the neuron is restored.
 
 Sleep never deletes anything outside `archive/`. Stale memories are *moved* to `archive/`, and every Sleep run starts with a full backup under `%LOCALAPPDATA%\Noema\sleep\backup\`.
 
@@ -82,9 +83,10 @@ Copy `skill/sleep/` to `~/.claude/skills/sleep/`. Then, in Claude Code, say "sle
 | Action | How |
 |---|---|
 | Show / hide | `Ctrl+Alt+N`, or the tray icon |
-| Rotate the cloud | scroll or drag on empty space |
-| Read a memory | click a card, a door handle, or an activity entry |
-| Archive / delete / purge a memory | right-click its card, or use the buttons in the reader (always confirmed) |
+| Rotate the network | drag on empty space (or Shift + scroll) |
+| Zoom | scroll; double-click empty space to reset |
+| Read a memory | click a neuron or its name, a gauge, or an activity entry |
+| Archive / delete / purge a memory | right-click the neuron, or use the buttons in the reader (always confirmed) |
 | Pin on top / collapse to capsule | title-bar buttons ▲ and − |
 | Switch project | the project dropdown (it also auto-follows active sessions) |
 

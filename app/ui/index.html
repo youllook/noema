@@ -9,15 +9,15 @@
 :root { color-scheme: dark; font-family: "Segoe UI", "Microsoft JhengHei UI", "Microsoft JhengHei", sans-serif; }
 html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; user-select: none; }
 body { color: var(--text); --mono: Consolas, "Cascadia Mono", ui-monospace, monospace;
-  --surface:#191b1b; --panel:#2b2b21b0; --text:#e4e5d3; --muted:#929482; --line:#d8b86b30; --accent:#edc477; --write:#ff895b;
-  --project:#edc477; --feedback:#9cc8c0; --user:#d5b0d5; --reference:#9fb5dd; }
+  --surface:#060b10; --panel:#10202bb0; --text:#e2f1f6; --muted:#7f98a3; --line:#8fdcf52a; --accent:#8fdcf5; --write:#ff895b;
+  --project:#8fdcf5; --feedback:#86ecc4; --user:#c9b6f6; --reference:#f2c98a; }
 button, select { font: inherit; }
 button { color: inherit; cursor: pointer; }
 button:focus-visible, select:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
 .window { width: 100vw; height: 100vh; position: relative; isolation: isolate; overflow: hidden; display: grid;
   grid-template-rows: 46px 80px minmax(150px, 1fr) 122px 28px;
-  border: 1px solid #b69a5660; border-radius: 8px; background: linear-gradient(135deg,#292c25aa,transparent 45%),#191b1b; }
-.window:after { content:''; position:absolute; inset:0; pointer-events:none; z-index:8; opacity:.16; background:repeating-linear-gradient(0deg,transparent 0 3px,#c5d39b12 3px 4px); }
+  border: 1px solid #4f9fbd60; border-radius: 8px; background: linear-gradient(135deg,#0f2230aa,transparent 45%),#060b10; }
+.window:after { content:''; position:absolute; inset:0; pointer-events:none; z-index:8; opacity:.16; background:repeating-linear-gradient(0deg,transparent 0 3px,#9bd3e012 3px 4px); }
 .topbar { margin: 0 21px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed var(--line); cursor: default; }
 .brand { display: flex; align-items: center; gap: 9px; font-size: 11px; letter-spacing: 2.8px; font-weight: 650; }
 .brand-mark { flex: none; width: 15px; height: 15px; border: 1px solid var(--accent); border-radius: 1px; position: relative; transform: rotate(45deg); }
@@ -29,35 +29,40 @@ button:focus-visible, select:focus-visible { outline: 1px solid var(--accent); o
 .window-controls { display: flex; gap: 6px; }
 .icon-btn { border: 1px solid var(--line); border-radius: 0; width: 25px; height: 24px; background: transparent; color: var(--muted); line-height: 1; padding: 0; font-size: 12px; }
 .icon-btn:hover { color: var(--text); border-color: var(--accent); }
-.icon-btn[aria-pressed="true"] { color: var(--accent); border-color: #edc47788; }
+.icon-btn[aria-pressed="true"] { color: var(--accent); border-color: #8fdcf588; }
 .hero { padding: 11px 22px 8px; position: relative; }
 .eyebrow { display: flex; align-items: center; gap: 6px; font: 9px var(--mono); letter-spacing: 2.2px; color: var(--muted); }
-.eyebrow select { max-width: 200px; background: #1b201be8; color: var(--accent); border: 1px solid var(--line); border-radius: 0; padding: 2px 4px; font: 9px var(--mono); letter-spacing: .4px; }
+.eyebrow select { max-width: 200px; background: #08131ae8; color: var(--accent); border: 1px solid var(--line); border-radius: 0; padding: 2px 4px; font: 9px var(--mono); letter-spacing: .4px; }
 h1 { margin: 3px 0 0; font-size: 29px; font-weight: 650; letter-spacing: 6px; }
 .hero-count { position: absolute; right: 23px; top: 20px; text-align: right; pointer-events: none; }
 .hero-count strong { font: 26px var(--mono); font-weight: 300; color: var(--accent); }
 .hero-count span { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; letter-spacing: 1px; }
 .section-label { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font: 9px var(--mono); letter-spacing: 1.5px; }
 .section-label em { font-style: normal; font-size: 9px; letter-spacing: .3px; }
-/* 啟動注入＝門縫兩側的空心光圈門把（2026-11-11 用戶定）：左 CLAUDE.md、右 MEMORY.md；位置由 resize() 依門縫算 */
-.handle { --hc: var(--accent); position: absolute; z-index: 120; width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px; padding: 0; border-radius: 50%;
-  border: 1.6px solid color-mix(in srgb, var(--hc) 70%, #fff4d8); background: none;
-  box-shadow: 0 0 6px var(--hc), 0 0 16px color-mix(in srgb, var(--hc) 55%, transparent), inset 0 0 5px color-mix(in srgb, var(--hc) 70%, transparent);
-  transition: transform .25s, box-shadow .25s, border-color .25s; animation: handle-breath 4.8s ease-in-out infinite; }
-@keyframes handle-breath { 0%, 100% { opacity: .78; } 50% { opacity: 1; } }
-.handle:hover, .handle:focus-visible { transform: scale(1.25); animation: none; opacity: 1; }
-.handle.reading, .handle.writing { animation: none; opacity: 1; transform: scale(1.3); border-color: #fff4d8;
-  box-shadow: 0 0 8px var(--hc), 0 0 22px var(--hc), 0 0 44px color-mix(in srgb, var(--hc) 55%, transparent), inset 0 0 7px var(--hc); }
-.handle.reading, .handle.writing { --hc: var(--ev); }
+/* 啟動注入＝中央神經元下方的兩個圓形儀表（2026-11-12 用戶定，取代門把）：左 CLAUDE.md、右 MEMORY.md
+   不接進網路，被讀寫時自己發光；弧＝占預算比例，紅刻度＝這個檔再長到哪裡合計就超標；位置由 resize() 算 */
+.handle { --hc: var(--accent); --gr: 40px; position: absolute; z-index: 120; padding: 0; border: 0; border-radius: 50%; background: none; transform: translate(-50%, -50%); color: var(--hc); transition: filter .3s; }
+.handle svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.handle .g-disc { fill: #050b10cc; stroke: #8fdcf522; }
+.handle .g-ticks line { stroke: var(--hc); }
+.handle .g-track { fill: none; stroke: #ffffff12; stroke-width: 5; }
+.handle .g-arc { fill: none; stroke: var(--hc); stroke-width: 5; stroke-linecap: round; transition: stroke-dasharray .6s ease, stroke .3s; }
+.handle .g-bud { stroke: #ff4856; stroke-width: 2; }
+.handle .g-flash { fill: none; stroke: var(--hc); stroke-width: 2; opacity: 0; }
+.handle .g-num { position: absolute; left: 0; right: 0; top: 30%; text-align: center; font-size: calc(var(--gr) * .42); font-weight: 300; line-height: 1; color: #eaf7fb; pointer-events: none; }
+.handle .g-lab { position: absolute; left: 0; right: 0; top: 60%; text-align: center; font: max(7px, calc(var(--gr) * .16)) var(--mono); letter-spacing: .3px; color: var(--hc); pointer-events: none; }
+.handle:hover, .handle:focus-visible { filter: brightness(1.3); outline: none; }
 .handle.over { --hc: #ff4856; }
-.handle.mention { border-style: dashed; }
-.handle.missing { border-style: dashed; opacity: .3; box-shadow: none; animation: none; }
-.handle-label { position: absolute; z-index: 120; transform: translateY(-50%); font: 7.5px var(--mono); letter-spacing: 1px; color: var(--muted); white-space: nowrap; pointer-events: none; opacity: .55; transition: opacity .25s, color .25s; }
-.handle-label.lit { opacity: 1; color: var(--ev, var(--accent)); }
-.handle-label i { display: block; font-style: normal; color: var(--accent); opacity: .8; }
-.handle-label[data-for="@claude"] { text-align: right; }
+.handle.over .g-arc { animation: g-over 1.1s ease-in-out infinite; }
+@keyframes g-over { 50% { opacity: .45; } }
+.handle.reading, .handle.writing { --hc: var(--ev); filter: drop-shadow(0 0 10px var(--ev)); }
+.handle.reading .g-flash, .handle.writing .g-flash { animation: g-flash 1.1s ease-out infinite; }
+@keyframes g-flash { 0% { opacity: 1; stroke-width: 7; } 100% { opacity: 0; stroke-width: 1; } }
+.handle.mention .g-disc { stroke-dasharray: 3 4; }
+.handle.missing { opacity: .35; }
+.handle-label { display: none; }
 .stage { position: relative; margin: 7px 0 0; min-height: 0; overflow: hidden;
-  background: radial-gradient(circle at 1px 1px, #d2ca8418 1px, transparent 1.2px) 19px 26px / 24px 24px; }
+  background: radial-gradient(circle at 1px 1px, #8fdcf518 1px, transparent 1.2px) 19px 26px / 24px 24px; }
 canvas { width: 100%; height: 100%; display: block; }
 .stage-caption { position: absolute; top: 10px; left: 22px; color: var(--muted); font: 8px var(--mono); letter-spacing: 1.5px; pointer-events: none; }
 .stage-hint { position: absolute; bottom: 35px; width: 100%; text-align: center; color: var(--muted); font-size: 8px; letter-spacing: 1px; pointer-events: none; }
@@ -66,61 +71,44 @@ canvas { width: 100%; height: 100%; display: block; }
 .legend i { width: 4px; height: 4px; border-radius: 50%; background: var(--dot); }
 .archive-toggle { margin-left: auto; padding: 3px 5px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 9px; border-radius: 0; white-space: nowrap; }
 .archive-toggle[aria-pressed="false"] { opacity: .5; }
-/* 3D 雲：.nodes 不建立堆疊脈絡，卡片的 z-index（0–100，依深度）直接和核心球那層（50）比前後 */
+/* 3D 神經網路：.nodes 不建立堆疊脈絡，標籤的 z-index（0–100，依深度）直接和中央神經元那層（50）比前後
+   記憶本體畫在畫布上；這裡的按鈕只是胞體上的點擊區＋下方的名字標籤（2026-11-12） */
 .nodes { position: absolute; inset: 0; pointer-events: none; }
-.nodes { --ns: 1; }
 canvas.core { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
-.node { --depth: 1; position: absolute; left: 0; top: 0; pointer-events: auto; max-width: calc(116px * var(--ns)); padding: calc(4px * var(--ns)) calc(12px * var(--ns)) calc(4px * var(--ns)) calc(7px * var(--ns)); border: 1px solid var(--line); border-left: 2px solid var(--node-color);
-  background: #1b201bd8; text-align: left; transform: translate(-50%,-50%); border-radius: 0; transition: border-color .3s, box-shadow .3s;
-  will-change: transform, opacity; }
-.node:before { content: ''; position: absolute; top: 50%; right: calc(5px * var(--ns)); width: 3px; height: 3px; margin-top: -1.5px; border-radius: 50%; background: var(--node-color); box-shadow: 0 0 10px var(--node-color); }
-.node-label { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: calc(9.5px * var(--ns)); letter-spacing: .1px; color: var(--text); }
+.node { position: absolute; left: 0; top: 0; pointer-events: auto; max-width: 150px; padding: 14px 4px 2px; border: 0; background: none; text-align: center;
+  transform-origin: 50% 8px; border-radius: 0; will-change: transform, opacity; }
+.node-label { display: inline-block; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 10.5px; letter-spacing: .2px; padding: 1px 6px;
+  border: 1px solid transparent; color: color-mix(in srgb, var(--node-color) 50%, #e6f3f7); text-shadow: 0 0 4px #000, 0 0 2px #000; transition: opacity .25s, background .2s, border-color .2s; }
 .node-meta { display: none; }
-.node.more { border-left-color: var(--muted); --node-color: var(--muted); }
-.node:hover, .node:focus-visible { background: #2b2b21; z-index: 300 !important; opacity: 1 !important; }
+.node.lbl-off .node-label { opacity: 0; }
+.node.more { padding: 0; }
+.node.more .node-label { border-color: var(--line); background: #06121acc; color: var(--muted); text-shadow: none; }
+/* 事件顏色由 JS 設在 --ev（讀取綠、新增藍、修改金黃、刪除紅）：被讀寫或滑過時，名字變成名牌 */
+.node:hover .node-label, .node:focus-visible .node-label, .node.reading .node-label, .node.writing .node-label { opacity: 1; background: #06121ae6; border-color: var(--ev, var(--node-color)); color: #eaf7fb; text-shadow: none; }
+.node:hover, .node:focus-visible { z-index: 300 !important; opacity: 1 !important; outline: none; }
 .node.reading, .node.writing { opacity: 1 !important; }
-/* 事件顏色由 JS 設在 --ev（2026-11-11 用戶定：讀取綠、新增藍、修改金黃、刪除紅） */
-.node.reading { border-color: var(--ev); box-shadow: 0 0 16px -4px var(--ev); }
-.node.reading:before { background: var(--ev); animation: read-light 1s ease-in-out infinite; }
-.node.writing { border-color: var(--ev); border-left-color: var(--ev); box-shadow: 0 0 18px -3px var(--ev); opacity: 1; }
-.node.writing:before { border-radius: 50%; background: var(--ev); box-shadow: 0 0 8px var(--ev); animation: read-light 1.2s ease-in-out infinite; }
-.node.mention { border-style: dashed; border-left-style: solid; opacity: 1; }
-.node.reading { animation: card-read 1.4s ease-in-out infinite; }
-.node.writing { animation: card-write 1.2s ease-in-out infinite; }
-@keyframes card-read {
-  0%, 100% { border-color: color-mix(in srgb, var(--ev) 45%, transparent); box-shadow: 0 0 6px -2px var(--ev); }
-  50% { border-color: var(--ev); box-shadow: 0 0 22px 2px color-mix(in srgb, var(--ev) 70%, transparent), inset 0 0 14px -4px var(--ev); }
-}
-@keyframes card-write {
-  0%, 100% { border-color: color-mix(in srgb, var(--ev) 40%, transparent); box-shadow: 0 0 5px -2px var(--ev); }
-  50% { border-color: color-mix(in srgb, var(--ev) 85%, transparent); box-shadow: 0 0 12px -2px color-mix(in srgb, var(--ev) 70%, transparent); }
-}
-@keyframes read-light { 50% { box-shadow: 0 0 3px 5px #a8e8ff22, 0 0 23px var(--ev, var(--node-color)); } }
-/* 新增：藍光打到後，新卡從光裡浮現 */
-.node.born { animation: born 1.4s ease-out; }
-@keyframes born {
-  0% { opacity: 0; filter: brightness(3) blur(3px); box-shadow: 0 0 30px #68b0ff; border-color: #cfe6ff; }
-  35% { opacity: 1; filter: brightness(1.8) blur(0); box-shadow: 0 0 22px #68b0ffcc; border-color: #9ccaff; }
-  100% { filter: none; } }
+.node.mention .node-label { border-style: dashed; }
+.node.born .node-label { animation: born 2.4s ease-out; }
+@keyframes born { 0%, 45% { opacity: 0; } 100% { opacity: 1; } }
 /* Sleep 掃描標記：⚠ 又熱又可疑（常駐）；路徑／複查、冷只在睡眠期間顯示 */
-.node-mark { display: none; position: absolute; top: -7px; right: -5px; font: calc(6.5px * var(--ns)) var(--mono); line-height: 1.3; padding: 0 3px; border: 1px solid currentColor; background: #191b1b; pointer-events: none; }
+.node-mark { display: none; position: absolute; top: 0; left: 50%; margin-left: 7px; font: 7px var(--mono); line-height: 1.3; padding: 0 3px; border: 1px solid currentColor; background: #060b10; pointer-events: none; }
 .node.m-warn .node-mark, .node.m-path .node-mark, .node.m-cold .node-mark { display: block; }
-.node.m-warn { border-color: #ff6a4dbb; box-shadow: 0 0 12px -2px #ff6a4d; animation: warn 1.6s ease-in-out infinite; }
-.node.m-warn .node-mark { color: #ff6a4d; }
+.node.m-warn .node-label { border-color: #ff6a4dbb; }
+.node.m-warn .node-mark { color: #ff6a4d; animation: warn 1.6s ease-in-out infinite; }
 .node.m-path .node-mark { color: var(--accent); }
 .node.m-cold { filter: saturate(.3) brightness(.75); }
 .node.m-cold .node-mark { color: #7d8a8f; border-style: dashed; }
-@keyframes warn { 50% { box-shadow: 0 0 20px 1px #ff6a4db3; } }
-.node.flash { border-color: color-mix(in srgb, var(--accent) 60%, transparent); box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 45%, transparent); }
-.node.burning { visibility: hidden; }
+@keyframes warn { 50% { opacity: .45; } }
+.node.flash .node-label { opacity: 1; color: #fff; }
+.node.burning .node-label { opacity: 0; }
 /* 睡眠：整張圖變暗，門縫那層升到暗幕之上，成為唯一的光 */
 /* 沒有記憶時的說明（別人第一次裝、還沒用過自動記憶時不會是一片空白） */
-.empty-state { position: absolute; left: 50%; top: 68%; transform: translateX(-50%); background: #191b1bd9; padding: 6px 10px; width: min(420px, 84%); z-index: 60; text-align: center; pointer-events: none; color: var(--muted); font-size: 10.5px; line-height: 1.65; }
+.empty-state { position: absolute; left: 50%; top: 68%; transform: translateX(-50%); background: #060b10d9; padding: 6px 10px; width: min(420px, 84%); z-index: 60; text-align: center; pointer-events: none; color: var(--muted); font-size: 10.5px; line-height: 1.65; }
 .empty-state strong { display: block; margin-bottom: 4px; color: var(--text); font-size: 11.5px; font-weight: 600; letter-spacing: .5px; }
 .empty-state p { margin: 0; }
 .empty-state p.zh { margin-top: 6px; opacity: .8; }
 .empty-state code { font: 9.5px var(--mono); color: var(--accent); }
-.sleep-dim { position: absolute; inset: 0; z-index: 110; background: #050605; opacity: 0; pointer-events: none; transition: opacity 1.6s ease; }
+.sleep-dim { position: absolute; inset: 0; z-index: 110; background: #020507; opacity: 0; pointer-events: none; transition: opacity 1.6s ease; }
 .stage[data-sleep="sleep"] .sleep-dim, .stage[data-sleep="scan"] .sleep-dim, .stage[data-sleep="propose"] .sleep-dim { opacity: .55; }
 .stage[data-sleep="apply"] .sleep-dim, .stage[data-sleep="purge"] .sleep-dim { opacity: .4; }
 .stage[data-sleep] canvas.core { z-index: 115; }
@@ -129,10 +117,10 @@ canvas.core { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
 .sleep-delta { position: absolute; left: 50%; transform: translate(-50%, -50%); z-index: 150; text-align: center; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .6s; }
 .sleep-delta.on { opacity: 1; }
 .sleep-delta small { display: block; font: 7.5px var(--mono); letter-spacing: 2px; color: var(--muted); }
-.sleep-delta b { font: 13px var(--mono); font-weight: 400; color: #fff4d8; text-shadow: 0 0 10px var(--accent); }
+.sleep-delta b { font: 13px var(--mono); font-weight: 400; color: #eafaff; text-shadow: 0 0 10px var(--accent); }
 .sleep-delta em { font-style: normal; font: 9px var(--mono); color: #9cd3a0; margin-left: 6px; }
 @keyframes write-light { 50% { transform: rotate(90deg) scale(1.8); } }
-.hud-center { position:absolute; top:60%; left:50%; transform:translateX(-50%); z-index:49; display:flex; align-items:baseline; gap:5px; white-space:nowrap; pointer-events:none; }
+.hud-center { display:none !important; position:absolute; top:60%; left:50%; transform:translateX(-50%); z-index:49; display:flex; align-items:baseline; gap:5px; white-space:nowrap; pointer-events:none; }
 .hud-center small { font:7px var(--mono); color:var(--muted); letter-spacing:2px; }
 .hud-center strong { font:11px var(--mono); color:var(--accent); font-weight:400; }
 .hud-center span { font:7px var(--mono); color:var(--accent); letter-spacing:2px; opacity:.7; }
@@ -150,31 +138,31 @@ canvas.core { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
 .event.mention .event-tag, .event.boot .event-tag { color: var(--muted); }
 .event.old { opacity: .5; }
 .event.fresh { animation: fresh 2.4s ease-out; }
-@keyframes fresh { from { background: #edc47733; } to { background: transparent; } }
+@keyframes fresh { from { background: #8fdcf533; } to { background: transparent; } }
 .event button { padding: 0; border: 0; background: transparent; text-align: left; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; font-size: 10px; color: var(--text); }
 .event .sub { color: var(--muted); font: 8px var(--mono); margin-left: 5px; }
 .empty { color: var(--muted); font-size: 9px; padding: 8px 0; }
 .footer { margin: 0 21px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; font: 8px var(--mono); color: var(--muted); letter-spacing: .5px; white-space: nowrap; overflow: hidden; }
 .footer span:last-child { color: var(--accent); }
-.capsule { display: none; align-items: center; gap: 11px; width: 100vw; height: 100vh; padding: 0 8px 0 18px; border: 1px solid #b69a5680; border-radius: 40px; background: linear-gradient(135deg,#292c25,#191b1b 60%); cursor: default; }
+.capsule { display: none; align-items: center; gap: 11px; width: 100vw; height: 100vh; padding: 0 8px 0 18px; border: 1px solid #4f9fbd80; border-radius: 40px; background: linear-gradient(135deg,#0f2230,#060b10 60%); cursor: default; }
 .capsule strong { font-size: 10px; letter-spacing: 2px; }
 .capsule span { flex: 1; min-width: 0; font-size: 9px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .capsule span.live { color: var(--accent); }
 .capsule span.live { color: var(--ev, var(--accent)); }
 .capsule button { flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: transparent; font-size: 15px; color: var(--accent); }
-.capsule button:hover { background: #edc47722; }
+.capsule button:hover { background: #8fdcf522; }
 body.collapsed .window { display: none; }
 body.collapsed .capsule { display: flex; }
 /* ---------- 閱讀器（HUD Markdown Reader） ---------- */
 dialog.reader { position: fixed; inset: 7px; margin: 0; width: auto; height: auto; max-width: none; max-height: none; padding: 0; overflow: hidden;
-  color: var(--text); border: 1px solid #b69a5680; border-radius: 3px; user-select: text; --tc: var(--accent);
-  background: linear-gradient(160deg,#2a2c22 0,transparent 34%), #151716; font-size: clamp(13.5px, 9px + 1.1vw, 16px); }
+  color: var(--text); border: 1px solid #4f9fbd80; border-radius: 3px; user-select: text; --tc: var(--accent);
+  background: linear-gradient(160deg,#0f2230 0,transparent 34%), #050a0e; font-size: clamp(13.5px, 9px + 1.1vw, 16px); }
 dialog.reader[open] { display: grid; grid-template-rows: auto 2px minmax(0,1fr) 25px; }
-dialog.reader::backdrop { background: #0c0e0df5; border-radius: 8px; }
+dialog.reader::backdrop { background: #03070af5; border-radius: 8px; }
 dialog.reader::before, dialog.reader::after { content: ''; position: absolute; width: 13px; height: 13px; pointer-events: none; z-index: 3; }
 dialog.reader::before { top: -1px; left: -1px; border-top: 2px solid var(--tc); border-left: 2px solid var(--tc); }
 dialog.reader::after { bottom: -1px; right: -1px; border-bottom: 2px solid var(--tc); border-right: 2px solid var(--tc); }
-dialog.reader ::selection { background: #edc47755; color: #fff; }
+dialog.reader ::selection { background: #8fdcf555; color: #fff; }
 .reader-head { padding: 10px 12px 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed var(--line); cursor: default; user-select: none; }
 .reader-mark { flex: none; width: 9px; height: 9px; background: var(--tc); box-shadow: 0 0 12px var(--tc); transform: rotate(45deg); margin: 0 3px; }
 .reader-id { min-width: 0; flex: 1; }
@@ -186,31 +174,31 @@ dialog.reader ::selection { background: #edc47755; color: #fff; }
 .op-btn { height: 26px; padding: 0 9px; border: 1px solid var(--line); background: transparent; color: var(--muted); font: 10px var(--mono); letter-spacing: 1px; }
 .op-btn:hover { color: var(--text); border-color: var(--accent); }
 .op-btn.danger:hover { color: #ff6a74; border-color: #ff4856; }
-.ctx-menu { position: fixed; z-index: 1000; min-width: 132px; padding: 4px 0; background: #161814f5; border: 1px solid #b69a5680; box-shadow: 0 8px 24px #000a; font-size: 11px; }
+.ctx-menu { position: fixed; z-index: 1000; min-width: 132px; padding: 4px 0; background: #07121af5; border: 1px solid #4f9fbd80; box-shadow: 0 8px 24px #000a; font-size: 11px; }
 .ctx-menu button { display: block; width: 100%; padding: 6px 12px; border: 0; background: transparent; color: var(--text); text-align: left; font: inherit; }
-.ctx-menu button:hover, .ctx-menu button:focus-visible { background: #edc4771c; outline: none; }
+.ctx-menu button:hover, .ctx-menu button:focus-visible { background: #8fdcf51c; outline: none; }
 .ctx-menu button.danger { color: #ff8a92; }
 .ctx-menu button.danger:hover { background: #ff485622; }
 .ctx-menu hr { border: 0; border-top: 1px dashed var(--line); margin: 4px 0; }
 .ctx-menu .ctx-title { padding: 4px 12px 6px; color: var(--muted); font: 9px var(--mono); letter-spacing: 1px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-dialog.confirm { width: min(360px, calc(100vw - 40px)); padding: 18px 20px 16px; border: 1px solid #b69a5690; background: #191b1b; color: var(--text); box-shadow: 0 12px 40px #000c; }
-dialog.confirm::backdrop { background: #050605b0; }
+dialog.confirm { width: min(360px, calc(100vw - 40px)); padding: 18px 20px 16px; border: 1px solid #4f9fbd90; background: #060b10; color: var(--text); box-shadow: 0 12px 40px #000c; }
+dialog.confirm::backdrop { background: #020507b0; }
 dialog.confirm h3 { margin: 0 0 10px; font-size: 14px; letter-spacing: 1px; }
-.confirm-file { margin: 0 0 10px; padding: 6px 8px; border-left: 2px solid var(--accent); background: #edc47712; font: 11px var(--mono); word-break: break-all; }
+.confirm-file { margin: 0 0 10px; padding: 6px 8px; border-left: 2px solid var(--accent); background: #8fdcf512; font: 11px var(--mono); word-break: break-all; }
 dialog.confirm.danger .confirm-file { border-left-color: #ff4856; background: #ff485614; }
 .confirm-body { margin: 0 0 16px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
 .confirm-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .confirm-actions button { padding: 6px 14px; border: 1px solid var(--line); background: transparent; color: var(--text); font-size: 12px; }
 .confirm-actions .confirm-ok { border-color: var(--accent); color: var(--accent); }
 .confirm-actions .confirm-ok.danger { border-color: #ff4856; background: #ff485622; color: #ffb3b9; }
-.reader-progress { background: #edc47712; }
+.reader-progress { background: #8fdcf512; }
 .reader-progress i { display: block; height: 100%; width: 0; background: var(--tc); box-shadow: 0 0 8px var(--tc); }
 .reader-scroll { overflow-y: auto; overflow-x: hidden; padding: 18px 18px 30px; outline: none; scroll-padding-top: 12px; }
 .reader-scroll > * { max-width: 740px; margin-left: auto; margin-right: auto; }
 .reader-scroll::-webkit-scrollbar, .md pre::-webkit-scrollbar, .tablewrap::-webkit-scrollbar { width: 9px; height: 9px; }
-.reader-scroll::-webkit-scrollbar-track { background: repeating-linear-gradient(0deg,#edc47720 0 1px,transparent 1px 7px); border-left: 1px solid var(--line); }
-.md pre::-webkit-scrollbar-track, .tablewrap::-webkit-scrollbar-track { background: #edc4770d; }
-.reader-scroll::-webkit-scrollbar-thumb, .md pre::-webkit-scrollbar-thumb, .tablewrap::-webkit-scrollbar-thumb { background: #edc477a8; border: 2px solid transparent; background-clip: padding-box; }
+.reader-scroll::-webkit-scrollbar-track { background: repeating-linear-gradient(0deg,#8fdcf520 0 1px,transparent 1px 7px); border-left: 1px solid var(--line); }
+.md pre::-webkit-scrollbar-track, .tablewrap::-webkit-scrollbar-track { background: #8fdcf50d; }
+.reader-scroll::-webkit-scrollbar-thumb, .md pre::-webkit-scrollbar-thumb, .tablewrap::-webkit-scrollbar-thumb { background: #8fdcf5a8; border: 2px solid transparent; background-clip: padding-box; }
 .reader-scroll::-webkit-scrollbar-thumb:hover, .md pre::-webkit-scrollbar-thumb:hover, .tablewrap::-webkit-scrollbar-thumb:hover { background: var(--accent); background-clip: padding-box; }
 .reader-scroll::-webkit-scrollbar-corner, .md pre::-webkit-scrollbar-corner { background: transparent; }
 .reader-foot { padding: 0 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); font: 9px var(--mono); letter-spacing: .8px; color: var(--muted); white-space: nowrap; user-select: none; }
@@ -246,7 +234,7 @@ dialog.confirm.danger .confirm-file { border-left-color: #ff4856; background: #f
 .md strong { font-weight: 650; color: #fbe2ac; }
 .md em { font-style: italic; color: #d6e6dc; }
 .md del { color: var(--muted); }
-.md code { font: .88em var(--mono), "Microsoft JhengHei"; padding: 1px 5px; color: #f1dcae; background: #edc47714; border: 1px solid #edc47726; border-radius: 2px; }
+.md code { font: .88em var(--mono), "Microsoft JhengHei"; padding: 1px 5px; color: #f1dcae; background: #8fdcf514; border: 1px solid #8fdcf526; border-radius: 2px; }
 .md .path, .info .path { cursor: copy; border: 1px dashed #9cc8c055; background: #9cc8c012; color: #bfe0d8; border-radius: 2px; }
 .md span.path { font: .88em var(--mono), "Microsoft JhengHei"; padding: 1px 5px; }
 .info .path { padding: 0 4px; }
@@ -273,13 +261,13 @@ dialog.confirm.danger .confirm-file { border-left-color: #ff4856; background: #f
 .md .box { display: inline-block; width: .9em; height: .9em; margin: 0 .5em 0 -1.35em; border: 1px solid var(--tc); vertical-align: -.08em; position: relative; }
 .md .box.on::after { content: ''; position: absolute; inset: 2px; background: var(--tc); }
 .md hr { height: 9px; margin: 1.8em 0; border: 0; background: linear-gradient(var(--line),var(--line)) 0 50% / 100% 1px no-repeat; position: relative; }
-.md hr::after { content: ''; position: absolute; left: 50%; top: 1px; width: 7px; height: 7px; margin-left: -4px; background: #151716; border: 1px solid var(--accent); transform: rotate(45deg); }
+.md hr::after { content: ''; position: absolute; left: 50%; top: 1px; width: 7px; height: 7px; margin-left: -4px; background: #050a0e; border: 1px solid var(--accent); transform: rotate(45deg); }
 .tablewrap { margin: 1em 0; overflow-x: auto; border: 1px solid var(--line); }
 .md table { width: 100%; border-collapse: collapse; font-size: .92em; line-height: 1.6; }
-.md th { padding: 7px 11px; text-align: left; font-weight: 650; color: var(--accent); background: #edc47714; border-bottom: 1px solid #edc47755; white-space: nowrap; }
+.md th { padding: 7px 11px; text-align: left; font-weight: 650; color: var(--accent); background: #8fdcf514; border-bottom: 1px solid #8fdcf555; white-space: nowrap; }
 .md td { padding: 7px 11px; vertical-align: top; border-top: 1px dashed var(--line); }
 .md th + th, .md td + td { border-left: 1px solid #d8b86b1c; }
-.md tbody tr:hover td { background: #edc4770a; }
+.md tbody tr:hover td { background: #8fdcf50a; }
 .md a { color: inherit; text-decoration: none; cursor: pointer; }
 .md .wl { --lc: var(--accent); padding: 0 5px 1px 4px; color: var(--lc); border-bottom: 1px solid color-mix(in srgb, var(--lc) 60%, transparent); background: color-mix(in srgb, var(--lc) 10%, transparent); }
 .md .wl::before { content: '◆'; margin-right: 4px; font-size: .55em; vertical-align: .25em; }
@@ -321,7 +309,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
 <body>
 <main class="window" aria-label="認知核心記憶檢視器">
   <header class="topbar" data-drag>
-    <div class="brand"><i class="brand-mark" aria-hidden="true"></i>NOEMA <span style="opacity:.45;font-weight:400">/ CORE / 03</span></div>
+    <div class="brand"><i class="brand-mark" aria-hidden="true"></i>NOEMA <span style="opacity:.45;font-weight:400">/ NEURAL / 04</span></div>
     <div class="window-controls">
       <button class="icon-btn" id="pin" title="置頂" aria-pressed="true">▲</button>
       <button class="icon-btn" id="collapse" title="縮成膠囊">−</button>
@@ -347,7 +335,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
     <div class="sleep-dim" aria-hidden="true"></div>
     <div class="sleep-phase" aria-live="polite"></div>
     <div class="sleep-delta" aria-live="polite"><small>BOOT INJECTION</small><b></b><em></em></div>
-    <div class="stage-hint">滾輪或拖曳旋轉 · 點選卡片展開記憶</div>
+    <div class="stage-hint">拖曳旋轉 · 滾輪縮放 · 雙擊回原大小 · 點神經元展開記憶</div>
     <div class="legend" aria-label="記憶類型圖例">
       <span><i style="--dot:var(--project)"></i>project</span>
       <span><i style="--dot:var(--feedback)"></i>feedback</span>
@@ -360,7 +348,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
     <div class="section-label"><span class="stream-label"><i class="live-dot"></i>01 / ACTIVITY STREAM</span><span class="sim-badge" id="stream-state">連線中</span></div>
     <ol class="events"></ol>
   </section>
-  <footer class="footer"><span id="footer-left">—</span><span id="footer-status">LOCAL · 右鍵卡片可封存／刪除</span></footer>
+  <footer class="footer"><span id="footer-left">—</span><span id="footer-status">LOCAL · 右鍵神經元可封存／刪除</span></footer>
 </main>
 <div class="capsule" data-drag aria-label="Noema 膠囊">
   <i class="brand-mark"></i><strong data-drag>NOEMA</strong><span id="capsule-status" data-drag>待命</span><button id="expand" title="展開">↗</button>
@@ -395,7 +383,7 @@ span.link-chip { --lc: var(--muted); color: var(--muted); border-style: dashed; 
 const $ = s => document.querySelector(s);
 const send = msg => { try { window.ipc.postMessage(JSON.stringify(msg)); } catch (e) {} };
 const TYPE_LABELS = { project: '專案', feedback: '回饋', user: '使用者', reference: '參考', boot: '啟動' };
-const colors = { project: '#edc477', feedback: '#9cc8c0', user: '#d5b0d5', reference: '#9fb5dd' };
+const colors = { project: '#8fdcf5', feedback: '#86ecc4', user: '#c9b6f6', reference: '#f2c98a' };
 const WRITE = '#ff895b';
 const pad = n => String(n).padStart(2, '0');
 
@@ -504,28 +492,545 @@ function updateFooter() {
   $('#stream-state').textContent = Date.now() - lastLive < 60000 ? '即時 · 活躍' : '即時監看';
 }
 
-/* ---------- 3D 記憶雲（2026-11-10 用戶定：中心能量球＝Claude，卡片立體環繞，滾輪旋轉） ---------- */
-let yaw = 0, pitch = -0.3, yawVel = 0, pitchVel = 0, hovering = false, dragging = null;
-let cx = 210, cy = 100, Rx = 120, Ry = 80, coreR = 30, cloudCap = 24;
+/* ---------- 3D 神經網路（2026-11-12 用戶定：取代卡片雲與門縫） ----------
+   每條記憶＝一顆 3D MST 神經元（Cuntz 2010：成本＝距離＋BF×回根路徑長；Rall 3/2 次方律管徑）。
+   中央大神經元＝Claude（取代門縫），樹突長向每個記憶槽位；現役記憶以纖維接回中央，
+   [[連結]] 是記憶之間的軸突，鄰近記憶的末梢再以細突觸相接。封存記憶沉在南方，不接回中央。
+   CLAUDE.md／MEMORY.md 不進網路：門把改成中央神經元下方的兩個圓形儀表，被讀寫時自己發光。
+   繪製：Canvas 2D。視角變了才把全部頂點投影一次，依（類別×線寬×霧化）分桶批次描線，加法混色不必排序；
+   網路畫在底層畫布（睡眠時被暗幕蓋住），中央神經元、動作電位、掃描畫在上層畫布。 */
+const hexRGB = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+// 光束顏色（2026-11-11 用戶定）：讀取綠、新增藍、修改金黃、刪除紅
+const EV = { read: '#7ee08a', create: '#68b0ff', modify: '#f5c850', delete: '#ff4856' };
+const EV_RGB = Object.fromEntries(Object.entries(EV).map(([k, v]) => [k, hexRGB(v)]));
+const TYPE_RGB = Object.fromEntries(Object.entries(colors).map(([k, v]) => [k, hexRGB(v)]));
+const CORE_GOLD = hexRGB(colors.project);
+const nclamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v;
+const nease = t => { t = nclamp(t); return t * t * (3 - 2 * t); };
+const nmix = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const nrgba = (c, a) => 'rgba(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ',' + nclamp(a).toFixed(3) + ')';
+const mulberry = s => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const hashStr = str => { let h = 2166136261; for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619); return h >>> 0; };
+const vadd = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const vsub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const vmul = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
+const vdot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const vcross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const vlen = a => Math.hypot(a[0], a[1], a[2]);
+const vnorm = a => { const l = vlen(a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+const vdist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const vbasis = d => { const u = vnorm(vcross(d, Math.abs(d[0]) < .9 ? [1, 0, 0] : [0, 1, 0])); return [u, vcross(d, u)]; };
+const jitterDir = (d, ang, phi) => { const [u, v] = vbasis(d), s = Math.sin(ang); return vnorm(vadd(vmul(d, Math.cos(ang)), vadd(vmul(u, Math.cos(phi) * s), vmul(v, Math.sin(phi) * s)))); };
+const randUnit = rng => { const y = rng() * 2 - 1, r = Math.sqrt(1 - y * y), t = rng() * 6.283; return [Math.cos(t) * r, y, Math.sin(t) * r]; };
+const bez3 = (a, b, c, d, u) => { const v = 1 - u; return [0, 1, 2].map(k => v * v * v * a[k] + 3 * v * v * u * b[k] + 3 * v * u * u * c[k] + u * u * u * d[k]); };
+
+/* 形態參數 */
+let CENTER_SEED = 11;
+const BF = .5, CENTER_POINTS = 420, SOMA = .11, CAM_D = 7, ZOOM_MIN = 3.4, ZOOM_MAX = 13;
+let camD = CAM_D, zoomTarget = CAM_D, pCam = NaN;
+const AXON_DIR = vnorm([.55, .78, .32]);           // 軸突朝右下前方
+const MEM_FIELD = .34, ARC_FIELD = .26;
+const NCLS = [
+  { c: [236, 250, 255], a: .72 }, { c: [178, 230, 250], a: .68 }, { c: [112, 200, 238], a: .58 },   // 0-2 中央 近／中／遠
+  { c: [165, 226, 248], a: .5 },  { c: [205, 242, 253], a: .3 }, { c: [236, 250, 255], a: .85 },  // 3 樹突棘 4 髓鞘 5 軸突芯
+  { c: [255, 224, 170], a: .9 },  { c: [110, 190, 228], a: .3 }, { c: [150, 210, 235], a: .2 },   // 6 終末扇 7 中央纖維 8 鄰近突觸
+];
+const NTYPES = ['project', 'feedback', 'user', 'reference'];
+NTYPES.forEach(t => NCLS.push({ c: TYPE_RGB[t], a: .85 }));                              // 9-12 記憶神經元
+NTYPES.forEach(t => NCLS.push({ c: nmix(TYPE_RGB[t], [255, 255, 255], .15), a: .42 }));   // 13-16 [[連結]] 軸突
+NCLS.push({ c: [150, 162, 170], a: .42 }, { c: [130, 142, 152], a: .22 });                // 17 封存神經元 18 封存連結
+const bodyCls = m => m.archived ? 17 : 9 + Math.max(0, NTYPES.indexOf(m.type));
+const linkCls = m => m.archived ? 18 : 13 + Math.max(0, NTYPES.indexOf(m.type));
+const isBodyCls = c => (c >= 9 && c <= 12) || c === 17;
+
+/* 幾何緩衝（每次重建整批重寫；形態本身有快取，重建只是重新排放） */
+let VX = [], VY = [], VZ = [], SA = [], SB = [], SW = [], SC = [], SO = [], SO2 = [], SF = [];
+let PX = new Float32Array(0), PY = PX, PS = PX, PN = PX;
+let nlist = [], nmap = new Map(), nProj = null, slotOf = {}, SLOTS = null, NCtr = null, centerCache = null;
+let nLinks = [], nSyns = [], boutons = [], linkKeys = new Set(), synKeys = new Set(), axonTips = [];
+const treeCache = new Map();
+const addV = p => { VX.push(p[0]); VY.push(p[1]); VZ.push(p[2]); return VX.length - 1; };
+const vpos = i => [VX[i], VY[i], VZ[i]];
+function addS(a, b, w, c, o, o2, f) {
+  const i = SA.length; SA.push(a); SB.push(b); SW.push(w); SC.push(c); SO.push(o); SO2.push(o2); SF.push(f);
+  if (o >= 0) nlist[o].segs.push(i); if (o2 >= 0) nlist[o2].segs2.push(i);
+  return i;
+}
+function mstTree(pts, nSeed, bf, maxLink) {
+  const n = pts.length, par = new Int32Array(n).fill(-1), pl = new Float32Array(n), best = new Float32Array(n).fill(1e9), bn = new Int32Array(n).fill(-1), st = new Uint8Array(n);
+  const d = (a, b) => Math.hypot(pts[a][0] - pts[b][0], pts[a][1] - pts[b][1], pts[a][2] - pts[b][2]);
+  const addN = i => { st[i] = 1; for (let j = nSeed + 1; j < n; j++) if (!st[j]) { const c = d(i, j) + bf * pl[i]; if (c < best[j]) { best[j] = c; bn[j] = i; } } };
+  st[0] = 1;
+  for (let s = 1; s <= nSeed; s++) { par[s] = 0; pl[s] = d(0, s); }
+  for (let s = 1; s <= nSeed; s++) addN(s);
+  for (;;) {
+    let m = -1, mc = 1e9;
+    for (let j = nSeed + 1; j < n; j++) if (!st[j] && best[j] < mc) { mc = best[j]; m = j; }
+    if (m < 0) break;
+    const p = bn[m], dd = d(p, m);
+    if (dd > maxLink) { st[m] = 2; continue; }               // 太遠的孤點丟掉
+    par[m] = p; pl[m] = pl[p] + dd; addN(m);
+  }
+  const kids = Array.from({ length: n }, () => []), r = new Float32Array(n), leaves = new Uint16Array(n), main = new Int32Array(n).fill(-1), order = [];
+  let maxPl = 0;
+  for (let i = 1; i < n; i++) if (par[i] >= 0) { kids[par[i]].push(i); order.push(i); if (pl[i] > maxPl) maxPl = pl[i]; }
+  order.sort((a, b) => pl[b] - pl[a]);
+  for (const i of order) {
+    if (!kids[i].length) { r[i] = 1; leaves[i] = 1; continue; }
+    let s = 0, b = -1;
+    for (const c of kids[i]) { s += Math.pow(r[c], 1.5); leaves[i] += leaves[c]; if (b < 0 || leaves[c] > leaves[b]) b = c; }
+    r[i] = Math.pow(s, 1 / 1.5); main[i] = b;
+  }
+  return { pts, par, pl, kids, r, main, maxPl: maxPl || 1 };
+}
+function growTree(rng, o) {
+  const pts = [[0, 0, 0]];
+  for (const l of o.lobes) pts.push(vmul(l.d, o.soma));
+  for (let i = 0; i < o.n; i++) {
+    const l = o.lobes[rng() * o.lobes.length | 0], r = o.soma * 1.5 + (l.len - o.soma * 1.5) * Math.pow(rng(), 1.15);
+    pts.push(vmul(jitterDir(l.d, (rng() + rng() + rng() - 1.5) * l.w * 1.3, rng() * 6.283), r));
+  }
+  for (const e of o.extra || []) pts.push(e);
+  return mstTree(pts, o.lobes.length, o.bf, o.maxLink);
+}
+// 寫進緩衝：每條邊做 3D Catmull-Rom 細分＋垂直微擺，線寬沿管徑漸變
+function emitTree(t, off, sc, o) {
+  const { pts, par, r, main, pl, maxPl } = t, n = pts.length, vi = new Int32Array(n).fill(-1), ev = new Array(n);
+  const W = p => vadd(off, vmul(p, sc));
+  for (let i = 0; i < n; i++) if (i === 0 || par[i] >= 0) vi[i] = addV(W(pts[i]));
+  for (let i = 1; i < n; i++) {
+    const p = par[i]; if (p < 0) continue;
+    const r2 = Math.min(o.cap, r[i] * o.tip), r1 = Math.min(o.cap * (p ? 1 : 1.5), (p ? r[p] : r[i] * 1.7) * o.tip);
+    const P1 = pts[p], P2 = pts[i], P0 = p ? pts[par[p]] : P1, m = main[i], P3 = m >= 0 ? pts[m] : vsub(vmul(P2, 2), P1);
+    const L = vdist(P1, P2), [u] = vbasis(vnorm(vsub(P2, P1))), wob = Math.min(L * .09, .05) * (((i * 7919) % 13) / 6.5 - 1);
+    const list = []; let prev = vi[p];
+    for (let k = 1; k <= o.K; k++) {
+      const q = k / o.K; let v;
+      if (k === o.K) v = vi[i];
+      else {
+        const q2 = q * q, q3 = q2 * q, c = [0, 1, 2].map(j => .5 * (2 * P1[j] + (P2[j] - P0[j]) * q + (2 * P0[j] - 5 * P1[j] + 4 * P2[j] - P3[j]) * q2 + (3 * P1[j] - P0[j] - 3 * P2[j] + P3[j]) * q3));
+        v = addV(W(vadd(c, vmul(u, Math.sin(q * Math.PI) * wob)))); list.push(v);
+      }
+      const qm = (k - .5) / o.K;
+      addS(prev, v, r1 + (r2 - r1) * qm, o.cls, o.owner, -1, (pl[p] + (pl[i] - pl[p]) * qm) / maxPl);
+      prev = v;
+    }
+    ev[i] = list;
+  }
+  const leaves = []; for (let i = 1; i < n; i++) if (par[i] >= 0 && !t.kids[i].length) leaves.push(i);
+  return { t, vi, ev, leaves };
+}
+function pathRootTo(E, node) {
+  const chain = []; for (let c = node; c > 0; c = E.t.par[c]) chain.push(c);
+  chain.reverse(); const out = [E.vi[0]];
+  for (const c of chain) out.push(...E.ev[c], E.vi[c]);
+  return out;
+}
+const nearestLeaf = (E, p) => { let b = -1, bd = 1e9; for (const l of E.leaves) { const d = vdist(vpos(E.vi[l]), p); if (d < bd) { bd = d; b = l; } } return b; };
+const cumOf = route => { const c = new Float32Array(route.length); for (let i = 1; i < route.length; i++) c[i] = c[i - 1] + vdist(vpos(route[i - 1]), vpos(route[i])); return c; };
+
+/* 槽位：現役散在球面（避開南方與軸突方向），封存排在南方一圈；同一條記憶的槽位固定，新增刪除不會讓別人跳位 */
+function makeSlots() {
+  const rng = mulberry(7), act = [], arc = [], N = 64;
+  for (let i = 0; i < N; i++) {
+    const y = 1 - (i + .5) / N * 2, rr = Math.sqrt(1 - y * y), th = i * 2.39996323, d = vnorm([Math.cos(th) * rr, y, Math.sin(th) * rr]);
+    const rad = 2.05 + rng() * .8;
+    if (vdot(d, AXON_DIR) > .86 || d[1] > .62) continue;
+    act.push({ dir: d, rad });
+  }
+  const order = []; for (let k = 0; k < act.length; k++) order.push(act[(k * 11) % act.length]);
+  for (let i = 0; i < 18; i++) {
+    const th = i / 18 * 6.283 + .3, y = .86 + ((i % 3) - 1) * .05, rr = Math.sqrt(1 - y * y);
+    arc.push({ dir: [Math.cos(th) * rr, y, Math.sin(th) * rr], rad: 2.25 + (i % 2) * .3 });
+  }
+  return { act: order, arc };
+}
+const ACTIVE_CAP = () => (SLOTS || (SLOTS = makeSlots())).act.length;
+const ARCHIVE_CAP = () => (SLOTS || (SLOTS = makeSlots())).arc.length;
+function assignSlots() {
+  const used = { act: new Set(), arc: new Set() }, pool = m => m.archived ? 'arc' : 'act';
+  for (const m of nlist) { const s = slotOf[m.key]; if (s && s.pool === pool(m) && !used[s.pool].has(s.i)) { used[s.pool].add(s.i); m.slot = s; } else m.slot = null; }
+  for (const m of nlist) {
+    if (m.slot) continue;
+    const p = pool(m), list = SLOTS[p], n = list.length; let i = hashStr(m.key) % n, k = 0;
+    while (used[p].has(i) && k < n) { i = (i + 1) % n; k++; }
+    if (k >= n) { m.slot = null; continue; }
+    used[p].add(i); m.slot = slotOf[m.key] = { pool: p, i };
+  }
+  for (const m of nlist) if (m.slot) { const s = SLOTS[m.slot.pool][m.slot.i]; m.pos = vmul(s.dir, s.rad); m.sdir = s.dir; }
+}
+
+/* 中央大神經元：形態只算一次（依種子快取） */
+function centerShape() {
+  if (centerCache && centerCache.seed === CENTER_SEED) return centerCache;
+  const rng = mulberry(CENTER_SEED), nL = 6 + (rng() * 3 | 0), lobes = [], extra = [], rot = rng() * 6.283;
+  for (let i = 0; i < nL; i++) {
+    const y = 1 - (i + .5) / nL * 2, rr = Math.sqrt(1 - y * y), th = i * 2.39996323 + rot;
+    let d = jitterDir(vnorm([Math.cos(th) * rr, y, Math.sin(th) * rr]), rng() * .3, rng() * 6.283);
+    const k = vdot(d, AXON_DIR); if (k > .6) d = vnorm(vsub(d, vmul(AXON_DIR, (k - .6) * 2)));   // 樹突讓開軸突
+    lobes.push({ d, len: 1.1 + rng() * .35, w: .3 + rng() * .14 });
+  }
+  // 每個現役槽位方向再撒一串引導點：中央樹突真的長向每一顆記憶
+  for (const s of SLOTS.act) for (let j = 0; j < 6; j++) extra.push(vmul(jitterDir(s.dir, rng() * .1, rng() * 6.283), .5 + j * .14));
+  const t = growTree(rng, { lobes, n: CENTER_POINTS, soma: SOMA, extra, bf: BF, maxLink: .3 });
+  const spines = [];
+  for (let i = 1; i < t.pts.length; i++) {
+    const p = t.par[i]; if (p < 1 || t.r[i] > 2.3 || rng() > .5) continue;
+    const A = t.pts[p], B = t.pts[i], base = vadd(A, vmul(vsub(B, A), .3 + rng() * .5)), sd = vnorm(vcross(vnorm(vsub(B, A)), randUnit(rng)));
+    spines.push([base, vadd(base, vmul(sd, .012 + rng() * .02)), t.pl[i] / t.maxPl]);
+  }
+  const attach = SLOTS.act.map(s => { const target = vmul(s.dir, 1.4); let b = 1, bd = 1e9; for (let i = 1; i < t.pts.length; i++) if (t.par[i] >= 0) { const d = vdist(t.pts[i], target); if (d < bd) { bd = d; b = i; } } return b; });
+  const side = vnorm(vcross(AXON_DIR, [0, 0, 1])), a0 = vmul(AXON_DIR, SOMA * .7), a1 = vadd(vmul(AXON_DIR, .5), vmul(side, -.18)), a2 = vadd(vmul(AXON_DIR, 1.0), vmul(side, .3)), a3 = vadd(vmul(AXON_DIR, 1.4), vmul(side, .25));
+  const axon = []; for (let i = 0; i <= 56; i++) axon.push(bez3(a0, a1, a2, a3, i / 56));
+  const fan = [], tips = [], end = axon[56], h0 = vnorm(vsub(end, axon[54]));
+  (function grow(p, h, l, depth, from) {
+    for (let j = 0; j < (depth ? 2 : 3); j++) {
+      const hh = jitterDir(h, (depth ? .55 : .45) + rng() * .2, rng() * 6.283), p2 = vadd(p, vmul(hh, l * (.75 + rng() * .5))), id = fan.length;
+      fan.push({ from, p: p2, depth });
+      if (depth < 2) grow(p2, hh, l * .72, depth + 1, id); else tips.push(id);
+    }
+  })(end, h0, .11, 0, -1);
+  return centerCache = { seed: CENTER_SEED, t, spines, attach, axon, fan, tips };
+}
+function emitCenter() {
+  const cs = centerShape(), t = cs.t;
+  NCtr = emitTree(t, [0, 0, 0], 1, { owner: -1, tip: .0068, cap: .075, K: 3, cls: 0 });
+  for (let i = 0; i < SA.length; i++) { const f = SF[i]; SC[i] = f < .3 ? 0 : f < .62 ? 1 : 2; }   // 依離胞體遠近分三層亮度
+  for (const [a, b, f] of cs.spines) addS(addV(a), addV(b), .0048, 3, -1, -1, f);
+  NCtr.paths = cs.attach.map(n => pathRootTo(NCtr, n));
+  const ax = cs.axon.map(addV);
+  for (let i = 0; i < 56; i++) addS(ax[i], ax[i + 1], i < 8 ? .012 + (SOMA * .9 - .012) * Math.pow(1 - i / 8, 2) : .012, 5, -1, -1, 0);
+  for (let a = 10; a + 5 <= 52; a += 7) for (let i = a; i < a + 5; i++) addS(ax[i], ax[i + 1], .03, 4, -1, -1, 0);
+  const fv = cs.fan.map(f => addV(f.p));
+  cs.fan.forEach((f, i) => addS(f.from < 0 ? ax[56] : fv[f.from], fv[i], [.01, .007, .005][f.depth], 6, -1, -1, 0));
+  axonTips = cs.tips.map(i => fv[i]);
+}
+function memShape(m) {
+  const k = m.key + (m.archived ? '#a' : '');
+  let t = treeCache.get(k);
+  if (!t) {
+    const rng = mulberry(hashStr(m.key)), nL = 4 + (rng() * 3 | 0), lobes = [];
+    for (let i = 0; i < nL; i++) lobes.push({ d: randUnit(rng), len: .8 + rng() * .3, w: .35 + rng() * .2 });
+    t = growTree(rng, { lobes, n: (m.archived ? 24 : 34) + (rng() * 24 | 0), soma: .14, bf: .45, maxLink: .42 });
+    treeCache.set(k, t);
+  }
+  return t;
+}
+function emitMem(m) {
+  const field = m.archived ? ARC_FIELD : MEM_FIELD;
+  m.soma = .14 * field;
+  m.E = emitTree(memShape(m), m.pos, field, { owner: m.idx, tip: .0046, cap: .016, K: 2, cls: bodyCls(m) });
+  m.somaV = m.E.vi[0];
+  m.faceTip = nearestLeaf(m.E, [0, 0, 0]);
+}
+// 中央樹突末梢 → 記憶面向中心的末梢，再沿記憶自己的樹突進胞體＝動作電位走的路
+function genFiber(m) {
+  const si = SLOTS.act.indexOf(SLOTS.act[m.slot.i]), A = NCtr.vi[centerCache.attach[si]], B = m.E.vi[m.faceTip], pa = vpos(A), pb = vpos(B), d = vdist(pa, pb);
+  const c1 = vadd(pa, vmul(vnorm(pa), d * .38)), c2 = vadd(pb, vmul(vnorm(vsub(pb, m.pos)), d * .38));
+  const perp = vnorm(vcross(vsub(pb, pa), [0, 1, .2])), amp = .05 * ((hashStr(m.key) & 1) ? 1 : -1), K = 20, verts = [A];
+  for (let k = 1; k < K; k++) { const u = k / K; verts.push(addV(vadd(bez3(pa, c1, c2, pb, u), vmul(perp, Math.sin(u * Math.PI) * amp)))); }
+  verts.push(B);
+  for (let j = 0; j < K; j++) addS(verts[j], verts[j + 1], .0058, 7, m.idx, -1, (j + .5) / K);
+  const path = NCtr.paths[si], into = pathRootTo(m.E, m.faceTip).reverse();
+  m.route = path.concat(verts.slice(1), into.slice(1));
+  m.cum = cumOf(m.route);
+  m.fL0 = m.cum[path.length - 1]; m.fL1 = m.cum[path.length - 1 + K];
+}
+// 封存記憶不接回中央：只留一條看不見的直線路徑，讀取或銷毀時光從中央直接打過去
+function genDirect(m) {
+  const pb = vpos(m.somaV), pa = vmul(vnorm(pb), SOMA), K = 12, route = [0];
+  for (let k = 1; k < K; k++) route.push(addV(vadd(pa, vmul(vsub(pb, pa), k / K))));
+  route.push(m.somaV);
+  m.route = route; m.cum = cumOf(route); m.fL0 = 0; m.fL1 = 0;
+}
+function genLink(src, dst) {
+  const key = src.idx + '>' + dst.idx; if (linkKeys.has(key) || src === dst) return; linkKeys.add(key);
+  const tip = nearestLeaf(dst.E, src.pos), A = src.somaV, B = dst.E.vi[tip], pa = vpos(A), pb = vpos(B), d = vdist(pa, pb);
+  let mid = vadd(pa, pb); mid = vlen(mid) < .1 ? [0, -1, 0] : vnorm(mid);
+  const c1 = vadd(vadd(pa, vmul(vnorm(vsub(pb, pa)), d * .3)), vmul(mid, d * .28)), c2 = vadd(vadd(pb, vmul(vnorm(vsub(pb, dst.pos)), d * .3)), vmul(mid, d * .28));
+  const K = 22, verts = [A];
+  for (let k = 1; k < K; k++) verts.push(addV(bez3(pa, c1, c2, pb, k / K)));
+  verts.push(B);
+  for (let j = 0; j < K; j++) addS(verts[j], verts[j + 1], .0048, linkCls(src), src.idx, dst.idx, (j + .5) / K);
+  boutons.push({ v: B, o: src.idx, o2: dst.idx });
+  const fwd = verts.concat(pathRootTo(dst.E, tip).reverse().slice(1)), rev = fwd.slice().reverse();
+  const rec = { src, dst, fwd, fc: cumOf(fwd), rev, rc: cumOf(rev) };
+  nLinks.push(rec); src.linkRecs.push(rec); dst.linkRecs.push(rec);
+}
+function genSyn(m) {
+  const near = nlist.filter(o => o !== m && o.E && o.archived === m.archived).map(o => [o, vdist(o.pos, m.pos)]).filter(x => x[1] < 1.3).sort((a, b) => a[1] - b[1]).slice(0, 2);
+  const rng = mulberry(hashStr(m.key) ^ 77);
+  for (const [o] of near) {
+    const key = Math.min(m.idx, o.idx) + '~' + Math.max(m.idx, o.idx);
+    if (synKeys.has(key) || linkKeys.has(m.idx + '>' + o.idx) || linkKeys.has(o.idx + '>' + m.idx)) continue; synKeys.add(key);
+    const A = m.E.vi[nearestLeaf(m.E, o.pos)], B = o.E.vi[nearestLeaf(o.E, m.pos)], pa = vpos(A), pb = vpos(B);
+    const ctl = vadd(vmul(vadd(pa, pb), .5), vmul(randUnit(rng), vdist(pa, pb) * .18)), K = 9, verts = [A];
+    for (let k = 1; k < K; k++) { const u = k / K, v = 1 - u; verts.push(addV([0, 1, 2].map(j => v * v * pa[j] + 2 * u * v * ctl[j] + u * u * pb[j]))); }
+    verts.push(B);
+    for (let j = 0; j < K; j++) addS(verts[j], verts[j + 1], .0032, 8, m.idx, o.idx, (j + .5) / K);
+    nSyns.push({ o: m, o2: o });
+  }
+}
+function nnRebuild() {
+  VX = []; VY = []; VZ = []; SA = []; SB = []; SW = []; SC = []; SO = []; SO2 = []; SF = [];
+  nLinks = []; nSyns = []; boutons = []; linkKeys = new Set(); synKeys = new Set();
+  nlist = nlist.filter(m => m.slot);
+  nlist.forEach((m, i) => { m.idx = i; m.segs = []; m.segs2 = []; m.linkRecs = []; });
+  emitCenter();
+  for (const m of nlist) emitMem(m);
+  for (const m of nlist) m.archived ? genDirect(m) : genFiber(m);
+  for (const e of wikiEdges) { const s = nmap.get(e.source.key), d = nmap.get(e.target.key); if (s && d && s.E && d.E) genLink(s, d); }
+  for (const m of nlist) genSyn(m);
+  nDirty = true;
+}
+// 依 shown（雲上要放的記憶）同步：新的長出來、消失的留成殘影凋零、換專案整個重來
+function nnSync() {
+  const proj = SNAP ? SNAP.current : '';
+  if (proj !== nProj) { nProj = proj; nmap = new Map(); slotOf = {}; pulses = []; embers = []; }
+  if (!SLOTS) SLOTS = makeSlots();
+  const next = new Map(), born = [];
+  for (const f of shown) {
+    if (f.more) continue;
+    let m = nmap.get(f.key);
+    if (!m || m.ghost) {
+      m = { key: f.key, phase: '', grow: 1, heat: 0 };
+      if (!f.archived && bornAt[f.key] && elapsed - bornAt[f.key] < 3000) { m.phase = 'incoming'; m.grow = 0; born.push(m); }
+    }
+    Object.assign(m, { f, type: f.type, archived: f.archived, label: f.label });
+    next.set(f.key, m);
+  }
+  for (const [k, m] of nmap) {
+    if (next.has(k)) continue;
+    if (!m.ghost) {                                                  // 這條記憶剛消失：留下殘影凋零（刪除紅、銷毀燒、其他淡出）
+      if (!m.E) continue;
+      m.ghost = true; m.f = null; m.g0 = elapsed; m.grow = 1;
+      m.phase = m.burnRef ? 'burn' : m.redHit && elapsed - m.redHit < 6000 ? 'wither' : 'fade';
+      if (m.phase !== 'fade') sparks(m, m.phase === 'burn' ? 22 : 14);
+    }
+    if (m.phase !== 'gone') next.set(k, m);
+  }
+  nmap = next; nlist = [...next.values()];
+  assignSlots();
+  nnRebuild();
+  for (const m of born) m.pulse = pulse(m.route, m.cum, 'create', { onArrive: () => { m.phase = 'grow'; m.g0 = elapsed; flashMem(m, 'create'); } });
+}
+const isDyn = m => m.phase !== '';
+
+/* 相機與投影（yaw／pitch 沿用卡片雲的旋轉；裝置像素） */
+const staticCv = document.createElement('canvas'), sg = staticCv.getContext('2d');
+const centerCv = document.createElement('canvas'), cg = centerCv.getContext('2d');
+const bloomA = [document.createElement('canvas'), document.createElement('canvas')];
+let DPR = 1, Wd = 0, Hd = 0, CX = 0, CY = 0, FOC = 1, nDirty = true, pYaw = NaN, pPitch = NaN, gaugeRects = [];
+function project() {
+  const n = VX.length;
+  if (PX.length < n) { const m = n + 2048; PX = new Float32Array(m); PY = new Float32Array(m); PS = new Float32Array(m); PN = new Float32Array(m); }
+  const cY = Math.cos(yaw), sY = Math.sin(yaw), cP = Math.cos(pitch), sP = Math.sin(pitch);
+  for (let i = 0; i < n; i++) {
+    const x = VX[i], y = VY[i], z = VZ[i], x1 = cY * x + sY * z, z1 = -sY * x + cY * z, y2 = cP * y - sP * z1, z2 = sP * y + cP * z1;
+    const s = FOC / Math.max(.4, camD - z2);
+    PX[i] = CX + x1 * s; PY[i] = CY + y2 * s; PS[i] = s; PN[i] = nclamp((z2 + 2.8) / 5.6);
+  }
+}
+const fogOf = n => .14 + .86 * Math.pow(n, 1.3);
+const WB = [.45, .65, .9, 1.25, 1.7, 2.3, 3.1, 4.2, 5.6, 7.5, 10];
+const wBucket = px => { for (let k = 0; k < WB.length - 1; k++) if (px < (WB[k] + WB[k + 1]) / 2) return k; return WB.length - 1; };
+function drawSegs(g, list, alphaFn, tint) {
+  const B = new Map();
+  for (const i of list) {
+    const a = SA[i], b = SB[i];
+    let am = alphaFn ? alphaFn(i) : 1; if (am <= .01) continue;
+    const px = SW[i] * (PS[a] + PS[b]) * .5 / DPR; if (px < .45) am *= px / .45;
+    const ab = Math.min(9, Math.round(fogOf((PN[a] + PN[b]) * .5) * am * 9));
+    if (ab <= 0) continue;
+    const key = SC[i] * 1000 + wBucket(px) * 10 + ab;
+    let arr = B.get(key); if (!arr) B.set(key, arr = []); arr.push(i);
+  }
+  for (const [key, arr] of B) {
+    const cl = NCLS[(key / 1000) | 0], wb = ((key % 1000) / 10) | 0, ab = key % 10;
+    g.lineWidth = WB[wb] * DPR; g.strokeStyle = nrgba(tint || cl.c, cl.a * ab / 9);
+    g.beginPath();
+    for (const i of arr) { g.moveTo(PX[SA[i]], PY[SA[i]]); g.lineTo(PX[SB[i]], PY[SB[i]]); }
+    g.stroke();
+  }
+}
+const sprites = {};
+function sprite(c) {
+  const key = (c[0] >> 3) + ',' + (c[1] >> 3) + ',' + (c[2] >> 3);
+  let s = sprites[key];
+  if (!s) { s = document.createElement('canvas'); s.width = s.height = 64; const g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, nrgba(c, .9)); gr.addColorStop(.25, nrgba(c, .35)); gr.addColorStop(1, nrgba(c, 0)); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); sprites[key] = s; }
+  return s;
+}
+function glow(g, x, y, r, c, a) { if (a <= .01 || r <= .4) return; g.globalAlpha = nclamp(a); g.drawImage(sprite(c), x - r, y - r, r * 2, r * 2); g.globalAlpha = 1; }
+const segOwnerOk = i => { const o = SO[i], o2 = SO2[i]; const a = o >= 0 ? nlist[o] : null, b = o2 >= 0 ? nlist[o2] : null; return (!a || ((!a.archived || archiveVisible) && !isDyn(a))) && (!b || ((!b.archived || archiveVisible) && !isDyn(b))); };
+function somaColor(m) { return m.archived ? [150, 162, 170] : TYPE_RGB[m.type] || CORE_GOLD; }
+// 沒載入的記憶：整顆壓暗成背景，載入後才亮起
+const DIM = .26;
+const litOf = m => !m || m.archived || loadedKeys.has(m.key) || isDyn(m) ? 1 : DIM;
+const segLit = i => { const a = SO[i] >= 0 ? nlist[SO[i]] : null, b = SO2[i] >= 0 ? nlist[SO2[i]] : null; return b ? (litOf(a) + litOf(b)) / 2 : litOf(a); };
+function drawSoma(g, m, a) {
+  a *= litOf(m);
+  const v = m.somaV, s = PS[v], f = fogOf(PN[v]) * a, r = m.soma * s, c = somaColor(m);
+  glow(g, PX[v], PY[v], Math.min(r * 5, 26 * DPR), c, f * (m.archived ? .35 : .6));
+  glow(g, PX[v], PY[v], r * 1.5, nmix(c, [255, 255, 255], .6), f * (m.archived ? .6 : 1));
+}
+function nnRenderStatic() {
+  project();
+  const cList = [], sList = [];
+  for (let i = 0; i < SA.length; i++) { if (SO[i] === -1) cList.push(i); else if (segOwnerOk(i)) sList.push(i); }
+  for (const g of [sg, cg]) { g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, Wd, Hd); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; }
+  drawSegs(sg, sList, segLit);
+  for (const b of boutons) { const m = nlist[b.o], m2 = nlist[b.o2]; if (isDyn(m) || isDyn(m2) || ((m.archived || m2.archived) && !archiveVisible)) continue; glow(sg, PX[b.v], PY[b.v], 3.2 * DPR, somaColor(m), fogOf(PN[b.v]) * .7); }
+  for (const m of nlist) if (!isDyn(m) && (!m.archived || archiveVisible)) drawSoma(sg, m, 1);
+  drawSegs(cg, cList);
+  for (const v of axonTips) { glow(cg, PX[v], PY[v], .03 * PS[v], [255, 224, 170], fogOf(PN[v])); glow(cg, PX[v], PY[v], .009 * PS[v], [255, 250, 235], 1); }
+}
+function nnEnsure() {
+  if (!Wd || !NCtr) return;
+  if (nDirty || yaw !== pYaw || pitch !== pPitch || camD !== pCam) { pYaw = yaw; pPitch = pitch; pCam = camD; nDirty = false; nnRenderStatic(); }
+}
+
+/* 中央胞體與膜：預先畫好的看板圖，事件時整層染色 */
+const somaCv = document.createElement('canvas'), hazeCv = document.createElement('canvas'), tintCv = document.createElement('canvas');
+let tintKey = '';
+function blob(g, fn, n) {
+  const P = []; for (let i = 0; i < n; i++) { const a = i / n * 6.283, r = fn(a); P.push(Math.cos(a) * r, Math.sin(a) * r); }
+  g.beginPath(); g.moveTo((P[2 * n - 2] + P[0]) / 2, (P[2 * n - 1] + P[1]) / 2);
+  for (let i = 0; i < n; i++) { const j = (i + 1) % n; g.quadraticCurveTo(P[2 * i], P[2 * i + 1], (P[2 * i] + P[2 * j]) / 2, (P[2 * i + 1] + P[2 * j + 1]) / 2); }
+  g.closePath();
+}
+function buildBillboards() {
+  const rng = mulberry(CENTER_SEED ^ 0x51ed);
+  somaCv.width = somaCv.height = 256; let g = somaCv.getContext('2d'); g.setTransform(1, 0, 0, 1, 128, 128);
+  const bumps = Array.from({ length: 7 }, () => [rng() * 6.283, .5 + rng() * .5]), ph = [rng() * 6.283, rng() * 6.283];
+  blob(g, a => { let b = 0; for (const [d, k] of bumps) { const dd = Math.atan2(Math.sin(a - d), Math.cos(a - d)); b += k * Math.exp(-dd * dd / .08); } return 78 * (.8 + .35 * Math.min(1, b) + .05 * Math.sin(3 * a + ph[0]) + .03 * Math.sin(7 * a + ph[1])); }, 72);
+  let gr = g.createRadialGradient(-8, -8, 0, 0, 0, 105);
+  gr.addColorStop(0, 'rgba(255,252,240,1)'); gr.addColorStop(.3, 'rgba(255,232,196,.97)'); gr.addColorStop(.62, 'rgba(178,232,250,.85)'); gr.addColorStop(1, 'rgba(104,190,232,.5)');
+  g.fillStyle = gr; g.fill(); g.lineWidth = 1.4; g.strokeStyle = 'rgba(220,247,255,.7)'; g.stroke();
+  gr = g.createRadialGradient(5, -3, 0, 5, -3, 32); gr.addColorStop(0, '#fff'); gr.addColorStop(.7, 'rgba(255,244,222,.8)'); gr.addColorStop(1, 'rgba(255,236,200,.1)');
+  g.fillStyle = gr; g.beginPath(); g.arc(5, -3, 32, 0, 6.283); g.fill();
+  g.fillStyle = '#fff'; g.beginPath(); g.arc(10, -7, 8, 0, 6.283); g.fill();
+  hazeCv.width = hazeCv.height = tintCv.width = tintCv.height = 512; g = hazeCv.getContext('2d'); g.setTransform(1, 0, 0, 1, 256, 256);
+  for (let i = 0; i < 7; i++) {
+    const ox = (rng() - .5) * 60, oy = (rng() - .5) * 60, R = 256 * (.22 + .075 * i), p = [rng() * 6.283, rng() * 6.283, rng() * 6.283];
+    g.save(); g.translate(ox, oy); blob(g, a => R * (1 + .13 * Math.sin(2 * a + p[0]) + .09 * Math.sin(3 * a + p[1]) + .05 * Math.sin(5 * a + p[2])), 48);
+    g.fillStyle = 'rgba(255,255,255,.03)'; g.fill(); g.strokeStyle = 'rgba(255,255,255,.07)'; g.lineWidth = 1.5; g.stroke(); g.restore();
+  }
+  gr = g.createRadialGradient(0, 0, 0, 0, 0, 120); gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(.4, 'rgba(255,255,255,.16)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.beginPath(); g.arc(0, 0, 120, 0, 6.283); g.fill();
+  tintKey = '';
+}
+function retint(c) {
+  const key = (c[0] >> 3) + ',' + (c[1] >> 3) + ',' + (c[2] >> 3); if (key === tintKey) return; tintKey = key;
+  const g = tintCv.getContext('2d'); g.globalCompositeOperation = 'copy'; g.drawImage(hazeCv, 0, 0);
+  g.globalCompositeOperation = 'source-in'; g.fillStyle = nrgba(c, 1); g.fillRect(0, 0, 512, 512); g.globalCompositeOperation = 'source-over';
+}
+
+/* 動作電位：沿 3D 路徑傳遞；讀取＝粗細起伏的光，寫入類＝細線三顆短脈衝 */
+let pulses = [], embers = [], ripples = [], nnHover = null;
+const loadedKeys = new Set();
+function routeAt(route, cum, pos) {
+  let lo = 0, hi = cum.length - 1;
+  if (pos <= 0) return [PX[route[0]], PY[route[0]]]; if (pos >= cum[hi]) return [PX[route[hi]], PY[route[hi]]];
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (cum[m] <= pos) lo = m; else hi = m; }
+  const t = (pos - cum[lo]) / ((cum[hi] - cum[lo]) || 1), a = route[lo], b = route[hi];
+  return [PX[a] + (PX[b] - PX[a]) * t, PY[a] + (PY[b] - PY[a]) * t];
+}
+function pulse(route, cum, kind, opt = {}) {
+  const p = { route, cum, kind, c: opt.color || EV_RGB[kind] || CORE_GOLD, t0: elapsed, speed: opt.speed || (kind === 'read' ? 2.1 : 2.7), weak: !!opt.weak, onArrive: opt.onArrive, arrived: false, trail: opt.weak ? .3 : kind === 'read' ? .55 : .2 };
+  pulses.push(p); return p;
+}
+function drawPulse(g, p) {
+  const L = p.cum[p.cum.length - 1], head = (elapsed - p.t0) / 1000 * p.speed;
+  if (head >= L && !p.arrived) { p.arrived = true; p.onArrive && p.onArrive(); }
+  const offs = p.kind === 'read' || p.weak ? [0] : [0, .14, .28];
+  if (head - offs[offs.length - 1] - p.trail > L) { p.done = true; return; }
+  const base = (p.weak ? 1.3 : p.kind === 'read' ? 2.8 : 1.5) * DPR, al = p.weak ? .5 : 1;
+  for (const o of offs) {
+    const h = head - o, lo = Math.max(0, h - p.trail), hi = Math.min(L, h); if (hi <= lo) continue;
+    let prev = routeAt(p.route, p.cum, lo);
+    for (let k = 1; k <= 12; k++) {
+      const pos = lo + (hi - lo) * k / 12, q = routeAt(p.route, p.cum, pos), tt = k / 12;
+      let w = base * (.25 + .75 * tt);
+      if (p.kind === 'read' && !p.weak && !reducedMotion) w *= 1 + .45 * Math.sin(elapsed / 85 + pos * 28);
+      g.lineWidth = w; g.strokeStyle = nrgba(nmix(p.c, [255, 255, 255], tt * .35), al * (.2 + .8 * tt));
+      g.beginPath(); g.moveTo(prev[0], prev[1]); g.lineTo(q[0], q[1]); g.stroke(); prev = q;
+    }
+    if (h <= L) glow(g, prev[0], prev[1], (p.weak ? 7 : 11) * DPR, p.c, al);
+  }
+}
+function flashMem(m, kind, s = 1) { m.flash = { t0: elapsed, c: EV_RGB[kind] || somaColor(m), s }; }
+function sparks(m, n) {
+  if (m.somaV == null || !PX.length) return;
+  const v = m.somaV;
+  for (let k = 0; k < n; k++) { const a = Math.random() * 6.283, sp = (.008 + Math.random() * .018) * DPR; embers.push({ x: PX[v], y: PY[v], vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - .006 * DPR, t0: elapsed, life: 900 + Math.random() * 700 }); }
+}
+// 事件進來（onEvents）：CLAUDE.md／MEMORY.md 只讓儀表發光，其餘沿網路打一道動作電位
+function nnEvent(key, kind) {
+  if (key === '@claude' || key === 'memory.md') return;
+  const m = nmap.get(key);
+  if (!m || m.ghost || !m.route || m.phase === 'incoming') return;
+  if (kind === 'mention') { pulse(m.route, m.cum, 'read', { weak: true, color: somaColor(m), speed: 1.8 }); return; }
+  pulse(m.route, m.cum, kind, { onArrive: () => {
+    flashMem(m, kind);
+    if (kind === 'delete') m.redHit = elapsed;
+    if (kind === 'modify') { ripples.push({ m, t0: elapsed }); ripples.push({ m, t0: elapsed + 220 }); }
+    if (kind === 'read') for (const r of m.linkRecs) {               // 抵達後沿 [[連結]] 往相鄰記憶擴散一層（弱）
+      const o = r.src === m ? r.dst : r.src; if (o.ghost || isDyn(o) || (o.archived && !archiveVisible)) continue;
+      pulse(r.src === m ? r.fwd : r.rev, r.src === m ? r.fc : r.rc, 'read', { weak: true, speed: 1.6, onArrive: () => flashMem(o, 'read', .5) });
+    }
+  } });
+}
+function dynAlpha(m, i) {
+  const own = SO[i] === m.idx, ph = m.phase;
+  if (SC[i] === 7 && own) {                                         // 中央纖維：跟著脈衝頭往外長
+    if (ph === 'incoming') { const p = m.pulse, head = p ? (elapsed - p.t0) / 1000 * p.speed : 0; return m.fL0 + SF[i] * (m.fL1 - m.fL0) < head ? 1 : 0; }
+    return ph === 'grow' ? 1 : m.grow;
+  }
+  if (own && isBodyCls(SC[i])) { if (ph === 'incoming') return 0; return SF[i] < m.grow ? 1 : 0; }
+  return ph === 'incoming' ? 0 : m.grow;
+}
+
+/* ---------- 開機注入儀表（2026-11-12 用戶定：取代門把；縮小放在中央神經元下方，不接線，被讀寫時自己發光） ---------- */
+const tokensOf = s => { const cjk = (String(s || '').match(/[　-〿㐀-鿿豈-﫿＀-￯]/g) || []).length; return Math.round(cjk + (String(s || '').length - cjk) / 3.5); };
+const kfmt = n => n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+function gaugeSVG() {
+  let t = '';
+  for (let i = 0; i < 60; i++) { const a = i / 60 * 6.283, maj = i % 5 === 0, r0 = maj ? 55 : 57; t += `<line x1="${(60 + Math.cos(a) * r0).toFixed(1)}" y1="${(60 + Math.sin(a) * r0).toFixed(1)}" x2="${(60 + Math.cos(a) * 60).toFixed(1)}" y2="${(60 + Math.sin(a) * 60).toFixed(1)}" stroke-opacity="${maj ? .55 : .22}" stroke-width="${maj ? 1.2 : .8}"/>`; }
+  return `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="51" class="g-disc"/><g class="g-ticks">${t}</g>
+    <circle cx="60" cy="60" r="45" class="g-track"/><circle class="g-arc" cx="60" cy="60" r="45" transform="rotate(-90 60 60)" stroke-dasharray="0 999"/>
+    <line class="g-bud" x1="60" y1="9" x2="60" y2="21"/><circle class="g-flash" cx="60" cy="60" r="51"/></svg><span class="g-num"></span><span class="g-lab"></span>`;
+}
+for (const h of document.querySelectorAll('.handle')) h.innerHTML = gaugeSVG();
+function updateHandles() {
+  const budget = (sleepReport && sleepReport.budget) || 5000, P = 2 * Math.PI * 45;
+  const tok = { '@claude': tokensOf(byKey('@claude')?.content), 'memory.md': tokensOf(byKey('memory.md')?.content) };
+  const total = tok['@claude'] + tok['memory.md'], over = total > budget;
+  for (const h of document.querySelectorAll('.handle')) {
+    const key = h.dataset.open, has = !!byKey(key), name = key === '@claude' ? 'CLAUDE.md' : 'MEMORY.md', other = total - tok[key];
+    h.classList.toggle('missing', !has); h.classList.toggle('over', has && over);
+    h.title = has ? `${name} · ≈${tok[key].toLocaleString()} tok\n開機注入合計 ≈${total.toLocaleString()} / 預算 ${budget.toLocaleString()}${over ? '（超過）' : ''}\n點擊開啟` : name + ' · 不存在';
+    h.querySelector('.g-arc').setAttribute('stroke-dasharray', (P * nclamp(tok[key] / budget)).toFixed(1) + ' 999');
+    h.querySelector('.g-bud').setAttribute('transform', `rotate(${(nclamp((budget - other) / budget) * 360).toFixed(1)} 60 60)`);
+    h.querySelector('.g-num').textContent = has ? kfmt(tok[key]) : '—';
+    h.querySelector('.g-lab').textContent = name;
+  }
+}
+
+/* ---------- 雲上的記憶：DOM 按鈕只當標籤＋點擊區，位置跟著神經元胞體 ---------- */
+let yaw = 0.55, pitch = -0.3, yawVel = 0, pitchVel = 0, hovering = false, dragging = null;
+let cx = 210, cy = 100, coreR = 30;
 function buildNodes() {
   const box = $('.nodes');
   box.replaceChildren();
   const act = memories.filter(f => !f.archived), arc = memories.filter(f => f.archived);
-  // 雲上最多放 CAP 張，多出的收進「+N 筆」（最近改過的優先上雲）
-  const CAP = cloudCap, ARC_CAP = Math.max(4, Math.round(cloudCap / 3));
+  // 網路上最多放滿槽位，多出的收進「+N 筆」（最近改過的優先上網路）
+  const CAP = ACTIVE_CAP(), ARC_CAP = ARCHIVE_CAP();
   let visAct = act, hidAct = [];
-  if (act.length > CAP) { const s = [...act].sort((a, b) => b.mtime - a.mtime); visAct = s.slice(0, CAP - 1); hidAct = s.slice(CAP - 1); }
+  if (act.length > CAP) { const s = [...act].sort((a, b) => b.mtime - a.mtime); visAct = s.slice(0, CAP); hidAct = s.slice(CAP); }
   let visArc = arc, hidArc = [];
-  if (arc.length > ARC_CAP) { visArc = arc.slice(0, ARC_CAP - 1); hidArc = arc.slice(ARC_CAP - 1); }
-  const a = hidAct.length ? [...visAct, { more: hidAct, archived: false }] : visAct;
-  const b = hidArc.length ? [...visArc, { more: hidArc, archived: true }] : visArc;
+  if (arc.length > ARC_CAP) { visArc = arc.slice(0, ARC_CAP); hidArc = arc.slice(ARC_CAP); }
+  const all = [...visAct, ...(hidAct.length ? [{ more: hidAct, archived: false }] : []), ...visArc, ...(hidArc.length ? [{ more: hidArc, archived: true }] : [])];
   shown = [];
-  // 費氏球面均勻分布：現役在上半、封存沉在南極一帶
-  const all = [...a, ...b], N = all.length, GA = Math.PI * (3 - Math.sqrt(5));
-  all.forEach((f, i) => {
-    const y = N === 1 ? 0 : 1 - 2 * (i + .5) / N, r = Math.sqrt(1 - y * y), th = i * GA + .6;
-    f.ux = Math.cos(th) * r; f.uy = -y; f.uz = Math.sin(th) * r;
-  });
   let n = 0;
   for (const f of all) {
     const button = document.createElement('button');
@@ -542,68 +1047,84 @@ function buildNodes() {
       label.textContent = f.label;
       meta.textContent = f.archived ? 'ARCHIVED' : f.type.toUpperCase() + ' / ' + pad(++n);
       button.addEventListener('click', () => openReader(f));
+      button.addEventListener('pointerenter', () => { nnHover = f.key; });
+      button.addEventListener('pointerleave', () => { if (nnHover === f.key) nnHover = null; });
     }
     button.hidden = f.archived && !archiveVisible;
     const mark = document.createElement('span'); mark.className = 'node-mark';
     button.append(label, meta, mark);
-    // 剛新增的記憶：從藍光裡浮現
-    if (!f.more && bornAt[f.key] && elapsed - bornAt[f.key] < 3000) { button.classList.add('born'); setTimeout(() => button.classList.remove('born'), 1500); }
+    if (!f.more && bornAt[f.key] && elapsed - bornAt[f.key] < 3000) { button.classList.add('born'); setTimeout(() => button.classList.remove('born'), 2600); }
     if (!f.more && burns.some(b => b.key === f.key)) button.classList.add('burning');
-    f.button = button; shown.push(f); box.append(button);
+    f.button = button; f.lblOff = null; shown.push(f); box.append(button);
   }
   for (const f of memories) if (!shown.includes(f)) f.button = null;
-  refreshLights(); positionNodes(); renderMarks(); paint();       // 先上事件 class 再算位置，凸顯才不會掉一格
+  nnSync();
+  refreshLights(); positionNodes(); renderMarks(); paint();
+  requestAnimationFrame(() => { for (const f of shown) if (f.button) f.lw = f.button.querySelector('.node-label').offsetWidth + 10; positionNodes(); });
 }
-const handlePos = side => ({ x: cx + side * (coreR * .42 + 8), y: cy + coreR * .06 });
-function point(file) {
-  if (file.type === 'boot') return { ...handlePos(file.key === '@claude' ? -1 : 1), d: 1 };
-  if (!file.button || file.button.hidden) return null;
-  return { x: file.sx, y: file.sy, d: file.depth };
-}
-// 每幀：旋轉 → 透視投影 → 依深度設位置、大小、透明度、前後層（核心球在 z-index 50，背面卡片被它擋住）
+const overlap = (a, b) => a[0] < b[0] + b[2] && a[0] + a[2] > b[0] && a[1] < b[1] + b[3] && a[1] + a[3] > b[1];
+// 每次視角變動：標籤跟著胞體；凸顯中的放大浮上來；其餘依前後深度淡出，互相撞到的收起文字（點擊區仍在）
 function positionNodes() {
-  const cY = Math.cos(yaw), sY = Math.sin(yaw), cP = Math.cos(pitch), sP = Math.sin(pitch);
+  nnEnsure();
+  const placed = [...gaugeRects], cs = SOMA * FOC / camD / DPR * 1.6;
+  placed.push([cx - cs, cy - cs, cs * 2, cs * 2]);
+  const order = [];
+  let moreN = 0;
   for (const f of shown) {
-    const x1 = f.ux * cY + f.uz * sY, z1 = -f.ux * sY + f.uz * cY;
-    const y2 = f.uy * cP - z1 * sP, z2 = f.uy * sP + z1 * cP;
-    const k = 3 / (3 - z2) / 1.2;                     // 0.625（背）～1.25（前）
-    const depth = (z2 + 1) / 2;
-    f.sx = cx + x1 * Rx * k; f.sy = cy + y2 * Ry * k; f.depth = depth;
-    // 互動中的卡片凸顯（2026-11-11 用戶定）：放大、不透明、浮到門縫與暗幕之上；事件結束後平滑縮回
+    const st = f.button.style;
+    if (f.more) {                                                   // 「+N 筆」固定在舞台右下
+      f.sx = width - 70 - (moreN++) * 64; f.sy = height - 40; f.depth = 1;
+      st.transform = 'translate3d(' + f.sx + 'px,' + f.sy + 'px,0) translate(-50%,-50%)'; st.opacity = '.9'; st.zIndex = 130;
+      continue;
+    }
+    const m = nmap.get(f.key);
+    if (!m || m.somaV == null || m.somaV >= VX.length) { st.transform = 'translate3d(-999px,-999px,0)'; continue; }
+    const v = m.somaV, depth = PN[v];
+    f.sx = PX[v] / DPR; f.sy = PY[v] / DPR; f.depth = depth;
     const cl = f.button.classList, hot = cl.contains('reading') || cl.contains('writing');
     f.boost = (f.boost || 0) + ((hot ? 1 : 0) - (f.boost || 0)) * (reducedMotion ? 1 : .14);
     if (f.boost < .002) f.boost = 0;
-    const s0 = .6 + .45 * depth, s = s0 + (Math.max(1.18, s0 + .12) - s0) * f.boost;
-    const o0 = (.22 + .78 * depth) * (f.archived ? .45 : 1);
-    // 只動 transform / opacity（走合成層，不觸發重排）；z-index 變了才寫
-    const st = f.button.style;
-    st.transform = 'translate3d(' + f.sx.toFixed(1) + 'px,' + f.sy.toFixed(1) + 'px,0) translate(-50%,-50%) scale(' + s.toFixed(3) + ')';
-    st.opacity = (o0 + (1 - o0) * f.boost).toFixed(2);
+    const grow = m.phase === 'incoming' ? 0 : m.phase === 'grow' ? nease(m.grow * 1.6) : 1;
+    const s = (.82 + .3 * depth) + (1.15 - (.82 + .3 * depth)) * f.boost;
+    const o0 = (.3 + .7 * depth) * (f.archived ? .55 : loadedKeys.has(f.key) ? 1 : .5);
+    st.transform = 'translate3d(' + f.sx.toFixed(1) + 'px,' + f.sy.toFixed(1) + 'px,0) translate(-50%,-8px) scale(' + s.toFixed(3) + ')';
+    st.opacity = ((o0 + (1 - o0) * f.boost) * grow).toFixed(2);
     const z = f.boost > .05 ? 200 : Math.round(depth * 100);
     if (f.z !== z) { f.z = z; st.zIndex = z; }
+    order.push(f);
+  }
+  order.sort((a, b) => (b.boost - a.boost) || (b.depth - a.depth));
+  for (const f of order) {
+    if (f.button.hidden) continue;
+    const forced = f.boost > .05 || f.key === nnHover, w = f.lw || 60, r = [f.sx - w / 2, f.sy + 5, w, 15];
+    const off = !forced && (f.depth < .36 || placed.some(p => overlap(p, r)));
+    if (!off) placed.push(r);
+    if (f.lblOff !== off) { f.lblOff = off; f.button.classList.toggle('lbl-off', off); }
   }
 }
 const boosting = () => active.length > 0 || shown.some(f => f.boost > 0);
 let lastSpin = 0;
 function spin(dt) {
   dt = Math.max(0, Math.min(dt, 100));
-  const idle = false;                                  // 待機不自轉（2026-11-11 用戶定），只靠滾輪／拖曳旋轉
   yaw += yawVel * dt;
   pitch = Math.max(-1.1, Math.min(1.1, pitch + pitchVel * dt));
   const decay = Math.exp(-dt / 380);
   yawVel *= decay; pitchVel *= decay;
   if (Math.abs(yawVel) < 1e-6) yawVel = 0;
   if (Math.abs(pitchVel) < 1e-6) pitchVel = 0;
-  return idle || yawVel || pitchVel;
+  // 縮放：鏡頭距離平滑追上滾輪設定的目標
+  const zd = zoomTarget - camD;
+  camD = Math.abs(zd) < .002 ? zoomTarget : camD + zd * (reducedMotion ? 1 : 1 - Math.exp(-dt / 110));
+  return yawVel || pitchVel || camD !== zoomTarget;                // 待機不自轉（2026-11-11 用戶定），只靠拖曳旋轉
 }
+// 滾輪＝縮放（2026-11-12 用戶定，原本是旋轉）；Shift＋滾輪仍可旋轉
 stage.addEventListener('wheel', e => {
   e.preventDefault();
-  const d = e.deltaMode === 1 ? 33 : 1;                 // 行模式換算成像素
-  if (e.shiftKey) pitchVel += e.deltaY * d * 5e-6;
-  else { yawVel += e.deltaY * d * 7.5e-6; pitchVel += e.deltaX * d * 5e-6; }
-  yawVel = Math.max(-.006, Math.min(.006, yawVel));
+  const d = e.deltaMode === 1 ? 33 : 1;
+  if (e.shiftKey) { yawVel += e.deltaY * d * 7.5e-6; yawVel = Math.max(-.006, Math.min(.006, yawVel)); return; }
+  zoomTarget = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomTarget * Math.exp(e.deltaY * d * .0011)));
 }, { passive: false });
-// 在空白處拖曳也能轉（點卡片仍是開閱讀器）
+stage.addEventListener('dblclick', e => { if (!e.target.closest('.node, button')) zoomTarget = CAM_D; });   // 雙擊空白處回到原本大小
 stage.addEventListener('pointerdown', e => {
   if (e.button !== 0 || e.target.closest('.node, button')) return;
   dragging = { x: e.clientX, y: e.clientY, t: performance.now() }; stage.setPointerCapture(e.pointerId);
@@ -619,138 +1140,127 @@ const endDrag = () => { dragging = null; };
 stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag);
 $('.nodes').addEventListener('pointerover', e => { hovering = !!e.target.closest('.node'); });
 $('.nodes').addEventListener('pointerout', e => { hovering = !!(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.node')); });
-let rebuildTimer = 0;
 function resize() {
   width = stage.clientWidth; height = stage.clientHeight;
   if (!width || !height) return;
-  // 記憶框隨舞台放大（420 寬的原稿為 1 倍，上限 1.8 倍）
-  nodeScale = Math.max(1, Math.min(1.8, width / 470, height / 470));
-  $('.nodes').style.setProperty('--ns', nodeScale.toFixed(3));
-  const dpr = Math.min(devicePixelRatio || 1, 2);
-  for (const [cv, c] of [[canvas, ctx], [coreCanvas, cctx]]) {
-    cv.width = Math.round(width * dpr); cv.height = Math.round(height * dpr); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  Wd = Math.round(width * DPR); Hd = Math.round(height * DPR);
+  for (const cv of [canvas, coreCanvas, staticCv, centerCv]) { cv.width = Wd; cv.height = Hd; }
+  bloomA[0].width = Math.ceil(Wd / 4); bloomA[0].height = Math.ceil(Hd / 4); bloomA[1].width = Math.ceil(Wd / 10); bloomA[1].height = Math.ceil(Hd / 10);
+  // 中央神經元在舞台中央略偏上，下方留給兩個儀表
+  CX = Wd / 2; CY = Hd * .46; FOC = Math.min(Wd, Hd * 1.2) * 1.02;   // 最外圈（半徑約 2.9）也留在舞台內
+  cx = CX / DPR; cy = CY / DPR; coreR = Math.max(16, SOMA * FOC / CAM_D / DPR * 3);
+  const r = Math.max(22, Math.min(46, Math.min(width, height) * .085)), gy = Math.min(cy + height * .3, height - r - 30), gdx = Math.max(width * .15, r * 2.5);
+  gaugeRects = [];
+  for (const h of document.querySelectorAll('.handle')) {
+    const x = cx + (+h.dataset.side) * gdx;
+    h.style.left = x + 'px'; h.style.top = gy + 'px'; h.style.width = h.style.height = 2 * r + 'px';
+    h.style.setProperty('--gr', r + 'px');
+    gaugeRects.push([x - r - 4, gy - r - 4, 2 * r + 8, 2 * r + 8]);
   }
-  // 雲的幾何：螢幕上最外緣出現在側面（透視約 0.89 倍），以此反推半徑，卡片不出舞台
-  const halfW = 56 * nodeScale, halfH = 15 * nodeScale;
-  // 球與雲的中心＝舞台正中央（2026-11-10 用戶定：Fable 繪製）；上下各留 36px，下緣避開圖例列
-  cx = width / 2; cy = height / 2;
-  Rx = Math.max(50, (width / 2 - halfW - 8) / .89);
-  Ry = Math.max(40, (height / 2 - 36 - halfH) / .89);
-  const cap = Math.max(12, Math.min(60, Math.floor(Rx * Ry / (780 * nodeScale * nodeScale))));
-  if (cap !== cloudCap) { cloudCap = cap; clearTimeout(rebuildTimer); rebuildTimer = setTimeout(() => SNAP && buildNodes(), 120); }
-  coreR = Math.max(16, Math.min(Rx, Ry) * .3);
-  const hc = $('.hud-center'); hc.style.top = (cy + coreR * 1.25 + 10) + 'px';   // 標籤貼在門縫正下方
   placeEmptyState();
-  for (const h of document.querySelectorAll('.handle')) {                         // 門把貼著門縫兩側、略低於正中
-    const side = +h.dataset.side, p = handlePos(side), lab = $('.handle-label[data-for="' + h.dataset.open + '"]');
-    h.style.left = p.x + 'px'; h.style.top = p.y + 'px';
-    lab.style.top = p.y + 'px';
-    if (side < 0) { lab.style.left = ''; lab.style.right = (width - p.x + 12) + 'px'; } else { lab.style.right = ''; lab.style.left = (p.x + 12) + 'px'; }
-  }
+  nDirty = true;
   positionNodes(); paint();
 }
 new ResizeObserver(resize).observe(stage);
 
-/* ---------- 繪製 ---------- */
-function line(x1, y1, x2, y2, color, lw = 1) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.stroke(); }
-// 有機光束：沿線的粗細波動往終點流動、兩端收細、外暈＋內芯兩層（2026-11-10）
-// o = { bend, base, amp, period(ms), waves, alpha }
-function organicBeam(ax, ay, bx, by, color, o) {
-  const N = o.lite ? 18 : 30, mx = (ax + bx) / 2, my = (ay + by) / 2 - (o.bend || 0);
-  const pts = [];
-  for (let i = 0; i <= N; i++) {
-    const s = i / N, u = 1 - s;
-    const x = u * u * ax + 2 * u * s * mx + s * s * bx, y = u * u * ay + 2 * u * s * my + s * s * by;
-    const env = Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(.04, s))), .55);
-    let wave = .5 + .5 * Math.sin((s * (o.waves || 1.6) - elapsed / o.period) * Math.PI * 2);
-    if (o.sharp) wave = Math.pow(wave, o.sharp);          // 次方越大，波峰越窄＝一顆顆短脈衝
-    const slow = .5 + .5 * Math.sin(elapsed / (o.period * 2.7) * Math.PI * 2 + s * 1.3);
-    pts.push({ x, y, w: env * (o.base + o.amp * (wave * .75 + slow * .25)) });
-  }
-  // 效能（2026-11-10）：改畫成一條「粗細沿線變化的填色帶」——每層一次 fill，不再逐段 stroke＋shadowBlur
-  const nx = [], ny = [];
-  for (let i = 0; i <= N; i++) {
-    const p = pts[Math.max(0, i - 1)], q = pts[Math.min(N, i + 1)];
-    const dx = q.x - p.x, dy = q.y - p.y, len = Math.hypot(dx, dy) || 1;
-    nx.push(-dy / len); ny.push(dx / len);
-  }
-  const ga = ctx.globalAlpha;
-  ctx.save(); ctx.fillStyle = color;
-  for (const [mul, alpha, blur] of [[3.2, .16, 0], [1, 1, o.lite ? 0 : 5]]) {
-    ctx.shadowColor = color; ctx.shadowBlur = blur;
-    ctx.globalAlpha = (o.alpha ?? 1) * alpha * ga;
-    ctx.beginPath();
-    for (let i = 0; i <= N; i++) { const h = Math.max(.25, pts[i].w * mul / 2); i ? ctx.lineTo(pts[i].x + nx[i] * h, pts[i].y + ny[i] * h) : ctx.moveTo(pts[i].x + nx[i] * h, pts[i].y + ny[i] * h); }
-    for (let i = N; i >= 0; i--) { const h = Math.max(.25, pts[i].w * mul / 2); ctx.lineTo(pts[i].x - nx[i] * h, pts[i].y - ny[i] * h); }
-    ctx.closePath(); ctx.fill();
-  }
-  ctx.restore();
-}
-function circle(x, y, r, color, lw = 1, s = 0, e = Math.PI * 2) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), s, e); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.stroke(); }
-// 關聯線只畫「凸顯中的卡片」碰到的那幾條（2026-11-11 用戶定）：平常圖上沒有線，一眼看出哪些記憶正在被用
-function drawConnections() {
-  for (const edge of edges) {
-    if (!archiveVisible && (edge.source.archived || edge.target.archived)) continue;
-    const lit = Math.max(edge.source.boost || 0, edge.target.boost || 0);
-    if (lit <= 0) continue;
-    const a = point(edge.source), b = point(edge.target);
-    if (!a || !b) continue;
-    ctx.globalAlpha = lit * (.45 + .55 * Math.max(a.d, b.d));   // 跟著卡片凸顯淡入淡出
-    try { drawEdge(edge, a, b); } finally { ctx.globalAlpha = 1; }
-  }
-}
-function drawEdge(edge, a, b) {
-  {
-    const alpha = edge.source.archived || edge.target.archived ? '22' : edge.kind === 'wiki' ? '80' : '22';
-    const color = colors[edge.target.type] || colors.project;
-    ctx.setLineDash(edge.kind === 'index' ? [2, 6] : []);
-    ctx.beginPath(); ctx.moveTo(a.x, a.y);
-    ctx.quadraticCurveTo((a.x + b.x) / 2, (a.y + b.y) / 2 - 12, b.x, b.y);
-    // [[連結]] 光絲：有機粗細波動沿線流向被引用者（2026-11-10 用戶定）
-    if (edge.kind === 'wiki' && !reducedMotion && !(edge.source.archived || edge.target.archived)) {
-      ctx.setLineDash([]);
-      organicBeam(a.x, a.y, b.x, b.y, color, { bend: 12, base: .5, amp: 1.8, period: 2600, waves: 1.4, alpha: .75, lite: true });
-    } else {
-      ctx.strokeStyle = color + alpha; ctx.lineWidth = edge.kind === 'wiki' ? 1 : .6; ctx.stroke();
+/* ---------- 中央神經元的呼吸與染色（沿用門縫的開合邏輯：有事件張開、入睡闔上、醒來猛然打開） ---------- */
+let coreClock = 0, coreLast = -1, coreHeat = 0, coreBusy = 0, coreOpen = .1, coreTint = [...CORE_GOLD], breath = 0, lastNPaint = -1e9;
+const slitHalf = () => coreR * 1.25;
+function coreUpdate() {
+  const hot = active.some(a => a.kind !== 'read' && a.kind !== 'mention'), busy = active.length > 0 || pulses.length > 0;
+  const dt = coreLast < 0 ? 0 : Math.max(0, Math.min(elapsed - coreLast, 100)); coreLast = elapsed;
+  const ease = reducedMotion ? 1 : 1 - Math.exp(-dt / 240);
+  coreHeat += ((hot ? 1 : 0) - coreHeat) * ease; coreBusy += ((busy ? 1 : 0) - coreBusy) * ease;
+  let latest = null;
+  for (const a of active) if (a.kind !== 'mention' && (!latest || a.start > latest.start)) latest = a;
+  const tc = latest ? EV_RGB[latest.kind] || CORE_GOLD : CORE_GOLD;
+  coreTint = coreTint.map((v, i) => v + (tc[i] - v) * ease);
+  coreClock += dt;
+  const t = coreClock / 1000, sa = elapsed - sleepAt, asleep = sleepPhase === 'sleep' || sleepPhase === 'propose';
+  let target = .06 + .45 * coreBusy + .3 * coreHeat;
+  if (asleep) target = 0; else if (sleepPhase === 'scan') target = .2;
+  else if (sleepPhase === 'wake' && sa < 2500) target = 1.1 * (1 - sa / 2500) + .1;
+  coreOpen += (target - coreOpen) * (reducedMotion ? 1 : 1 - Math.exp(-dt / (sleepPhase === 'sleep' ? 600 : 160)));
+  breath = reducedMotion ? 0 : Math.sin(t * 6.283 / (asleep ? 7.2 : 4.6));
+  for (const m of nlist) {                                          // 生長／凋零進度
+    if (m.phase === 'grow') { m.grow = nclamp((elapsed - m.g0) / 1500); if (m.grow >= 1) { m.phase = ''; nDirty = true; } }
+    else if (m.phase === 'wither' || m.phase === 'fade' || m.phase === 'burn') {
+      m.grow = nclamp(1 - (elapsed - m.g0) / (m.phase === 'burn' ? BURN : 1400));
+      if (m.grow <= 0) { m.phase = 'gone'; nmap.delete(m.key); nlist = nlist.filter(x => x !== m); nnRebuild(); return coreUpdate(); }
     }
-    ctx.setLineDash([]);
   }
 }
-function drawHud() {
-  // 點陣底紋改由 .stage 的 CSS 背景畫一次（效能）
-  // 雲的赤道軌道：跟著旋轉傾斜的淡橢圓，給出立體感
-  const tilt = Math.abs(Math.sin(pitch));
-  ctx.save(); ctx.setLineDash([2, 7]);
-  ctx.beginPath(); ctx.ellipse(cx, cy, Rx * 1.02, Math.max(2, Ry * 1.02 * tilt), 0, 0, Math.PI * 2);
-  ctx.strokeStyle = '#edc47726'; ctx.lineWidth = .8; ctx.stroke();
-  ctx.restore();
+function bloom(g, src) {
+  const [a, b] = bloomA, ag = a.getContext('2d'), bg = b.getContext('2d');
+  ag.clearRect(0, 0, a.width, a.height); ag.drawImage(src, 0, 0, a.width, a.height);
+  bg.clearRect(0, 0, b.width, b.height); bg.drawImage(a, 0, 0, b.width, b.height);
+  g.globalAlpha = .32; g.drawImage(a, 0, 0, Wd, Hd); g.globalAlpha = .38; g.drawImage(b, 0, 0, Wd, Hd); g.globalAlpha = 1;
 }
-// 中心＝門縫（2026-11-11 用戶定：取代測地線金色燈球）：黑暗裡一道沒關緊的門，門後是光
-// 待命：幾乎闔上、緩緩呼吸；有事件：門縫打開、光往兩側灑出，顏色跟著最新事件（讀綠／新增藍／修改金／刪除紅）
-// 效能：不用 shadowBlur；每幀只有兩個漸層＋兩個矩形
-const hexRGB = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-// 光束顏色（2026-11-11 用戶定）：讀取綠、新增藍、修改金黃、刪除紅
-const EV = { read: '#7ee08a', create: '#68b0ff', modify: '#f5c850', delete: '#ff4856' };
-const EV_RGB = Object.fromEntries(Object.entries(EV).map(([k, v]) => [k, hexRGB(v)]));
-const CORE_GOLD = hexRGB(colors.project);
-let coreClock = 0, coreLast = -1, coreHeat = 0, coreBusy = 0, coreOpen = .1, coreTint = [...CORE_GOLD];
-const slitHalf = () => coreR * 1.25;                                 // 門縫半高
-
-/* ---------- 開機注入 token（門把上顯示，滑過看預算線） ---------- */
-const tokensOf = s => { const cjk = (String(s || '').match(/[　-〿㐀-鿿豈-﫿＀-￯]/g) || []).length; return Math.round(cjk + (String(s || '').length - cjk) / 3.5); };
-const kfmt = n => n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
-function updateHandles() {
-  const budget = (sleepReport && sleepReport.budget) || 5000;
-  const tok = { '@claude': tokensOf(byKey('@claude')?.content), 'memory.md': tokensOf(byKey('memory.md')?.content) };
-  const total = tok['@claude'] + tok['memory.md'], over = total > budget;
-  for (const h of document.querySelectorAll('.handle')) {
-    const key = h.dataset.open, has = !!byKey(key), name = key === '@claude' ? 'CLAUDE.md' : 'MEMORY.md';
-    h.classList.toggle('missing', !has); h.classList.toggle('over', has && over);
-    h.title = has ? `${name} · ≈${tok[key].toLocaleString()} tok\n開機注入合計 ≈${total.toLocaleString()} / 預算 ${budget.toLocaleString()}${over ? '（超過）' : ''}\n點擊開啟` : name + ' · 不存在';
-    const lab = $('.handle-label[data-for="' + key + '"]');
-    lab.innerHTML = '';
-    lab.append(name); if (has) { const i = document.createElement('i'); i.textContent = '≈' + kfmt(tok[key]) + ' tok'; lab.append(i); }
+// 底層畫布：整片網路（靜態快取＋凸顯、生長凋零、閃光、漣漪、銷毀前的加熱）
+function composeNet() {
+  const g = ctx; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, Wd, Hd); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+  g.drawImage(staticCv, 0, 0);
+  const lit = new Set(); for (const f of shown) if (f.boost > .05) lit.add(f.key); if (nnHover) lit.add(nnHover);
+  for (const k of lit) { const m = nmap.get(k); if (m && !isDyn(m) && (!m.archived || archiveVisible)) drawSegs(g, m.segs.filter(i => !isBodyCls(SC[i])).concat(m.segs2).filter(segOwnerOk), () => 1.6); }
+  for (const m of nlist) {
+    if (!isDyn(m) || (m.archived && !archiveVisible)) continue;
+    const red = m.phase === 'wither' || m.phase === 'burn';
+    const tint = red ? nmix(somaColor(m), m.phase === 'burn' ? [255, 150, 90] : [255, 72, 86], nclamp(1.4 - m.grow)) : null;
+    drawSegs(g, m.segs.concat(m.segs2), i => { const o = SO2[i] >= 0 ? nlist[SO2[i]] : null, a = o && o !== m && o.archived && !archiveVisible ? 0 : 1; return a * dynAlpha(m, i); }, tint);
+    if (m.phase === 'grow') drawSoma(g, m, nease(m.grow * 2));
+    if (red) { const v = m.somaV; glow(g, PX[v], PY[v], m.soma * PS[v] * 4 * m.grow, m.phase === 'burn' ? [255, 170, 110] : [255, 72, 86], m.grow); }
   }
+  for (const m of nlist) if (m.heat > 0 && !m.ghost && (!m.archived || archiveVisible)) {   // 銷毀：紅光注入、整顆越來越亮
+    const h = m.heat, v = m.somaV;
+    drawSegs(g, m.segs.filter(i => isBodyCls(SC[i])), () => h, nmix([255, 110, 80], [255, 236, 210], h));
+    glow(g, PX[v], PY[v], m.soma * PS[v] * (3 + 5 * h), [255, 120, 80], h);
+  }
+  for (const m of nlist) if (m.flash) {
+    const f = m.flash, p = (elapsed - f.t0) / 900; if (p >= 1 || m.somaV == null) { m.flash = null; continue; }
+    const v = m.somaV; glow(g, PX[v], PY[v], m.soma * PS[v] * (5 + 9 * p) * f.s, f.c, (1 - p) * f.s);
+  }
+  ripples = ripples.filter(r => {
+    const p = (elapsed - r.t0) / 1000; if (p < 0) return true; if (p >= 1 || r.m.ghost || r.m.somaV == null) return false;
+    const v = r.m.somaV; g.strokeStyle = nrgba(EV_RGB.modify, (1 - p) * .8); g.lineWidth = 1.5 * DPR; g.beginPath(); g.arc(PX[v], PY[v], r.m.soma * PS[v] * (2 + 9 * p), 0, 6.283); g.stroke(); return true;
+  });
+  bloom(g, canvas);
+  g.globalCompositeOperation = 'source-over';
+}
+// 上層畫布：中央大神經元（呼吸、染色）、動作電位、火星、睡眠掃描
+function composeCore(dt) {
+  const g = cctx; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, Wd, Hd); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+  const ox = PX[0], oy = PY[0], s0 = PS[0], b = breath, o = coreOpen, dim = sleepPhase && sleepPhase !== 'wake' && sleepPhase !== 'purge' ? .55 : 1;
+  const k = 1 + .02 * b + .045 * o;
+  retint(coreTint);
+  const hs = s0 * 1.5 * (1 + .03 * b + .06 * o); g.globalAlpha = nclamp((.26 + .1 * b + .35 * o) * dim); g.drawImage(tintCv, ox - hs, oy - hs, hs * 2, hs * 2);
+  g.setTransform(k, 0, 0, k, ox * (1 - k), oy * (1 - k)); g.globalAlpha = nclamp((.62 + .08 * b + .2 * o) * dim); g.drawImage(centerCv, 0, 0); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1;
+  glow(g, ox, oy, SOMA * s0 * (2.4 + .4 * b + 1.8 * o), nmix([255, 226, 180], coreTint, nclamp(coreBusy * .8)), (.4 + .15 * b + .4 * o) * dim);
+  g.globalCompositeOperation = 'source-over';
+  const ss = SOMA * s0 * 1.65 * (1 + .03 * b + .05 * o); g.save(); g.globalAlpha = .55 + .45 * dim; g.translate(ox, oy); g.rotate(yaw * .6); g.drawImage(somaCv, -ss, -ss, ss * 2, ss * 2); g.restore();
+  g.globalCompositeOperation = 'lighter';
+  if (sleepPhase === 'wake' && elapsed - sleepAt < 2200) { const p = (elapsed - sleepAt) / 2200; g.beginPath(); g.arc(ox, oy, SOMA * s0 + p * Math.min(Wd, Hd) * .45, 0, 6.283); g.strokeStyle = nrgba(CORE_GOLD, (1 - p) * .65); g.lineWidth = (2 * (1 - p) + .5) * DPR; g.stroke(); }
+  for (const p of pulses) drawPulse(g, p);
+  pulses = pulses.filter(p => !p.done);
+  embers = embers.filter(e => { const p = (elapsed - e.t0) / e.life; if (p >= 1) return false; const t = elapsed - e.t0; glow(g, e.x + e.vx * t, e.y + e.vy * t, 3.5 * DPR * (1 - p), [255, 120, 80], 1 - p); return true; });
+  bloom(g, coreCanvas);
+  g.globalCompositeOperation = 'source-over';
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  drawSweep(g);
+  drawBurns(dt);
+  // 睡眠卡住的保底：30 分鐘沒有新階段就自動醒來（用實際時間：視窗藏起來時 elapsed 不會走）
+  if (sleepPhase && sleepPhase !== 'purge' && Date.now() - sleepWall > 30 * 60000) { setSleep(''); renderMarks(); }
+}
+function paint() {
+  if (!width || !Wd || !NCtr) return;
+  const dt = coreLast < 0 ? 0 : Math.max(0, Math.min(elapsed - coreLast, 100));
+  coreUpdate();
+  if (nlist.some(m => m.phase === 'incoming' || m.phase === 'grow')) positionNodes();   // 新長出的神經元：標籤跟著淡入
+  const busy = pulses.length || embers.length || ripples.length || nlist.some(m => isDyn(m) || m.flash || m.heat > 0) || active.length || sleepBusy() || yaw !== pYaw || pitch !== pPitch || camD !== pCam || nDirty || coreOpen > .08;
+  if (!busy && elapsed - lastNPaint < 33) return;                   // 靜止時只跑呼吸，約 30fps
+  lastNPaint = elapsed;
+  nnEnsure();
+  composeNet(); composeCore(dt);
 }
 
 /* ---------- NOEMA · Sleep（技能 noema-sleep.js 的階段標記驅動） ---------- */
@@ -772,12 +1282,10 @@ function sleepEvent(ev) {
   if (phase === 'wake') { wakeSeenTs = Date.parse(ev.ts) || Date.now(); scheduleWakeClear(7000); tryDelta(); }
   paint();
 }
-// 醒來的清場計時：token 變化晚到時會重新起算，讓它顯示完整
 function scheduleWakeClear(ms) {
   clearTimeout(wakeTimer);
   wakeTimer = setTimeout(() => { if (sleepPhase === 'wake') { setSleep(''); renderMarks(); } }, ms);
 }
-// 醒來的 token 變化：報告和醒來標記誰先到都行，兩者都到齊才顯示一次（舊報告不算）
 function tryDelta() {
   if (!wakeReport || !wakeSeenTs || wakeReport.shown) return;
   if ((Date.parse(wakeReport.phaseAt) || 0) < wakeSeenTs - 5000) return;
@@ -785,7 +1293,7 @@ function tryDelta() {
   const b = wakeReport.before?.boot?.total ?? 0, a = wakeReport.after.boot.total, d = $('.sleep-delta');
   d.querySelector('b').textContent = b.toLocaleString() + ' → ' + a.toLocaleString() + ' tok';
   d.querySelector('em').textContent = (a <= b ? '−' + (b - a) : '+' + (a - b)) + ' · 預算 ' + (wakeReport.budget || 5000).toLocaleString();
-  d.style.top = (cy - slitHalf() - 26) + 'px';
+  d.style.top = Math.max(18, cy - slitHalf() - 26) + 'px';
   if (!sleepPhase) setSleep('wake');
   d.classList.add('on'); setTimeout(() => d.classList.remove('on'), 6000);
   scheduleWakeClear(7000);
@@ -793,27 +1301,23 @@ function tryDelta() {
 function onSleepReport(r) {
   const prevScan = sleepReport && sleepReport.scannedAt;
   sleepReport = r && typeof r === 'object' ? r : null;
-  // Noema 在睡眠途中重開：從報告補回階段（30 分鐘內、還沒醒來）
   if (sleepReport && !reportSynced) {
     reportSynced = true;
     const ph = sleepReport.phase, at = Date.parse(sleepReport.phaseAt || '') || 0;
     if (!sleepPhase && ['sleep', 'scan', 'propose', 'apply'].includes(ph) && Date.now() - at < 30 * 60000) setSleep(ph === 'scan' ? 'propose' : ph);
   }
-  // 掃描結果比光幕晚到：再掃一次，標記跟著光幕出現
   if (sleepReport && sleepPhase === 'scan' && sleepReport.scannedAt && sleepReport.scannedAt !== prevScan && sweepAt < 0) {
     sweepAt = elapsed; for (const f of shown) f.swept = false;
   }
   if (sleepReport && sleepReport.phase === 'wake' && sleepReport.after) { wakeReport = sleepReport; tryDelta(); }
   updateHandles(); renderMarks();
 }
-// 換專案：上一個專案的睡眠、銷毀、光束全部清掉
 function resetSleep() {
   clearTimeout(wakeTimer);
-  setSleep(''); sweepAt = -1; burns.length = 0; ash.length = 0; active = [];
+  setSleep(''); sweepAt = -1; burns.length = 0; ash.length = 0; active = []; pulses = []; embers = [];
   sleepReport = null; wakeReport = null; wakeSeenTs = 0; reportSynced = false; purgePrev = '';
   $('.sleep-delta').classList.remove('on');
 }
-// 標記：⚠ 又熱又可疑常駐；路徑失效／過了複查日、冷只在睡眠期間（且是這次入睡之後的掃描）顯示
 function markOf(f) {
   if (!sleepReport || !Array.isArray(sleepReport.files) || f.archived || f.more) return '';
   const r = sleepReport.files.find(x => x.file && x.file.toLowerCase() === f.key);
@@ -835,223 +1339,66 @@ function renderMarks() {
     if (m) { f.button.classList.add('m-' + m); f.button.querySelector('.node-mark').textContent = { warn: '⚠ 熱', path: '路徑', cold: '冷' }[m]; }
   }
 }
-// 掃描：兩道淡淡的光幕從門縫往左右推開，掃過的卡片輕閃，可疑的留下標記
+// 掃描：兩道淡淡的光幕從中央神經元往左右推開，掃過的神經元輕閃，可疑的留下標記
 function drawSweep(c) {
   if (sweepAt < 0) return;
   const age = elapsed - sweepAt, u = Math.min(1, age / 3200), reach = (width / 2 + 40) * (1 - Math.pow(1 - u, 2));
   c.save(); c.globalCompositeOperation = 'lighter';
   for (const s of [-1, 1]) {
     const x = cx + s * reach, g = c.createLinearGradient(x - s * 60, 0, x, 0);
-    g.addColorStop(0, 'rgba(237,196,119,0)'); g.addColorStop(1, 'rgba(237,196,119,' + (.08 * (1 - u * .6)).toFixed(3) + ')');
+    g.addColorStop(0, 'rgba(143,220,245,0)'); g.addColorStop(1, 'rgba(143,220,245,' + (.08 * (1 - u * .6)).toFixed(3) + ')');
     c.fillStyle = g; c.fillRect(Math.min(x, x - s * 60), 0, 60, height);
-    c.fillStyle = 'rgba(255,244,216,' + (.28 * (1 - u * .5)).toFixed(3) + ')'; c.fillRect(x - .5, 0, 1, height);
+    c.fillStyle = 'rgba(230,250,255,' + (.28 * (1 - u * .5)).toFixed(3) + ')'; c.fillRect(x - .5, 0, 1, height);
   }
   c.restore();
   for (const f of shown) {
-    if (f.swept || !f.button || Math.abs(f.sx - cx) > reach) continue;
+    if (f.swept || !f.button || f.more || Math.abs(f.sx - cx) > reach) continue;
     f.swept = true; f.button.classList.add('flash'); setTimeout(() => f.button && f.button.classList.remove('flash'), 380);
-    const m = markOf(f);
-    if (m) { f.button.classList.add('m-' + m); f.button.querySelector('.node-mark').textContent = { warn: '⚠ 熱', path: '路徑', cold: '冷' }[m]; }
+    const m = nmap.get(f.key); if (m) flashMem(m, 'read', .45);
+    const mk = markOf(f);
+    if (mk) { f.button.classList.add('m-' + mk); f.button.querySelector('.node-mark').textContent = { warn: '⚠ 熱', path: '路徑', cold: '冷' }[mk]; }
   }
   if (u >= 1) { sweepAt = -1; renderMarks(); }
 }
 
-/* ---------- 銷毀（只限 archive/）：紅光持續注入 → 卡片發亮 → 從受光那側燒掉（餘燼線＋焦邊＋灰燼，不畫火焰） ---------- */
+/* ---------- 銷毀（只限 archive/）：紅光一道道打進封存神經元 → 整顆發亮 → 檔案真的刪掉後燒成火星 ---------- */
 const HEAT = 1200, BURN = 1500, GAP = 1100;
 const burns = [], ash = [];
-const PURGE_WAIT = 20000;   // 指令被拒或腳本略過時，等這麼久還沒刪掉就取消、卡片還原
+const PURGE_WAIT = 20000;   // 指令被拒或腳本略過時，等這麼久還沒刪掉就取消、還原
 function startPurge(names) {
-  if (sleepPhase !== 'purge') purgePrev = sleepPhase;              // 睡眠流程中途銷毀：燒完回到原本的階段
+  if (sleepPhase !== 'purge') purgePrev = sleepPhase;
   setSleep('purge');
-  if (collapsed) return;                                           // 收成膠囊時量不到卡片，不演
-  const sr = stage.getBoundingClientRect();
+  if (collapsed) return;
   names.forEach((name, i) => {
-    const key = 'archive/' + name.toLowerCase(), f = byKey(key);
-    if (!f || !f.button || f.button.hidden || burns.some(b => b.key === key)) return;   // 不在雲上（收在 +N 或封存隱藏）就不演
-    // 封存卡多半沉在雲的背面、縮得很小：燒的時候用卡片原尺寸（未經深度縮放）畫，才看得清楚
-    const r = f.button.getBoundingClientRect();
-    const rw = Math.max(r.width, f.button.offsetWidth * 1.15), rh = Math.max(r.height, f.button.offsetHeight * 1.15);
-    if (!(rw > 1 && rh > 1)) return;
-    const b = { key, label: f.label, t0: elapsed + i * GAP, x: r.left - sr.left + r.width / 2, y: r.top - sr.top + r.height / 2, rw, rh, beamAt: -1e9 };
-    // 一開始就把卡片畫進畫布、藏起 DOM：檔案刪掉後 DOM 卡片會被重建拿掉，排隊中的卡仍要留在原地
-    b.cold = rasterCard(b, false); b.hot = rasterCard(b, true);
-    f.button.classList.add('burning');
-    burns.push(b);
+    const key = 'archive/' + name.toLowerCase(), m = nmap.get(key), f = byKey(key);
+    if (!m || m.ghost || !f || !f.button || f.button.hidden || burns.some(b => b.key === key)) return;
+    const b = { key, t0: elapsed + i * GAP, beamAt: -1e9 };
+    m.burnRef = b; burns.push(b);
   });
 }
 function cancelBurn(i) {
-  const b = burns.splice(i, 1)[0], f = byKey(b.key);
-  if (f && f.button) f.button.classList.remove('burning');
+  const b = burns.splice(i, 1)[0], m = nmap.get(b.key);
+  if (m) { m.burnRef = null; m.heat = 0; }
 }
-function rasterCard(b, hot) {
-  const d = Math.min(devicePixelRatio || 1, 2), w = Math.ceil(b.rw * d), h = Math.ceil(b.rh * d);
-  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.scale(d, d);
-  g.fillStyle = hot ? 'rgb(198,168,114)' : 'rgba(27,32,27,.85)'; g.fillRect(0, 0, b.rw, b.rh);
-  g.strokeStyle = hot ? 'rgb(255,236,200)' : 'rgba(216,184,107,.19)'; g.lineWidth = 1; g.strokeRect(.5, .5, b.rw - 1, b.rh - 1);
-  g.fillStyle = hot ? 'rgb(255,240,210)' : '#929482'; g.fillRect(0, 0, 2, b.rh);
-  const sc = b.rh / 21; g.font = (9.5 * sc).toFixed(1) + 'px "Segoe UI","Microsoft JhengHei UI",sans-serif'; g.textBaseline = 'middle';
-  if (hot) { g.shadowColor = 'rgba(255,200,140,.9)'; g.shadowBlur = 6; }
-  g.fillStyle = hot ? '#fffaf0' : '#e4e5d3'; g.fillText(b.label, 7 * sc, b.rh / 2 + .5, b.rw - 12 * sc);
-  return cv;
-}
-function igniteBurn(b) {
-  b.hot = b.hot || rasterCard(b, true);
-  const d = b.hot.width / b.rw, w = b.hot.width, h = b.hot.height;
-  b.base = b.hot.getContext('2d').getImageData(0, 0, w, h);
-  // 燃燒順序：離受光點（最靠門縫的卡緣）越遠越晚，加平滑雜訊讓燒線不規則
-  const ox = Math.max(0, Math.min(b.rw, cx - (b.x - b.rw / 2))) * d, oy = Math.max(0, Math.min(b.rh, cy - (b.y - b.rh / 2))) * d;
-  const maxD = Math.max(...[[0, 0], [w, 0], [0, h], [w, h]].map(([x, y]) => Math.hypot(x - ox, y - oy)));
-  const G = 7, gw = Math.ceil(w / G) + 2, grid = Float32Array.from({ length: gw * (Math.ceil(h / G) + 2) }, Math.random), s = t => t * t * (3 - 2 * t);
-  b.val = new Float32Array(w * h);
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    const fx = x / G, fy = y / G, ix = fx | 0, iy = fy | 0, tx = s(fx - ix), ty = s(fy - iy);
-    const a = grid[iy * gw + ix], bb = grid[iy * gw + ix + 1], c = grid[(iy + 1) * gw + ix], e = grid[(iy + 1) * gw + ix + 1];
-    b.val[y * w + x] = Math.hypot(x - ox, y - oy) / maxD * .78 + ((a + (bb - a) * tx) * (1 - ty) + (c + (e - c) * tx) * ty) * .32;
-  }
-  b.w = w; b.h = h; b.d = d;
-  b.out = document.createElement('canvas'); b.out.width = w; b.out.height = h;
-  b.glow = document.createElement('canvas'); b.glow.width = w; b.glow.height = h;
-}
-function drawBurns(c, dt) {
+function drawBurns() {
   for (let i = burns.length - 1; i >= 0; i--) {
-    const b = burns[i], a = elapsed - b.t0;
-    const x0 = b.x - b.rw / 2, y0 = b.y - b.rh / 2;
-    if (a < 0) { c.drawImage(b.cold, x0, y0, b.rw, b.rh); continue; }   // 排隊中：維持原樣
-    const gone = !byKey(b.key);                                    // 腳本真的刪掉了才燒
-    if (a < HEAT || (!gone && !b.val)) {                           // 注入：紅光一道道打進去，卡片越來越亮
-      if (!gone && a > HEAT + PURGE_WAIT) { cancelBurn(i); continue; }   // 一直沒刪：取消，卡片還原
-      if (elapsed - b.beamAt > 500) { b.beamAt = elapsed; active.push({ key: b.key, kind: 'delete', start: elapsed, p: { x: b.x, y: b.y } }); }
-      const h = Math.min(1, Math.pow(a / HEAT, 1.4)), pulse = a > HEAT ? .8 + .2 * Math.sin(a / 160) : 1;   // 等候刪除時發亮脈動
-      c.drawImage(b.cold, x0, y0, b.rw, b.rh);
-      c.save(); c.globalAlpha = h; c.drawImage(b.hot, x0, y0, b.rw, b.rh);
-      c.globalCompositeOperation = 'lighter'; c.globalAlpha = h * .6 * pulse; c.filter = 'blur(' + (2 + 8 * h).toFixed(1) + 'px)'; c.drawImage(b.hot, x0, y0, b.rw, b.rh); c.restore();
+    const b = burns[i], a = elapsed - b.t0, m = nmap.get(b.key);
+    if (a < 0) continue;
+    if (byKey(b.key)) {                                              // 還沒刪：持續注入
+      if (a > HEAT + PURGE_WAIT) { cancelBurn(i); continue; }
+      if (m) {
+        m.heat = Math.min(1, Math.pow(a / HEAT, 1.4)) * (a > HEAT ? .85 + .15 * Math.sin(a / 160) : 1);
+        if (elapsed - b.beamAt > 500) { b.beamAt = elapsed; if (m.route) pulse(m.route, m.cum, 'delete', { speed: 3.2 }); active.push({ key: b.key, kind: 'delete', start: elapsed }); }
+      }
       continue;
     }
-    if (!b.val) { igniteBurn(b); b.burnAt = a; }
-    const p = Math.min(1, (a - b.burnAt) / BURN), T = -.04 + p * 1.18, E = .035, C = .11;
-    const oc = b.out.getContext('2d'), gc = b.glow.getContext('2d');
-    const img = oc.createImageData(b.w, b.h), gi = gc.createImageData(b.w, b.h), o = img.data, go = gi.data, s = b.base.data, v = b.val;
-    const fronts = [];
-    for (let k = 0, j = 0; k < v.length; k++, j += 4) {
-      const x = v[k] - T;
-      if (x < 0) continue;                                         // 已燒掉
-      if (x < E) {                                                 // 餘燼線：白熱→橘
-        const u = x / E; o[j] = 255; o[j + 1] = 250 - 110 * u; o[j + 2] = 220 - 180 * u; o[j + 3] = 255;
-        go[j] = 255; go[j + 1] = 170 - 60 * u; go[j + 2] = 60; go[j + 3] = 230 * (1 - u * .5);
-        if (Math.random() < .004) fronts.push(k); continue;
-      }
-      if (x < E + C) {                                             // 焦邊：黑褐漸回原色
-        const u = (x - E) / C, k2 = .18 + .82 * u * u;
-        o[j] = s[j] * k2 + 40 * (1 - k2); o[j + 1] = s[j + 1] * k2 + 22 * (1 - k2); o[j + 2] = s[j + 2] * k2 + 10 * (1 - k2); o[j + 3] = s[j + 3]; continue;
-      }
-      o[j] = s[j]; o[j + 1] = s[j + 1]; o[j + 2] = s[j + 2]; o[j + 3] = s[j + 3];
-    }
-    oc.putImageData(img, 0, 0); gc.putImageData(gi, 0, 0);
-    c.drawImage(b.out, x0, y0, b.rw, b.rh);
-    c.save(); c.globalCompositeOperation = 'lighter'; c.filter = 'blur(3px)'; c.globalAlpha = .9; c.drawImage(b.glow, x0, y0, b.rw, b.rh); c.restore();
-    for (const k of fronts.slice(0, 4)) ash.push({ x: x0 + (k % b.w) / b.d, y: y0 + ((k / b.w) | 0) / b.d, vx: (Math.random() - .5) * .02, vy: -(.015 + Math.random() * .035), t: 0, life: 700 + Math.random() * 900, s: .6 + Math.random() * 1.1, hot: Math.random() < .4 });
-    if (p >= 1) burns.splice(i, 1);
+    if (!b.burnAt) b.burnAt = elapsed;                               // 檔案刪掉了：殘影在 nnSync 轉成燃燒
+    if (elapsed - b.burnAt > BURN + 300) burns.splice(i, 1);
   }
-  for (let i = ash.length - 1; i >= 0; i--) {                      // 灰燼：細碎往上飄，少數帶餘溫
-    const a = ash[i]; a.t += dt; if (a.t > a.life) { ash.splice(i, 1); continue; }
-    a.vx += (Math.random() - .5) * .0006 * dt; a.x += a.vx * dt; a.y += a.vy * dt; const u = a.t / a.life;
-    c.fillStyle = a.hot && u < .35 ? 'rgba(255,' + Math.round(170 - 200 * u) + ',70,' + (1 - u).toFixed(3) + ')' : 'rgba(120,112,98,' + (.8 * (1 - u)).toFixed(3) + ')';
-    c.fillRect(a.x, a.y, a.s, a.s);
-  }
-  if (sleepPhase === 'purge' && !burns.length && !ash.length) { setSleep(purgePrev || ''); purgePrev = ''; renderMarks(); }
+  if (sleepPhase === 'purge' && !burns.length && !embers.length) { setSleep(purgePrev || ''); purgePrev = ''; renderMarks(); }
 }
-const sleepBusy = () => !!sleepPhase || burns.length > 0 || ash.length > 0 || sweepAt >= 0;
-
-function drawCore() {
-  const c = cctx;
-  c.clearRect(0, 0, width, height);
-  const hot = active.some(a => a.kind !== 'read' && a.kind !== 'mention'), busy = active.length > 0;
-  const dt = coreLast < 0 ? 0 : Math.max(0, Math.min(elapsed - coreLast, 100)); coreLast = elapsed;
-  const ease = reducedMotion ? 1 : 1 - Math.exp(-dt / 240);
-  coreHeat += ((hot ? 1 : 0) - coreHeat) * ease; coreBusy += ((busy ? 1 : 0) - coreBusy) * ease;
-  // 門縫跟著最新一筆事件的顏色走，沒事件時回到金色
-  let latest = null;
-  for (const a of active) if (a.kind !== 'mention' && (!latest || a.start > latest.start)) latest = a;
-  const tc = latest ? EV_RGB[latest.kind] || CORE_GOLD : CORE_GOLD;
-  coreTint = coreTint.map((v, i) => v + (tc[i] - v) * ease);
-  coreClock += dt;
-  const t = coreClock / 1000, sa = elapsed - sleepAt;
-  // 睡眠時門縫的開合：入睡／等候核准幾乎闔上、掃描微開、醒來猛然打開再收回
-  let target = .08 + (reducedMotion ? 0 : .03 * Math.sin(t * 1.3)) + .45 * coreBusy + .35 * coreHeat;
-  if (sleepPhase === 'sleep' || sleepPhase === 'propose') target = .012 + .01 * Math.sin(t * .8);
-  else if (sleepPhase === 'scan') target = .25;
-  else if (sleepPhase === 'wake' && sa < 2500) target = 1.1 * (1 - sa / 2500) + .1;
-  coreOpen += (target - coreOpen) * (reducedMotion ? 1 : 1 - Math.exp(-dt / (sleepPhase === 'sleep' ? 600 : 160)));
-  const o = coreOpen, h2 = slitHalf(), k = h2 / 130, x = cx, y = cy;
-  const [R, Gc, B] = coreTint.map(Math.round);
-  const rgba = a => 'rgba(' + R + ',' + Gc + ',' + B + ',' + Math.max(0, Math.min(1, a)).toFixed(3) + ')';
-  const white = a => 'rgba(255,240,205,' + Math.max(0, Math.min(1, a)).toFixed(3) + ')';
-  c.save();
-  c.globalCompositeOperation = 'lighter';
-  // 1. 光從門縫往兩側灑出：水平拉長的柔光，開越大拉越寬
-  c.save(); c.translate(x, y); c.scale(.9 + o * 3, 1);
-  let g = c.createRadialGradient(0, 0, 0, 0, 0, h2 * 1.5);
-  g.addColorStop(0, rgba(.1 + .22 * o)); g.addColorStop(1, rgba(0));
-  c.fillStyle = g; c.fillRect(-h2 * 1.5, -h2 * 1.5, h2 * 3, h2 * 3);
-  c.restore();
-  // 2. 門縫光暈：貼著縫的窄長光
-  const w = Math.max(1.2, (1.5 + o * 20) * k);
-  c.save(); c.translate(x, y); c.scale((w * 2.2 + 10 * k + o * 30 * k) / h2, 1);
-  g = c.createRadialGradient(0, 0, 0, 0, 0, h2);
-  g.addColorStop(0, rgba(.55)); g.addColorStop(.45, rgba(.16)); g.addColorStop(1, rgba(0));
-  c.fillStyle = g; c.fillRect(-h2, -h2, h2 * 2, h2 * 2);
-  c.restore();
-  // 3. 門縫本體：上下淡出的白熱細縫
-  g = c.createLinearGradient(0, y - h2, 0, y + h2);
-  g.addColorStop(0, white(0)); g.addColorStop(.12, white(.95)); g.addColorStop(.88, white(.95)); g.addColorStop(1, white(0));
-  c.fillStyle = g; c.fillRect(x - w / 2, y - h2, w, h2 * 2);
-  c.restore();
-  drawSweep(c);
-  drawBurns(c, dt);
-  // 睡眠卡住的保底：30 分鐘沒有新階段就自動醒來
-  if (sleepPhase && sleepPhase !== 'purge' && Date.now() - sleepWall > 30 * 60000) { setSleep(''); renderMarks(); }   // 用實際時間：視窗藏起來時 elapsed 不會走
-}
-function drawEvents() {
-  for (const ev of active) {
-    const file = byKey(ev.key);
-    if (file && file.archived && !archiveVisible && ev.kind !== 'delete') continue;
-    // 卡片被刪掉後就沒有位置了：沿用最後一次看到的位置，讓紅光打完
-    let p = file && point(file);
-    if (p) ev.p = p; else p = ev.p;
-    if (!p) continue;
-    const age = elapsed - ev.start;
-    const color = ev.kind === 'mention' ? (file && colors[file.type]) || colors.project : EV[ev.kind] || colors.project;
-    const fade = Math.max(0, 1 - age / 4200);
-    ctx.globalAlpha = fade;
-    // 由環心射向節點的資料束（加粗＋外光＋流動光點，2026-11-10 用戶要更明顯）
-    const t = Math.min(1, age / 450);
-    const ex = cx + (p.x - cx) * t, ey = cy + (p.y - cy) * t;
-    const strong = ev.kind !== 'mention';
-    ctx.save();
-    ctx.shadowColor = color; ctx.shadowBlur = strong ? 14 : 6;
-    ctx.setLineDash(ev.kind === 'mention' ? [3, 6] : []);
-    // 光束：有機粗細波動由環心流向卡片；讀取慢、寫入（新增／修改／刪除）快（2026-11-10 用戶定）
-    if (strong) {
-      ctx.setLineDash([]); ctx.shadowBlur = 0;
-      organicBeam(cx, cy, ex, ey, color, ev.kind !== 'read'
-        // 寫入＝細線上跑短脈衝（2026-11-10 用戶：粗光束太粗暴，細細的脈衝傳輸即可）
-        ? { base: .35, amp: 1.6, period: 700, waves: 3.2, sharp: 7 }
-        : { base: .8, amp: 3, period: 1500, waves: 1.8 });
-    } else {
-      line(cx, cy, ex, ey, color, 1.2);
-    }
-    ctx.setLineDash([]);
-    ctx.restore();
-    ctx.globalAlpha = fade;
-    // 節點上的圓圈漣漪已拿掉：點亮改由整張卡的邊框表現（2026-11-10 用戶定）
-    ctx.globalAlpha = 1;
-  }
-}
-function paint() {
-  if (!width) return;
-  ctx.clearRect(0, 0, width, height);
-  drawHud(); drawConnections(); drawEvents(); drawCore();
-}
+const sleepBusy = () => !!sleepPhase || burns.length > 0 || embers.length > 0 || sweepAt >= 0;
+buildBillboards();
 
 /* ---------- 閱讀 ---------- */
 /* Markdown → HTML（自寫輕量解析器；所有文字一律先跳脫，記憶內容裡的 <...> 不會變成標籤） */
@@ -1435,15 +1782,28 @@ function refreshLights() {
   cs.classList.toggle('live', !!top); if (col) cs.style.setProperty('--ev', col);
   if (!top) cs.textContent = lastLive ? cs.dataset.last || '待命' : '待命 · ' + (SNAP ? pad(SNAP.memories.length) + ' 筆記憶' : '');
 }
+// 載入＝這次開機（注入）之後被讀過或寫過、正在 Claude 腦中的記憶；只有它們是亮的（2026-11-12 用戶定）
+// 開機事件代表新的 context（新對話或壓縮後）：清空重來，只剩開機注入的兩個檔
+function trackLoaded(ev) {
+  if (ev.kind === 'boot') { loadedKeys.clear(); return true; }
+  if (!ev.target || ev.kind === 'sleep' || ev.kind === 'mention') return false;
+  const key = targetKey(ev.target).toLowerCase();
+  if (ev.kind === 'delete') return loadedKeys.delete(key);
+  if (loadedKeys.has(key)) return false;
+  loadedKeys.add(key); return true;
+}
 function onEvents(list, history) {
   if (history) {
     $('.events').replaceChildren();
     if (!list.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = '這個 session 尚未觸及記憶。'; $('.events').append(li); }
-    for (const ev of list) addTimeline({ ...ev, kind: ev.kind === 'write' ? 'modify' : ev.kind }, false);
+    loadedKeys.clear();
+    for (const ev of list) { addTimeline({ ...ev, kind: ev.kind === 'write' ? 'modify' : ev.kind }, false); trackLoaded(ev); }
+    nDirty = true; positionNodes(); paint();
     return;
   }
   for (const raw of list) {
     const ev = { ...raw, kind: raw.kind === 'write' ? 'modify' : raw.kind };
+    if (trackLoaded(ev)) nDirty = true;
     // 超過一分鐘前的事件（新開的對話紀錄從頭讀、或接續對話帶著舊紀錄）只進紀錄，不演
     const stale = ev.ts && Date.now() - Date.parse(ev.ts) > 60000;
     addTimeline(ev, !stale);
@@ -1454,7 +1814,7 @@ function onEvents(list, history) {
     if (ev.kind === 'sleep') { sleepEvent(ev); continue; }
     const kind = ev.kind === 'boot' ? 'read' : ev.kind;
     const keys = ev.kind === 'boot' ? ['@claude', 'memory.md'] : ev.target === '' ? [] : [targetKey(ev.target)];
-    for (const key of keys) active.push({ key, kind, start: elapsed });
+    for (const key of keys) { active.push({ key, kind, start: elapsed }); nnEvent(key, kind); }
   }
   refreshLights(); updateFooter(); paint();
 }
@@ -1478,7 +1838,7 @@ $('.archive-toggle').addEventListener('click', () => {
   archiveVisible = !archiveVisible;
   $('.archive-toggle').setAttribute('aria-pressed', String(archiveVisible));
   for (const f of shown) if (f.archived) f.button.hidden = !archiveVisible;
-  paint();
+  nDirty = true; positionNodes(); paint();
 });
 const EDGE = 6;
 function edgeDir(e) {
@@ -1574,7 +1934,7 @@ function onMemopResult(r) {
   s.textContent = (r.ok ? '✓ ' : '✕ ') + r.message;
   s.style.color = r.ok ? '' : '#ff8a92';
   clearTimeout(opMsgTimer);
-  opMsgTimer = setTimeout(() => { s.textContent = 'LOCAL · 右鍵卡片可封存／刪除'; s.style.color = ''; }, r.ok ? 4000 : 8000);
+  opMsgTimer = setTimeout(() => { s.textContent = 'LOCAL · 右鍵神經元可封存／刪除'; s.style.color = ''; }, r.ok ? 4000 : 8000);
 }
 
 /* ---------- 主迴圈 ---------- */
